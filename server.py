@@ -67,5 +67,5 @@ def getAllGroups():
 
 if __name__ == "__main__":
     webbrowser.open_new_tab('http://localhost:5000/static/index.html')
-    app.debug = False
+    app.debug = True
     app.run()
