@@ -9,9 +9,9 @@ app = Flask(__name__)
 #C:\Users\thoma_000\Dropbox\UQ Semester 2-2014\DECO3801\python\flaskr\static\testfile.csv
 
 @app.route("/")
-def hello():
-    linestring = open('passwords.html', 'r').read()
-    return linestring
+def index():
+    #linestring = open('passwords.html', 'r').read()
+    return render_template('index.html')
 
 @app.route("/login", methods=['POST', 'GET'])
 def login():
@@ -20,16 +20,6 @@ def login():
     dbFile=request.form['DatabaseFile']
     global vault
     vault = Vault(password.encode('ascii','ignore'),dbFile)
-
-##    outString=""
-##    for rec in vault.records:
-##        outString += str(rec._get_uuid()) + "<br>"
-##        outString += str(rec._get_title()) + "<br>"
-##        outString += str(rec._get_group()) + "<br>"
-##        outString += str(rec._get_user()) + "<br>"
-##        outString += str(rec._get_passwd()) + "<br>"
-##        outString += str(rec._get_notes()) + "<br>" + "<br>"
-
     output = render_template('passwords.html', vaultRecords = vault.records, groupList=getAllGroups(), titleList=getAllTitles())
     
     return output
@@ -50,6 +40,14 @@ def getRecordData():
         
     return "No Record Found"
 
+@app.route("/getGroup", methods=['POST', 'GET'])
+def getGroup():
+    group=request.form['group']
+    for record in vault.records:
+        outString= "uuid: "+ str(record._get_uuid()) + "\n"
+        
+    return "No Record Found"
+
 def getAllTitles():
     titleList=[]
     for rec in vault.records:
@@ -66,6 +64,6 @@ def getAllGroups():
 
 
 if __name__ == "__main__":
-    webbrowser.open_new_tab('http://localhost:5000/static/index.html')
+    webbrowser.open_new_tab('http://localhost:5000')
     app.debug = True
     app.run()
