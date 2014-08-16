@@ -1,35 +1,49 @@
 from flask import Flask
 from flask import request
 from flask import render_template
+from flask import flash
 from vault import *
 import os.path
 import webbrowser
 app = Flask(__name__)
 
-#C:\Users\thoma_000\Dropbox\UQ Semester 2-2014\DECO3801\python\flaskr\static\testfile.csv
 
+#Root function that is activated when a user first visits the website
 @app.route("/")
 def index():
-    #linestring = open('passwords.html', 'r').read()
     return render_template('index.html')
 
+#Function that handled the logic of checking if the Login was successful or not.
+#If success then redirect to dashboard.
+#If fail redirect to login page with error message.
 @app.route("/login", methods=['POST', 'GET'])
 def login():
     username=request.form['Username']
     password=request.form['Password']
     dbFile=request.form['DatabaseFile']
-    global vault
-    vault = Vault(password.encode('ascii','ignore'),dbFile)
-    output = render_template('passwords.html', vaultRecords = vault.records, groupList=getAllGroups(), titleList=getAllTitles())
+    if (os.path.isfile(dbFile)==False):
+        return render_template('index.html', error="Database file does not exist.")
+    global vault #A temporary mesure, will later replace with a kind of "Session Class Object" that store all session information and we can pass to all functions.
+    try:
+        vault = Vault(password.encode('ascii','ignore'),dbFile)
+    except VaultVersionError:
+        return render_template('index.html', error="Not a Primate or PasswordGorilla file.")
+    except 'BadPasswordError':
+        return render_template('index.html', error="Incorrect Password.")
+    
+
+    output = render_template('dashboard.html', vaultRecords = vault.records, groupList=getAllGroups(), titleList=getAllTitles())
     
     return output
 
 
+#Temporary proof of concept function.
+#Function gets called if user clicks an account on the dashboard.
+#Function returns a list of details about requested account.
 @app.route("/getRecordData", methods=['POST', 'GET'])
 def getRecordData():
     uuid=request.form['uuid']
     for record in vault.records:
-        #print record._get_uuid()+":"+uuid
         if str(record._get_uuid()) == uuid:
             outString= "uuid: "+ str(record._get_uuid()) + "\n"
             outString+="title: "+ str(record._get_title()) + "\n"
@@ -40,6 +54,7 @@ def getRecordData():
         
     return "No Record Found"
 
+#Returns data to populate the Group-Edit menu on the dashboard
 @app.route("/getGroup", methods=['POST', 'GET'])
 def getGroup():
     group=request.form['group']
@@ -48,6 +63,7 @@ def getGroup():
         
     return "No Record Found"
 
+#Returns a list of all Titles in the database.
 def getAllTitles():
     titleList=[]
     for rec in vault.records:
@@ -55,6 +71,7 @@ def getAllTitles():
             titleList.append(rec._get_title())
     return titleList
 
+#Returns a list of all Groups in the database
 def getAllGroups():
     groupList=[]
     for rec in vault.records:
@@ -63,6 +80,7 @@ def getAllGroups():
     return groupList
 
 
+#Code below is equivilent to a "Main" function in Java or C
 if __name__ == "__main__":
     webbrowser.open_new_tab('http://localhost:5000')
     app.debug = True
