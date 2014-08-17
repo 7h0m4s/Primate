@@ -8,6 +8,19 @@ import webbrowser
 app = Flask(__name__)
 
 
+class SessionData:
+    """A class to hold all session data in."""
+    
+    def __init__(self):
+        self.vault = None
+        self.username = None
+        self.password = None
+        self.dbFile = None
+
+        return
+    
+
+
 #Root function that is activated when a user first visits the website
 @app.route("/")
 def index():
@@ -18,21 +31,19 @@ def index():
 #If fail redirect to login page with error message.
 @app.route("/login", methods=['POST', 'GET'])
 def login():
-    username=request.form['Username']
-    password=request.form['Password']
-    dbFile=request.form['DatabaseFile']
-    if (os.path.isfile(dbFile)==False):
+    sessionData.username=request.form['Username']
+    sessionData.password=request.form['Password']
+    sessionData.dbFile=request.form['DatabaseFile']
+    if (os.path.isfile(sessionData.dbFile)==False):
         return render_template('index.html', error="Database file does not exist.")
-    global vault #A temporary mesure, will later replace with a kind of "Session Class Object" that store all session information and we can pass to all functions.
+    #global vault #A temporary mesure, will later replace with a kind of "Session Class Object" that store all session information and we can pass to all functions.
     try:
-        vault = Vault(password.encode('ascii','ignore'),dbFile)
-    except VaultVersionError:
-        return render_template('index.html', error="Not a Primate or PasswordGorilla file.")
+        sessionData.vault = Vault(sessionData.password.encode('ascii','ignore'),sessionData.dbFile)
     except 'BadPasswordError':
         return render_template('index.html', error="Incorrect Password.")
     
 
-    output = render_template('dashboard.html', vaultRecords = vault.records, groupList=getAllGroups(), titleList=getAllTitles())
+    output = render_template('dashboard.html', vaultRecords = sessionData.vault.records, groupList=getAllGroups(), titleList=getAllTitles())
     
     return output
 
@@ -43,7 +54,7 @@ def login():
 @app.route("/getRecordData", methods=['POST', 'GET'])
 def getRecordData():
     uuid=request.form['uuid']
-    for record in vault.records:
+    for record in sessionData.vault.records:
         if str(record._get_uuid()) == uuid:
             outString= "uuid: "+ str(record._get_uuid()) + "\n"
             outString+="title: "+ str(record._get_title()) + "\n"
@@ -58,15 +69,22 @@ def getRecordData():
 @app.route("/getGroup", methods=['POST', 'GET'])
 def getGroup():
     group=request.form['group']
-    for record in vault.records:
+    for record in sessionData.vault.records:
         outString= "uuid: "+ str(record._get_uuid()) + "\n"
         
     return "No Record Found"
 
+#Returns data to populate the Group-Edit menu on the dashboard
+@app.route("/save", methods=['POST', 'GET'])
+def saveDB():
+    
+        
+    return 
+
 #Returns a list of all Titles in the database.
 def getAllTitles():
     titleList=[]
-    for rec in vault.records:
+    for rec in sessionData.vault.records:
         if rec._get_title() not in titleList:
             titleList.append(rec._get_title())
     return titleList
@@ -74,7 +92,7 @@ def getAllTitles():
 #Returns a list of all Groups in the database
 def getAllGroups():
     groupList=[]
-    for rec in vault.records:
+    for rec in sessionData.vault.records:
         if rec._get_group() not in groupList:
             groupList.append(rec._get_group())
     return groupList
@@ -82,6 +100,8 @@ def getAllGroups():
 
 #Code below is equivilent to a "Main" function in Java or C
 if __name__ == "__main__":
+    global sessionData
+    sessionData = SessionData()
     webbrowser.open_new_tab('http://localhost:5000')
     app.debug = True
     app.run()
