@@ -12,6 +12,7 @@ class SessionData:
     """A class to hold all session data in."""
     
     def __init__(self):
+        self.loggedIn = False
         self.vault = None
         self.username = None
         self.password = None
@@ -32,13 +33,13 @@ def index():
 @app.route("/login", methods=['POST', 'GET'])
 def login():
     sessionData.username=request.form['Username']
-    sessionData.password=request.form['Password']
+    sessionData.password=request.form['Password'].encode('ascii','ignore')
     sessionData.dbFile=request.form['DatabaseFile']
     if (os.path.isfile(sessionData.dbFile)==False):
         return render_template('index.html', error="Database file does not exist.")
     #global vault #A temporary mesure, will later replace with a kind of "Session Class Object" that store all session information and we can pass to all functions.
     try:
-        sessionData.vault = Vault(sessionData.password.encode('ascii','ignore'),sessionData.dbFile)
+        sessionData.vault = Vault(sessionData.password,sessionData.dbFile)
     except 'BadPasswordError':
         return render_template('index.html', error="Incorrect Password.")
     
@@ -77,9 +78,9 @@ def getGroup():
 #Returns data to populate the Group-Edit menu on the dashboard
 @app.route("/save", methods=['POST', 'GET'])
 def saveDB():
+    sessionData.vault.write_to_file(sessionData.dbFile, sessionData.password)
     
-        
-    return 
+    return "Database was saved to "+sessionData.dbFile
 
 #Returns a list of all Titles in the database.
 def getAllTitles():
