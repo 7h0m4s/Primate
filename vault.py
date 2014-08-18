@@ -352,8 +352,10 @@ class Vault(object):
 
     def _create_empty(self, password):
 
-        assert type(password) != unicode
-
+        #Attempt to fix problems with unicode.
+        #assert type(password) != unicode
+        password = password.encode('ascii','ignore')
+        
         self.f_tag = 'PWS3'
         self.f_salt = Vault._urandom(32)
         self.f_iter = 2048
@@ -454,7 +456,9 @@ class Vault(object):
         """
         Store contents of this Vault into a file.
         """
-        assert type(password) != unicode
+        #Attempt to fix problems with unicode.
+        #assert type(password) != unicode
+        password = password.encode('ascii','ignore')
 
         _last_save = struct.pack("<L", int(time.time()))
         self.header.raw_fields[0x04] = self.Field(0x04, len(_last_save), _last_save)
