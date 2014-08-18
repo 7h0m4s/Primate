@@ -29,7 +29,7 @@
 	
   </head>
   <body>
-    <form class="form-signin" role="form" action="/login" method="post">
+    <form class="form-signin" role="form" action="/newDB" method="post">
       <div class="container">
         <div class="row">
           <div class="col-sm-4 col-sm-offset-4">
@@ -55,40 +55,40 @@
         </div>
 
         <br />
-
-        <div class="row">
-          <div class="col-sm-4 col-sm-offset-4">
-            <input type="password" class="form-control" placeholder="Password" name="Password" required>
-          </div>
-        </div>
-
-        <br />
-        
-        <div class="row">
+		<div class="row">
           <div class="col-sm-4 col-sm-offset-4">
             <input type="text" class="form-control" placeholder="Database File" name="DatabaseFile" required>
             <br />
           </div>
         </div>
-        
+		
+		<br />
+		
         <div class="row">
           <div class="col-sm-4 col-sm-offset-4">
-            <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+            <input type="password" class="form-control" placeholder="Enter Password" name="Password" required>
+          </div>
+        </div>
+		
+		<br />
+		
+        <div class="row">
+          <div class="col-sm-4 col-sm-offset-4">
+            <input type="password" class="form-control" placeholder="Confirm Password" name="ConfirmPassword" required>
           </div>
         </div>
 
+        
+        
+        
+        
         <div class="row">
           <div class="col-sm-4 col-sm-offset-4">
-            <br />
-            <div class="row">
-              
-    
-              <div class="col-xs-6">
-                <p class="text-right"><a href="/NewDatabase"><span class="glyphicon glyphicon-import"></span> New Database</a></p>
-              </div>
-            </div>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Create New Password Database</button>
           </div>
         </div>
+
+
       </div>
     </form>
 

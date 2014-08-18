@@ -42,11 +42,40 @@ def login():
         sessionData.vault = Vault(sessionData.password,sessionData.dbFile)
     except 'BadPasswordError':
         return render_template('index.html', error="Incorrect Password.")
-    
+    except Exception,e:
+        return render_template('index.html', error=str(e))
 
-    output = render_template('dashboard.html', vaultRecords = sessionData.vault.records, groupList=getAllGroups(), titleList=getAllTitles())
     
-    return output
+    return render_template('dashboard.html', vaultRecords = sessionData.vault.records, groupList=getAllGroups(), titleList=getAllTitles())
+
+
+@app.route("/NewDatabase")
+def newDatabase():
+    print "bleep"
+    return render_template('newDB.html')
+
+
+#Function that handles the creation of a new DB file and logging the user in.
+#If success then redirect to dashboard.
+#If fail redirect to newDB page with error message.
+@app.route("/newDB", methods=['POST', 'GET'])
+def newDB():
+    if (request.form['Password'].encode('ascii','ignore') != request.form['ConfirmPassword'].encode('ascii','ignore')):
+        return render_template('newDB.html', error="Passwords do not match.")
+    sessionData.username=request.form['Username']
+    sessionData.password=request.form['Password'].encode('ascii','ignore')
+    assert type(sessionData.password) != unicode
+    sessionData.dbFile=request.form['DatabaseFile']
+    #global vault #A temporary mesure, will later replace with a kind of "Session Class Object" that store all session information and we can pass to all functions.
+    try:
+        sessionData.vault = Vault(sessionData.password.encode('ascii','ignore'))
+        sessionData.vault.write_to_file(sessionData.password.encode('ascii','ignore'),sessionData.dbFile)
+    except 'BadPasswordError':
+        return render_template('newDB.html', error="Incorrect Password.")
+    #except Exception,e:
+    #    return render_template('newDB.html', error="Error:"+str(e))
+
+    return render_template('dashboard.html', vaultRecords = sessionData.vault.records, groupList=getAllGroups(), titleList=getAllTitles())
 
 
 #Temporary proof of concept function.
