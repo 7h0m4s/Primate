@@ -9,7 +9,7 @@ function saveDB(){
 	
 }
 
-function loginDropDown(command) {
+function loginDropDown(id,command) {
 //This function is called if one of the buttons in the account's dropdown menu is clicked.
 //Please tell Thomas is there is a better way of laying this code out without a million if statements.
 
@@ -33,7 +33,17 @@ function loginDropDown(command) {
 
 
     } else if (command == "edit") {
-        $(obj).closest("div.row").find('.passwordLink').click();
+        //$("#form-edit-user input[name='uuid']").val(id);
+        $.post("get-user", { uuid: id }, function (result) {
+            //result = JSON.stringify(userObjTest);
+            var userObj = jQuery.parseJSON(result);
+            $("#form-edit-user input[name='uuid']").val(userObj.uuid);
+            $("#form-edit-user input[name='usr']").val(userObj.usr);
+            $("#form-edit-user input[name='userTitle']").val(userObj.userTitle);
+            $("#form-edit-user input[name='userUrl']").val(userObj.userUrl);
+            $("#form-edit-user input[name='notes']").val(userObj.notes);
+            $('#editUserModal').modal('show');
+		});
     } else if (command == "move") {
 
 
@@ -47,11 +57,12 @@ function loginDropDown(command) {
         userObjTest.userUrl = "www.google.com";
         userObjTest.notes = "Test test!"; */
 
-        var id = $(obj).closest("div.row").find('.passwordLink').attr("id");
-        alert("this is del func --> before post");
+        //var id = $(this).attr("uuid");
+        //alert("uuid:"+id.toString());
         $.post("get-user", { uuid: id }, function (result) {
-            alert("this is del func");
-            result = JSON.stringify(userObjTest);
+            //alert("this is del func");
+/* 			var userObjTest = {};
+            result = JSON.stringify(userObjTest); */
             var userObj = jQuery.parseJSON(result);
             $("#form-del-user input[name='uuid']").val(userObj.uuid);
             $("#form-del-user input[name='usr']").val(userObj.usr);
@@ -77,7 +88,7 @@ var posting = function (method, url, postData, successFun) {
       .fail(function () {
           //to be removed successFun(); test only
           successFun();
-          alert("Save failed. Please check your Internet connection.");
+          alert("Failed. Please check your Internet connection.");
       });
 };
 
@@ -132,7 +143,7 @@ $(function () {
         userObjTest.notes = "Test test!"; */
 
         var id = $(this).attr('id');
-
+		//$("#form-edit-user input[name='uuid']").val(id);
         $.post("get-user", { uuid: id }, function (result) {
             //result = JSON.stringify(userObjTest);
             var userObj = jQuery.parseJSON(result);
@@ -142,6 +153,7 @@ $(function () {
             $("#form-edit-user input[name='userUrl']").val(userObj.userUrl);
             $("#form-edit-user input[name='notes']").val(userObj.notes);
             $('#editUserModal').modal('show');
+			
         });
     });
 

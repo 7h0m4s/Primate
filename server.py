@@ -171,8 +171,8 @@ def createUser():
         sessionData.logger.error("UserGroup:"+str(len(group)))
         if len(group)<= 0:
             sessionData.logger.error("UserGroup:"+group)
-            return "Cannot create user. No group name given."
-        entry = Vault.Record()
+            return "Cannot create user. No group name given.", 500
+        entry = Vault.Record.create()
         entry._set_group(group)
         entry._set_user(usr)
         entry._set_passwd(pwd)
@@ -185,6 +185,51 @@ def createUser():
         return "Group Added Successfully"
     except Exception,e:
         return str(e),500
+
+
+
+@app.route("/edit-user", methods=['POST', 'GET'])
+def editUser():
+    try:
+        uuid = request.form['uuid']
+        usr=request.form['usr']
+        pwd=request.form['pwd']
+        userTitle=request.form['userTitle']
+        userUrl=request.form['userUrl']
+        notes=request.form['notes']
+
+        if len(userTitle)<= 0:
+            return "Account must have a title.", 500
+        for record in sessionData.vault.records:
+            if str(record._get_uuid()) == uuid:
+                record._set_user(usr)
+                record._set_passwd(pwd)
+                record._set_title(userTitle)
+                record._set_url(userUrl)
+                record._set_notes(notes)
+            
+                saveDB()
+                return "Account Edited Successfully"
+            
+        return "Account was not found.", 500
+    except Exception,e:
+        return str(e),500
+
+
+
+@app.route("/delete-user", methods=['POST', 'GET'])
+def deleteUser():
+    try:
+        uuid = request.form['uuid']
+        for record in sessionData.vault.records:
+            if str(record._get_uuid()) == uuid:
+                sessionData.vault.records.remove(record)
+                saveDB()
+                return "Account Deleted Successfully"
+        return "Cannot find account tobe deleted.", 500
+    except Exception,e:
+        return str(e),500
+    
 
 #Returns data to populate the Group-Edit menu on the dashboard
 @app.route("/save", methods=['POST', 'GET'])

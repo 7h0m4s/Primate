@@ -141,10 +141,10 @@
                                                 <li><a href="#"><span class="glyphicon glyphicon-file"></span> Copy Password</a></li>
                                                 <li><a href="#"><span class="glyphicon glyphicon-file"></span> Copy URL</a></li>
                                                 <hr>
-                                                <li><a href="#" onclick="loginDropDown(this,'view')"><span class="glyphicon glyphicon-eye-open"></span> View</a></li>
-                                                <li><a href="#" onclick="loginDropDown(this,'edit')"><span class="glyphicon glyphicon-edit"></span> Edit</a></li>
-                                                <li><a href="#" onclick="loginDropDown(this,'move')"><span class="glyphicon glyphicon-move"></span> Move</a></li>
-                                                <li><a href="#" onclick="loginDropDown(this,'delete')"><span class="glyphicon glyphicon-remove"></span> Delete</a></li>
+                                                <li><a href="#" onclick="loginDropDown('{{ record._get_uuid() }}','view')"><span class="glyphicon glyphicon-eye-open"></span> View</a></li>
+                                                <li><a href="#" onclick="loginDropDown('{{ record._get_uuid() }}','edit')"><span class="glyphicon glyphicon-edit"></span> Edit</a></li>
+                                                <li><a href="#" onclick="loginDropDown('{{ record._get_uuid() }}','move')"><span class="glyphicon glyphicon-move"></span> Move</a></li>
+                                                <li><a href="#" onclick="loginDropDown('{{ record._get_uuid() }}','delete')"><span class="glyphicon glyphicon-remove"></span> Delete</a></li>
 
                                             </ul>
                                         </div>
@@ -183,7 +183,7 @@
                     </div>
 
                 </div>
-            </div>
+            <!-- endogrid --></div>
         </div>
     </div>
     <div class="modal fade" id="redditModal" data-groupid="">
@@ -950,7 +950,7 @@
     <div class="modal fade" id="editUserModal">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="form-edit-user" method="POST" target="/">
+                <form id="form-edit-user" method="POST" target="/edit-user">
                     <input type="hidden" name="uuid" /> 
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -992,7 +992,7 @@
     <div class="modal fade" id="delUserModal">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="form-del-user" method="POST" target="/">
+                <form id="form-del-user" method="POST" target="/delete-user">
                     <input type="hidden" name="uuid" />
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
