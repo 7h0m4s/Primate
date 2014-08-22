@@ -40,16 +40,16 @@ function loginDropDown(command) {
 
     } else if (command == "delete") {
         
-        var userObjTest = {};
+        /* var userObjTest = {};
         userObjTest.uuid = "789798-87879";
         userObjTest.usr = "jf123456";
         userObjTest.userTitle = "asdfghjk";
         userObjTest.userUrl = "www.google.com";
-        userObjTest.notes = "Test test!";
+        userObjTest.notes = "Test test!"; */
 
         var id = $(obj).closest("div.row").find('.passwordLink').attr("id");
         alert("this is del func --> before post");
-        $.post("getRecordData", { uuid: id }, function (result) {
+        $.post("get-user", { uuid: id }, function (result) {
             alert("this is del func");
             result = JSON.stringify(userObjTest);
             var userObj = jQuery.parseJSON(result);
@@ -124,17 +124,17 @@ $(function () {
     });
 
     $('.passwordLink').click(function () {
-        var userObjTest = {};
-        userObjTest.uuid = "789798-87879";
+        //var userObjTest = {};
+        /* userObjTest.uuid = "789798-87879";
         userObjTest.usr = "jf123456";
         userObjTest.userTitle = "asdfghjk";
         userObjTest.userUrl = "www.google.com";
-        userObjTest.notes = "Test test!";
+        userObjTest.notes = "Test test!"; */
 
         var id = $(this).attr('id');
 
-        $.post("getRecordData", { uuid: id }, function (result) {
-            result = JSON.stringify(userObjTest);
+        $.post("get-user", { uuid: id }, function (result) {
+            //result = JSON.stringify(userObjTest);
             var userObj = jQuery.parseJSON(result);
             $("#form-edit-user input[name='uuid']").val(userObj.uuid);
             $("#form-edit-user input[name='usr']").val(userObj.usr);

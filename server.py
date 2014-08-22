@@ -6,6 +6,7 @@ from vault import *
 import os.path
 import webbrowser
 import logging
+import json
 
 app = Flask(__name__)
 #something happened
@@ -101,22 +102,29 @@ def newDB():
     return render_template('dashboard.html', sessionData=sessionData)
 
 
-#Temporary proof of concept function.
-#Function gets called if user clicks an account on the dashboard.
-#Function returns a list of details about requested account.
-@app.route("/getRecordData", methods=['POST', 'GET'])
-def getRecordData():
+
+
+#Function returns a JSON of details about requested account.
+@app.route("/get-user", methods=['POST', 'GET'])
+def getUser():
     uuid=request.form['uuid']
     for record in sessionData.vault.records:
         if str(record._get_uuid()) == uuid:
-            outString= "uuid: "+ str(record._get_uuid()) + "\n"
-            outString+="title: "+ str(record._get_title()) + "\n"
-            outString+="user: "+ str(record._get_user()) + "\n"
-            outString+="password :"+ str(record._get_passwd()) + "\n"
-            outString+="url: "+ str(record._get_url()) + "\n"
-            return outString
+            data={}
+            data["uuid"]=str(record._get_uuid())
+            data["usr"]=str(record._get_user())
+            data["userTitle"]=str(record._get_title())
+            data["userUrl"]=str(record._get_url())
+            data["notes"]=str(record._get_notes())
+            
+##            outString= "uuid: "+ str(record._get_uuid()) + "\n"
+##            outString+="title: "+ str(record._get_title()) + "\n"
+##            outString+="user: "+ str(record._get_user()) + "\n"
+##            outString+="password :"+ str(record._get_passwd()) + "\n"
+##            outString+="url: "+ str(record._get_url()) + "\n"
+            return json.dumps(data)
         
-    return "No Record Found"
+    return "No Record Found", 500
 
 #Returns data to populate the Group-Edit menu on the dashboard
 @app.route("/getGroup", methods=['POST', 'GET'])
