@@ -72,7 +72,7 @@ var posting = function (method, url, postData, successFun) {
         data: postData
     }).done(function () {
         successFun();
-        alert("success");
+        //alert("success");
     })
       .fail(function () {
           //to be removed successFun(); test only
@@ -83,7 +83,7 @@ var posting = function (method, url, postData, successFun) {
 
 function refresh() {
 	$("#gridview").load("/refresh");
-	alert("Refreshed!");
+	//alert("Refreshed!");
 
 }
 
@@ -102,20 +102,23 @@ $(function () {
         });
     });
 	
-	$("#addUserButton").click(function(){
-		var group=this.attr("group");
-		$("input[name='group']").val(group);
+	$(".addUserButton").click(function(){
+		//alert("butts");
+		var group = $(this).attr("group");
+		//alert(group);
+		$("#form-create-user input[name='group']").val(group);
 		
 	});
 	
     $("#form-create-user .saveChanges").click(function () {
         //console.log($("#form-create-group").serialize());
         //console.log($("#form-create-group").attr("target"));
-		console.log(this.attr("group"));
+		//alert(this.attr("group"));
         var method = "POST";
         var url = $("#form-create-user").attr("target");
         var postData = $("#form-create-user").serialize();
         posting(method, url, postData, function () {
+			refresh()
             $('#createUserModal').modal('hide');
         });
     });
@@ -149,6 +152,7 @@ $(function () {
         var url = $(editUser).attr("target");
         var postData = $(editUser).serialize();
         posting(method, url, postData, function () {
+			refresh()
             $("#editUserModal").modal('hide');
         });
     });
@@ -169,6 +173,7 @@ $(function () {
         var url = $(delUser).attr("target");
         var postData = $(delUser).serialize();
         posting(method, url, postData, function () {
+			refresh()
             $("#delUserModal").modal('hide');
         });
     });

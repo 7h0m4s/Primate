@@ -145,28 +145,38 @@ def createGroup():
         sessionData.addGroup(groupName)
     else:
         if groupParent not in sessionData.getGroups():
-            return "Group Parent Not Found"
+            return "Group Parent Not Found", 500
         sessionData.addGroup(groupParent +"."+ groupName)
 
     return "Group Added Successfully"
 
 @app.route("/create-user", methods=['POST', 'GET'])
 def createUser():
-    group=request.form['group']
-    usr=request.form['usr']
-    pwd=request.form['pwd']
-    userTitle=request.form['userTitle']
-    userUrl=request.form['userUrl']
-    notes=request.form['notes']
-    entry = Record()
-    entry._set_group(group)
-    entry._set_user(user)
-    entry._set_passwd(pwd)
-    entry._set_title(userTitle)
-    entry._set_url(userUrl)
-    entry._set_notes(notes)
-    session
-    return "Group Added Successfully"
+    try:
+        sessionData.logger.error("stuff")
+        group=request.form['group']
+        usr=request.form['usr']
+        pwd=request.form['pwd']
+        userTitle=request.form['userTitle']
+        userUrl=request.form['userUrl']
+        notes=request.form['notes']
+        sessionData.logger.error("UserGroup:"+str(len(group)))
+        if len(group)<= 0:
+            sessionData.logger.error("UserGroup:"+group)
+            return "Cannot create user. No group name given."
+        entry = Vault.Record()
+        entry._set_group(group)
+        entry._set_user(usr)
+        entry._set_passwd(pwd)
+        entry._set_title(userTitle)
+        entry._set_url(userUrl)
+        entry._set_notes(notes)
+        sessionData.vault.records.append(entry)
+
+        saveDB()
+        return "Group Added Successfully"
+    except Exception,e:
+        return str(e),500
 
 #Returns data to populate the Group-Edit menu on the dashboard
 @app.route("/save", methods=['POST', 'GET'])
@@ -200,9 +210,9 @@ if __name__ == "__main__":
 
     sessionData.logger = logging.getLogger('werkzeug')
     handler = logging.FileHandler('access.log')
-    handler2 = logging.StreamHandler()
+
     sessionData.logger.addHandler(handler)
-    sessionData.logger.addHandler(handler2)
+    
     #sessionData.logger.error("herror")
     #app.logger.addHandler(handler)
     

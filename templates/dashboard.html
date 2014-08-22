@@ -118,7 +118,7 @@
                                         <span data-toggle="popover" data-placement="bottom" title="Notes">{{ group }}</span>
                                     </div>
                                     <div class="col-xs-5">
-                                        <p class="text-right" style="margin-bottom: 0px"><a href="#" data-toggle="modal" data-target="#permissionsModal" style="color: #5bc0de"><span class="glyphicon glyphicon-user"></span></a>&nbsp;&nbsp;&nbsp;<a href="#" id="addUserButton" group="{{ group }}" data-toggle="modal" data-target="#createUserModal" style="color: #5bc0de"><span class="glyphicon glyphicon-plus"></span></a>&nbsp;&nbsp;&nbsp;<a href="#" data-toggle="modal" data-target="#redditModal" style="color: #5bc0de"><span class="glyphicon glyphicon-edit"></span></a></p>
+                                        <p class="text-right" style="margin-bottom: 0px"><a href="#" data-toggle="modal" data-target="#permissionsModal" style="color: #5bc0de"><span class="glyphicon glyphicon-user"></span></a>&nbsp;&nbsp;&nbsp;<a href="#" class="addUserButton" id="addUserButton" group="{{ group }}" data-toggle="modal" data-target="#createUserModal" style="color: #5bc0de"><span class="glyphicon glyphicon-plus"></span></a>&nbsp;&nbsp;&nbsp;<a href="#" data-toggle="modal" data-target="#redditModal" style="color: #5bc0de"><span class="glyphicon glyphicon-edit"></span></a></p>
                                     </div>
                                 </div>
                             </div>
@@ -137,9 +137,9 @@
                                             <ul class="dropdown-menu" role="menu">
                                                 <li><a target="_blank" href="http://{{ record._get_url() }}"><span class="glyphicon glyphicon-link"></span> Open URL</a></li>
                                                 <hr>
-                                                <li><a href="#" id="text-to-copy" data-clipboard-text="{{ record._get_user() }}"><span class="glyphicon glyphicon-file"></span> Copy Username</a></li>
-                                                <li><a href="#" id="text-to-copy" data-clipboard-text="{{ record._get_passwd() }}"><span class="glyphicon glyphicon-file"></span> Copy Password</a></li>
-                                                <li><a href="#" id="text-to-copy" data-clipboard-text="{{ record._get_url() }}"><span class="glyphicon glyphicon-file"></span> Copy URL</a></li>
+                                                <li><a href="#"><span class="glyphicon glyphicon-file"></span> Copy Username</a></li>
+                                                <li><a href="#"><span class="glyphicon glyphicon-file"></span> Copy Password</a></li>
+                                                <li><a href="#"><span class="glyphicon glyphicon-file"></span> Copy URL</a></li>
                                                 <hr>
                                                 <li><a href="#" onclick="loginDropDown(this,'view')"><span class="glyphicon glyphicon-eye-open"></span> View</a></li>
                                                 <li><a href="#" onclick="loginDropDown(this,'edit')"><span class="glyphicon glyphicon-edit"></span> Edit</a></li>
@@ -908,8 +908,8 @@
     <div class="modal fade" id="createUserModal">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="form-create-user" method="POST" target="/">
-				<input type="hidden" class="" name="group"/>
+                <form id="form-create-user" method="POST" target="/create-user">
+				<input type="hidden" class="" name="group" value=""/>
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                         <h4 class="modal-title">Add User</h4>
@@ -1132,9 +1132,9 @@
     <!-- crappy jquery -->
     <script>
         $('#addUser').hide();
-        $('#addUserButton').on("click", function () {
-            $('#addUser').toggle();
-        });
+        //$('#addUserButton').on("click", function () {
+        //    $('#addUser').toggle();
+        //});
 
         $('#editGroup').hide();
         $('#editGroupButton').on("click", function () {
