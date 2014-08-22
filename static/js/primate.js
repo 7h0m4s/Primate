@@ -88,6 +88,8 @@ function refresh() {
 }
 
 $(function () {
+
+
     $("#form-create-group .saveChanges").click(function () {
         //alert($("#form-create-group").serialize());
         //alert($("#form-create-group").attr("target"));
@@ -99,10 +101,17 @@ $(function () {
             $('#createGroupModal').modal('hide');
         });
     });
-
+	
+	$("#addUserButton").click(function(){
+		var group=this.attr("group");
+		$("input[name='group']").val(group);
+		
+	});
+	
     $("#form-create-user .saveChanges").click(function () {
-        console.log($("#form-create-group").serialize());
-        console.log($("#form-create-group").attr("target"));
+        //console.log($("#form-create-group").serialize());
+        //console.log($("#form-create-group").attr("target"));
+		console.log(this.attr("group"));
         var method = "POST";
         var url = $("#form-create-user").attr("target");
         var postData = $("#form-create-user").serialize();

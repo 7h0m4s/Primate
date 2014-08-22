@@ -69,9 +69,9 @@ def login():
     return render_template('dashboard.html', sessionData=sessionData)
 
 
+#Takes user to the new database page 
 @app.route("/NewDatabase")
 def newDatabase():
-    print "bleep"
     return render_template('newDB.html')
 
 
