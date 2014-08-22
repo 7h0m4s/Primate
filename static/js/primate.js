@@ -116,7 +116,7 @@ $(function () {
 	$(".addUserButton").click(function(){
 		//alert("butts");
 		var group = $(this).attr("group");
-		//alert(group);
+		alert(group);
 		$("#form-create-user input[name='group']").val(group);
 		
 	});
