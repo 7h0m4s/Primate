@@ -28,6 +28,12 @@ class SessionData:
                     self.groups.append(str(record._get_group()))
                 
         return self.groups
+
+    def addGroup(self,group):
+        if group not in self.groups:
+                    self.groups.append(group)
+
+        return "Group was added"
                 
 
 
@@ -114,6 +120,36 @@ def getGroup():
         outString= "uuid: "+ str(record._get_uuid()) + "\n"
         
     return "No Record Found"
+
+@app.route("/refresh")
+def refresh():
+
+    return render_template('passwordGrid.html', sessionData=sessionData)
+
+
+@app.route("/create-group", methods=['POST', 'GET'])
+def createGroup():
+    groupParent=request.form['groupParent']
+    groupName=request.form['groupName']
+
+    if groupParent != "":
+        if groupParent not in sessionData.getGroups():
+            return "Group Parent Not Found"
+        sessionData.addGroup(groupName)
+    else:
+        sessionData.addGroup(groupParent +"."+ groupName)
+
+    return "Group Added Successfully"
+
+@app.route("/create-user", methods=['POST', 'GET'])
+def createUser():
+    usr=request.form['usr']
+    pwd=request.form['pwd']
+    userTitle=request.form['userTitle']
+    userUrl=request.form['userUrl']
+    notes=request.form['notes']
+
+    return "Group Added Successfully"
 
 #Returns data to populate the Group-Edit menu on the dashboard
 @app.route("/save", methods=['POST', 'GET'])

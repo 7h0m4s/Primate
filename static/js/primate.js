@@ -81,6 +81,12 @@ var posting = function (method, url, postData, successFun) {
       });
 };
 
+function refresh() {
+	$("#gridview").load("/refresh");
+	alert("Refreshed!");
+
+}
+
 $(function () {
     $("#form-create-group .saveChanges").click(function () {
         //alert($("#form-create-group").serialize());
@@ -89,6 +95,7 @@ $(function () {
         var url = $("#form-create-group").attr("target");
         var postData = $("#form-create-group").serialize();
         posting(method, url, postData, function () {
+			refresh()
             $('#createGroupModal').modal('hide');
         });
     });
