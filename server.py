@@ -45,7 +45,10 @@ def index():
     sessionData.logger.error("index")
     return render_template('index.html')
 
-
+#test function to raise http error
+@app.route("/die")
+def defaultHandler():
+   return 'error handler there', 500
 
 #Function that handled the logic of checking if the Login was successful or not.
 #If success then redirect to dashboard.
@@ -149,12 +152,20 @@ def createGroup():
 
 @app.route("/create-user", methods=['POST', 'GET'])
 def createUser():
+    group=request.form['group']
     usr=request.form['usr']
     pwd=request.form['pwd']
     userTitle=request.form['userTitle']
     userUrl=request.form['userUrl']
     notes=request.form['notes']
-
+    entry = Record()
+    entry._set_group(group)
+    entry._set_user(user)
+    entry._set_passwd(pwd)
+    entry._set_title(userTitle)
+    entry._set_url(userUrl)
+    entry._set_notes(notes)
+    session
     return "Group Added Successfully"
 
 #Returns data to populate the Group-Edit menu on the dashboard
