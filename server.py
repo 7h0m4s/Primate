@@ -17,15 +17,26 @@ class SessionData:
         self.username = None
         self.password = None
         self.dbFile = None
+        self.groups = []
 
         return
     
+    def getGroups(self):
+        if self.groups == []:
+            for record in sessionData.vault.records:
+                if str(record._get_group()) not in self.groups:
+                    self.groups.append(str(record._get_group()))
+                
+        return self.groups
+                
 
 
 #Root function that is activated when a user first visits the website
 @app.route("/")
 def index():
     return render_template('index.html')
+
+
 
 #Function that handled the logic of checking if the Login was successful or not.
 #If success then redirect to dashboard.
@@ -46,7 +57,7 @@ def login():
         return render_template('index.html', error=str(e))
 
     
-    return render_template('dashboard.html', vaultRecords = sessionData.vault.records, groupList=getAllGroups(), titleList=getAllTitles())
+    return render_template('dashboard.html', sessionData=sessionData)
 
 
 @app.route("/NewDatabase")
@@ -75,7 +86,7 @@ def newDB():
     #except Exception,e:
     #    return render_template('newDB.html', error="Error:"+str(e))
 
-    return render_template('dashboard.html', vaultRecords = sessionData.vault.records, groupList=getAllGroups(), titleList=getAllTitles())
+    return render_template('dashboard.html', sessionData=sessionData)
 
 
 #Temporary proof of concept function.
