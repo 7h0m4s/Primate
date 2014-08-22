@@ -5,6 +5,8 @@ from flask import flash
 from vault import *
 import os.path
 import webbrowser
+import logging
+
 app = Flask(__name__)
 #something happened
 
@@ -18,7 +20,7 @@ class SessionData:
         self.password = None
         self.dbFile = None
         self.groups = []
-
+        self.logger=None
         return
     
     def getGroups(self):
@@ -40,6 +42,7 @@ class SessionData:
 #Root function that is activated when a user first visits the website
 @app.route("/")
 def index():
+    sessionData.logger.error("index")
     return render_template('index.html')
 
 
@@ -127,16 +130,19 @@ def refresh():
     return render_template('passwordGrid.html', sessionData=sessionData)
 
 
+
 @app.route("/create-group", methods=['POST', 'GET'])
 def createGroup():
     groupParent=request.form['groupParent']
     groupName=request.form['groupName']
-
-    if groupParent != "":
-        if groupParent not in sessionData.getGroups():
-            return "Group Parent Not Found"
+    sessionData.logger.error("groupParent:"+groupParent)
+    sessionData.logger.error("LENgroupParent:"+str(len(groupParent)))
+    sessionData.logger.error("groupName:"+groupName)
+    if len(groupParent) == 0:
         sessionData.addGroup(groupName)
     else:
+        if groupParent not in sessionData.getGroups():
+            return "Group Parent Not Found"
         sessionData.addGroup(groupParent +"."+ groupName)
 
     return "Group Added Successfully"
@@ -180,5 +186,14 @@ if __name__ == "__main__":
     global sessionData
     sessionData = SessionData()
     webbrowser.open_new_tab('http://localhost:5000')
+
+    sessionData.logger = logging.getLogger('werkzeug')
+    handler = logging.FileHandler('access.log')
+    handler2 = logging.StreamHandler()
+    sessionData.logger.addHandler(handler)
+    sessionData.logger.addHandler(handler2)
+    #sessionData.logger.error("herror")
+    #app.logger.addHandler(handler)
+    
     app.debug = True
     app.run()
