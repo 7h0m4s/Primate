@@ -36,7 +36,7 @@
             <div class="col-xs-6">
                 <div class="pull-right">
                     <div class="btn-group">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> {{ sessionData.username }} <span class="caret"></span></button>
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> {{  session['username'] }} <span class="caret"></span></button>
                         <ul class="dropdown-menu" role="menu">
                             <li><a href="#" data-toggle="modal" data-target="#manageUserSettingsModal"><span class="glyphicon glyphicon-calendar"></span> Manage Users</a></li>
                             <li><a href="#" data-toggle="modal" data-target="#userSettingsModal"><span class="glyphicon glyphicon-user"></span> User Settings</a></li>
@@ -86,7 +86,7 @@
             </div>
             <div class="row">
                 <div class="writeMain">
-                    {% for group in sessionData.getGroups() %}
+                    {% for group in session['groups'] %}
                     <div class="col-md-4">
                         <div class="panel panel-primary">
                             <div class="panel-heading">
@@ -107,7 +107,7 @@
 
                             <div class="panel-body">
                                 <h4></h4>
-                                {% for record in sessionData.vault.records %}
+                                {% for record in records %}
                                 {% if record._get_group() == group %}
                                 <p>
                                     <div class="row">
