@@ -1,6 +1,8 @@
 from flask import Flask
 from flask import request
 from flask import session
+from flask import redirect
+from flask import url_for
 from flask import render_template
 from flask import flash
 from vault import *
@@ -21,7 +23,7 @@ class SessionVault:
         return
 
     def addVault(self,vault):
-        if session['id'] in self.vaults:
+        if session['id'] in self.vaults:######################################need to check if Vault already exists in this dictionary
             raise KeyError
         self.vaults[session['id']]=vault
         return
@@ -53,28 +55,60 @@ def index():
     except KeyError:
         session['groups'] = []
 
-
-    
-    
+    #test if the session is logged in.
+    try:
+        if session['loggedIn']==True:
+            return redirect(url_for('dashboard'))
+        
+    except KeyError:
+        #Key error assumes false
+        return render_template('index.html')
+    #if session is not logged in \/
     return render_template('index.html')
 
 
-#test function to raise http error
-@app.route("/die")
-def defaultHandler():
-   return 'error handler there', 500
-
-@app.route("/die")
+#MAIN DISPLAY
+@app.route("/dashboard")
 def dashboard():
 
+    #test if the session is NOT logged in.
+    try:
+        if session['loggedIn']==False:
+            return redirect(url_for('index'))
+        
+    except KeyError:
+        #Key error assumes false
+        return redirect(url_for('index'))
+    
+    #if session IS logged in \/
     getGroups() #important, it populates the group list
     return render_template('dashboard.html', records=sessionVault.getVault().records)
+
+
+#Please comment if you have abetter name
+#Function will check if user has logged in already
+def isLoggedIn():
+#test if the session is logged in.
+    try:
+        if session['loggedIn']==True:
+            return True
+        
+    except KeyError:
+        #Key error assumes false
+        return False
+    #if session is not logged in \/
+    return False
+    
+
 
 #Function that handled the logic of checking if the Login was successful or not.
 #If success then redirect to dashboard.
 #If fail redirect to login page with error message.
 @app.route("/login", methods=['POST', 'GET'])
 def login():
+    if isLoggedIn():#redirects if already logged in
+        return redirect(url_for('dashboard'))
+    
     session['id']=uuid.uuid4()
     session['username']=request.form['Username']
     session['password']=request.form['Password'].encode('ascii','ignore')
@@ -91,12 +125,14 @@ def login():
 
     session['loggedIn']=True
     getGroups() #important, it populates the group list
-    return render_template('dashboard.html', records=sessionVault.getVault().records)
+    return redirect(url_for('dashboard'))
 
 
 #Takes user to the new database page 
 @app.route("/NewDatabase")
 def newDatabase():
+    if isLoggedIn():#redirects if already logged in
+        return redirect(url_for('dashboard'))
     return render_template('newDB.html')
 
 
@@ -105,6 +141,8 @@ def newDatabase():
 #If fail redirect to newDB page with error message.
 @app.route("/newDB", methods=['POST', 'GET'])
 def newDB():
+    if isLoggedIn():#redirects if already logged in
+        return redirect(url_for('dashboard'))
     if (request.form['Password'].encode('ascii','ignore') != request.form['ConfirmPassword'].encode('ascii','ignore')):
         return render_template('newDB.html', error="Passwords do not match.")
     session['username']=request.form['Username']
@@ -121,7 +159,7 @@ def newDB():
     #    return render_template('newDB.html', error="Error:"+str(e))
 
     getGroups() #important, it populates the group list
-    return render_template('dashboard.html', records=sessionVault.getVault().records)
+    return redirect(url_for('dashboard'))
 
 
 
@@ -130,7 +168,7 @@ def newDB():
 @app.route("/get-user", methods=['POST', 'GET'])
 def getUser():
     uuid=request.form['uuid']
-    for record in ssessionVault.getVault():
+    for record in sessionVault.getRecords():
         if str(record._get_uuid()) == uuid:
             data={}
             data["uuid"]=str(record._get_uuid())
@@ -161,7 +199,7 @@ def getGroup():
 @app.route("/refresh")
 def refresh():
 
-    return render_template('passwordGrid.html')
+    return redirect(url_for('dashboard'))
 
 
 
@@ -170,7 +208,7 @@ def createGroup():
     groupParent=request.form['groupParent']
     groupName=request.form['groupName']
     if len(groupParent) == 0:
-        session['groups'].addGroup(groupName)
+        addGroup(groupName)
     else:
         if groupParent not in session['groups'].getGroups():
             return "Group Parent Not Found", 500
