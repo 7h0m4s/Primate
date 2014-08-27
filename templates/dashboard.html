@@ -5,34 +5,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Primate Password</title>
-    <style>
-        body {
-            background: url(/static/imgs/logoTrans.png) no-repeat center center fixed;
-        }
-    </style>
-    <!-- Bootstrap -->
     <link href="/static/css/bootstrap.min.css" rel="stylesheet" />
     <!--<link href="https://netdna.bootstrapcdn.com/bootswatch/3.1.1/darkly/bootstrap.min.css" rel="stylesheet">-->
     <link href="/static/css/bootstrap-switch.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" media="" href="/static/css/style.css" />
     <!-- Include custom CSS files as needed -->
-
-
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="/static/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/static/js/ZeroClipboard.js"></script>
-
-    <!-- Include custom JS files as needed -->
-    <script src="/static/js/primate.js"></script>
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
+    <link href="../static/css/primate.css" rel="stylesheet" />
 </head>
 <body>
     <div class="container">
@@ -57,7 +35,7 @@
             <div class="col-xs-6">
                 <div class="pull-right">
                     <div class="btn-group">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> {{ sessionData.username }} <span class="caret"></span></button>
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> {{  session['username'] }} <span class="caret"></span></button>
                         <ul class="dropdown-menu" role="menu">
                             <li><a href="#" data-toggle="modal" data-target="#manageUserSettingsModal"><span class="glyphicon glyphicon-calendar"></span> Manage Users</a></li>
                             <li><a href="#" data-toggle="modal" data-target="#userSettingsModal"><span class="glyphicon glyphicon-user"></span> User Settings</a></li>
@@ -73,7 +51,7 @@
         <!-- <div class="col-xs-6">
           <div class="pull-right">
             <div class="btn-group">
-			<button type="button" class="btn btn-default" onclick="saveDB()"><span class="glyphicon glyphicon-floppy-disk"></span> Save Database </button>
+            <button type="button" class="btn btn-default" onclick="saveDB()"><span class="glyphicon glyphicon-floppy-disk"></span> Save Database </button>
               <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> JohnSmith <span class="caret"></span></button>
               <ul class="dropdown-menu" role="menu">
                 <li><a href="#" data-toggle="modal" data-target="#manageUserSettingsModal"><span class="glyphicon glyphicon-calendar"></span> Manage Users</a></li>
@@ -94,7 +72,7 @@
                 <div id="alertChangesSaved" class="alert alert-success" style="display: none">Changes Saved</div>
             </div>
             <div class="col-md-12">
-                <div id="alertDeleted" class="alert alert-danger" style="display: none">Deleted</div>
+                <div id="alertMsg" class="alert alert-danger" style="display: none">Deleted</div>
             </div>
         </div>
 
@@ -107,7 +85,7 @@
             </div>
             <div class="row">
                 <div class="writeMain">
-                    {% for group in sessionData.getGroups() %}
+                    {% for group in session['groups'] %}
                     <div class="col-md-4">
                         <div class="panel panel-primary">
                             <div class="panel-heading">
@@ -116,14 +94,19 @@
                                         <span data-toggle="popover" data-placement="bottom" title="Notes">{{ group }}</span>
                                     </div>
                                     <div class="col-xs-5">
-                                        <p class="text-right" style="margin-bottom: 0px"><a href="#" data-toggle="modal" data-target="#permissionsModal" style="color: #5bc0de"><span class="glyphicon glyphicon-user"></span></a>&nbsp;&nbsp;&nbsp;<a href="#" class="addUserButton" id="addUserButton" group="{{ group }}" data-toggle="modal" data-target="#createUserModal" style="color: #5bc0de"><span class="glyphicon glyphicon-plus"></span></a>&nbsp;&nbsp;&nbsp;<a href="#" data-toggle="modal" data-target="#redditModal" style="color: #5bc0de"><span class="glyphicon glyphicon-edit"></span></a></p>
+                                        <p class="text-right" style="margin-bottom: 0px">
+                                            <a href="#" data-toggle="modal" data-target="#permissionsModal" style="color: #5bc0de"><span class="glyphicon glyphicon-user"></span></a>&nbsp;&nbsp;&nbsp;<a href="#" class="addUserButton" id="addUserButton" group="{{ group }}" data-toggle="modal" data-target="#createUserModal" style="color: #5bc0de"><span class="glyphicon glyphicon-plus"></span></a>&nbsp;&nbsp;&nbsp;
+                                            <a href="#" data-toggle="modal" class="reeditGroup" group="{{ group }}" data-target="#redditModal" style="color: #5bc0de">
+                                                <span class="glyphicon glyphicon-edit"></span>
+                                            </a>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="panel-body">
                                 <h4></h4>
-                                {% for record in sessionData.vault.records %}
+                                {% for record in records %}
                                 {% if record._get_group() == group %}
                                 <p>
                                     <div class="row">
@@ -181,278 +164,70 @@
                     </div>
 
                 </div>
-            <!-- endogrid --></div>
+                <!-- endogrid -->
+            </div>
         </div>
     </div>
     <div class="modal fade" id="redditModal" data-groupid="">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Data centre</h4>
-                </div>
-                <div class="modal-body">
-                    <h3>Group</h3>
-                    <div class="input-group">
-                        <span class="input-group-btn">
-                            <div class="btn-group">
-                                <button class="btn btn-default" type="button" data-toggle="dropdown"><span class="caret"></span></button>
-                                <ul class="dropdown-menu" role="menu">
-                                    <li><a href="#">Infrastructure</a></li>
-                                    <li><a href="#">Social</a></li>
-                                </ul>
-                            </div>
-                        </span>
-                        <input type="text" class="form-control text-center" placeholder="Group" value="Infrastructure" />
+                <form id="form-edit-group" method="POST" target="">
+                    <input type="hidden" name="group" />
+                    <!--req can only be edit or del-->
+                    <input type="hidden" name="req" class="req" />
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Data Centre (Template)</h4>
                     </div>
-                    <h3>Title</h3>
-                    <input type="text" class="form-control text-center" placeholder="Title" value="Reddit" />
-                    <!--<h3>Default URL</h3>
-                    <input type="text" class="form-control text-center" placeholder="Default URL" />
-                    <h3>Notes</h3>
-                    <input type="text" class="form-control text-center" placeholder="Notes" />-->
-                    <!--<h3>Users</h3>-->
-                    <!--<h4>Normal Accounts <a href="#" style="font-size: 12px" id="editGroupButton">edit</a></h4>
-                    <div class="row" id="editGroup">
-                        <div class="col-md-12">
-                            <div class="input-group">
-                                <span class="input-group-btn">
-                                    <div class="btn-group">
-                                        <button class="btn btn-default" type="button" data-toggle="dropdown"><span class="caret"></span></button>
-                                        <ul class="dropdown-menu" role="menu">
-                                            <li><a href="#">Employees</a></li>
-                                            <li><a href="#">Other</a></li>
-                                        </ul>
-                                    </div>
-                                </span>
-                                <input type="text" class="form-control" placeholder="Group" value="Employees" />
-                            </div>
-                            <br />
-                            <input type="text" class="form-control" placeholder="Default URL" />
-                            <br />
-                            <input type="text" class="form-control" placeholder="Notes" />
-                            <hr />
+                    <div class="modal-body">
+                        <h3>Group Parent</h3>
+                        <div class="input-group">
+                            <span class="input-group-btn">
+                                <div class="btn-group">
+                                    <button class="btn btn-default" type="button" data-toggle="dropdown"><span class="caret"></span></button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="#"></a></li>
+                                        <li><a href="#">Infrastructure</a></li>
+                                        <li><a href="#">Social</a></li>
+                                    </ul>
+                                </div>
+                            </span>
+                            <input type="text" class="form-control text-center" name="groupParent" placeholder="Group Parent" value="" />
                         </div>
-                    </div>-->
-                    <!--<div class="row">
-                        <div class="col-md-6">
-                            <div class="input-group">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-danger" type="Button"><span class="glyphicon glyphicon-remove"></span></button>
-                                </span>
-                                <input type="text" class="form-control text-center" placeholder="Username" value="Anna" />
-                                <span class="input-group-btn">
-                                    <button class="btn btn-primary" type="Button" id="editUserButton"><span class="glyphicon glyphicon-cog"></span></button>
-                                </span>
+                        <h3>Group Name</h3>
+                        <input type="text" class="form-control text-center" name="groupName" placeholder="Group Name" />
+                        <br />
+                        <h4>Panel Colour</h4>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-primary">Blue</button>
+                                    <button type="button" class="btn btn-success">Green</button>
+                                    <button type="button" class="btn btn-info active">Light Blue</button>
+                                    <button type="button" class="btn btn-warning">Yellow</button>
+                                    <button type="button" class="btn btn-danger">Red</button>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="col-md-6">
-                            <div class="input-group">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-primary generatePasswordButton" type="Button"><span class="glyphicon glyphicon-qrcode"></span></button>
-                                </span>
-                                <input type="text" class="form-control text-center" placeholder="Password" />
-                                <span class="input-group-btn">
-                                    <button class="btn btn-success togglePassword" type="Button"><span class="glyphicon glyphicon-eye-close"></span></button>
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="col-md-12" id="editUser">
-                            <br />
-                            <input type="text" class="form-control" placeholder="Name" />
-                            <br />
-                            <input type="text" class="form-control" placeholder="Default URL" />
-                            <br />
-                            <input type="text" class="form-control" placeholder="Notes" value="000002" />
-                            <hr />
-                        </div>
+                        <div class="alert alert-danger del-waring">Once you delete, you will not enable to recover.<input type="checkbox" class="del-group-chkbox" style="float:right;" /></div>
+                        <div class="clearfix"></div>
                     </div>
 
-                    <br />
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="input-group">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-danger" type="Button"><span class="glyphicon glyphicon-remove"></span></button>
-                                </span>
-                                <input type="text" class="form-control text-center" placeholder="Username" value="Briony" />
-                                <span class="input-group-btn">
-                                    <button class="btn btn-primary" type="Button"><span class="glyphicon glyphicon-cog"></span></button>
-                                </span>
+                    <div class="modal-footer">
+                        <div class="row">
+                            <div class="col-md-3 col-sm-12">
+                                <input id="deleteGroupButton" name="delGroup" type="button" class="btn btn-danger text-left" disabled="" value="Delete Group">
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="input-group">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-primary generatePasswordButton" type="Button"><span class="glyphicon glyphicon-qrcode"></span></button>
-                                </span>
-                                <input type="text" class="form-control text-center" placeholder="Password" />
-                                <span class="input-group-btn">
-                                    <button class="btn btn-success togglePassword" type="Button"><span class="glyphicon glyphicon-eye-close"></span></button>
-                                </span>
+                            <div class="clearfix visible-sm visible-xs"><br /><br /></div>
+                            <div class="col-md-9 col-sm-12">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary saveChanges">Save Changes</button>
                             </div>
                         </div>
                     </div>
-
-                    <br />
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="input-group">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-danger" type="Button"><span class="glyphicon glyphicon-remove"></span></button>
-                                </span>
-                                <input type="text" class="form-control text-center" placeholder="Username" value="Sam" />
-                                <span class="input-group-btn">
-                                    <button class="btn btn-primary" type="Button"><span class="glyphicon glyphicon-cog"></span></button>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="input-group">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-primary generatePasswordButton" type="Button"><span class="glyphicon glyphicon-qrcode"></span></button>
-                                </span>
-                                <input type="text" class="form-control text-center" placeholder="Password" />
-                                <span class="input-group-btn">
-                                    <button class="btn btn-success togglePassword" type="Button"><span class="glyphicon glyphicon-eye-close"></span></button>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <h4>Other <a href="#" style="font-size: 12px">edit</a></h4>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="input-group">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-danger" type="Button"><span class="glyphicon glyphicon-remove"></span></button>
-                                </span>
-                                <input type="text" class="form-control text-center" placeholder="Username" value="PIN" />
-                                <span class="input-group-btn">
-                                    <button class="btn btn-primary" type="Button"><span class="glyphicon glyphicon-cog"></span></button>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="input-group">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-primary generatePasswordButton" type="Button"><span class="glyphicon glyphicon-qrcode"></span></button>
-                                </span>
-                                <input type="text" class="form-control text-center" placeholder="Password" />
-                                <span class="input-group-btn">
-                                    <button class="btn btn-success togglePassword" type="Button"><span class="glyphicon glyphicon-eye-close"></span></button>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <br />
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="input-group">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-danger" type="Button"><span class="glyphicon glyphicon-remove"></span></button>
-                                </span>
-                                <input type="text" class="form-control text-center" placeholder="Username" value="Swipecard PIN" />
-                                <span class="input-group-btn">
-                                    <button class="btn btn-primary" type="Button"><span class="glyphicon glyphicon-cog"></span></button>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="input-group">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-primary generatePasswordButton" type="Button"><span class="glyphicon glyphicon-qrcode"></span></button>
-                                </span>
-                                <input type="text" class="form-control text-center" placeholder="Password" />
-                                <span class="input-group-btn">
-                                    <button class="btn btn-success togglePassword" type="Button"><span class="glyphicon glyphicon-eye-close"></span></button>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <br />-->
-                    <!--<div class="col-xs-4">
-                        <a href="#"><span class="glyphicon glyphicon-plus"></span> Add User</a>
-                    </div>
-
-                    <div class="col-xs-8">
-                        <p class="text-right"><a href="#" class="generatorSettingsButton"><span class="glyphicon glyphicon-cog"></span> Password Generator Settings</a></p>
-                        <div class="generatorSettings">
-                            <div class="checkbox">
-                                <label><input type="checkbox" checked />Custom Length <input class="form-control" type="text" size="4" maxlength="4"></input></label>
-                            </div>
-                            <div class="checkbox">
-                                <label><input type="checkbox" checked /> Use Lower Case</label>
-                            </div>
-                            <div class="checkbox">
-                                <label><input type="checkbox" checked /> Use Upper Case</label>
-                            </div>
-                            <div class="checkbox">
-                                <label><input type="checkbox" checked /> Use Digits</label>
-                            </div>
-                            <div class="checkbox">
-                                <label><input type="checkbox" /> Use Hexadecimal Digits</label>
-                            </div>
-                            <div class="checkbox">
-                                <label><input type="checkbox" /> Use Symbols (% $ @ # etc.)</label>
-                            </div>
-                            <div class="checkbox">
-                                <label><input type="checkbox" /> Have Spaces</label>
-                            </div>
-                            <div class="checkbox">
-                                <label><input type="checkbox" /> Use Easy to Read Characters Only (No 0 or O etc.)</label>
-                            </div>
-                        </div>
-                    </div>-->
-                    <!--<br />
-                    <h3>Modifications</h3>
-                    <p><strong>Last Modified: </strong>26/03/2014 11:55pm</p>
-                    <h4>Panel Colour</h4>
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-primary">Blue</button>
-                                <button type="button" class="btn btn-success">Green</button>
-                                <button type="button" class="btn btn-info active">Light Blue</button>
-                                <button type="button" class="btn btn-warning">Yellow</button>
-                                <button type="button" class="btn btn-danger">Red</button>
-                            </div>
-                        </div>
-                    </div>-->
-
-                    <br />
-
-                    <h3>Last Password Changes</h3>
-                    <p><strong>Anna: </strong>27/03/2014 1:40am</p>
-                    <p><strong>Briony: </strong>21/07/2012 12:55pm</p>
-                    <p><strong>Sam: </strong>26/06/2013 8:55pm</p>
-                    <p><strong>PIN: </strong>21/03/2014 3:55am</p>
-                    <p><strong>Swipecard PIN: </strong>21/03/2014 3:55am</p>
-
-                </div>
-                <div class="modal-footer">
-                    <div class="row">
-                        <div class="col-md-3 col-sm-12">
-                            <button id="deleteGroupButton" type="button" class="btn btn-danger text-left" data-dismiss="modal">Delete Group</button>
-                        </div>
-
-                        <div class="clearfix visible-sm visible-xs"><br /><br /></div>
-
-
-                        <div class="col-md-9 col-sm-12">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary saveChanges" data-dismiss="modal">Save changes</button>
-                        </div>
-                    </div>
-                </div>
+                </form>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
@@ -859,7 +634,7 @@
                                 <div class="btn-group">
                                     <button class="btn btn-default" type="button" data-toggle="dropdown"><span class="caret"></span></button>
                                     <ul class="dropdown-menu" role="menu">
-										<li><a href="#"></a></li>
+                                        <li><a href="#"></a></li>
                                         <li><a href="#">Infrastructure</a></li>
                                         <li><a href="#">Social</a></li>
                                     </ul>
@@ -907,7 +682,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <form id="form-create-user" method="POST" target="/create-user">
-				<input type="hidden" class="" name="group" value=""/>
+                    <input type="hidden" name="group" />
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                         <h4 class="modal-title">Add User</h4>
@@ -949,7 +724,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <form id="form-edit-user" method="POST" target="/edit-user">
-                    <input type="hidden" name="uuid" /> 
+                    <input type="hidden" name="uuid" />
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                         <h4 class="modal-title">Edit User</h4>
@@ -1012,7 +787,7 @@
                         <h4>Notes</h4>
                         <input type="text" class="form-control text-center" name="notes" placeholder="Title" disabled />
                         <br />
-                        <div class="alert alert-danger del-waring">Once you delete, you will not enable to recover.<input type="checkbox" class="del-user-chkbox" style="float:right;"/></div>
+                        <div class="alert alert-danger del-waring">Once you delete, you will not enable to recover.<input type="checkbox" class="del-user-chkbox" style="float:right;" /></div>
                         <div class="clearfix"></div>
 
                     </div>
@@ -1031,215 +806,22 @@
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/js/ZeroClipboard.js"></script>
 
-    <!-- alert toggles -->
-    <script>
-        //Initialise popovers
-        $('span').popover();
-        $('a').tooltip();
+    <script src="/static/js/jquery-ui.js"></script>
 
-        $('.saveChanges').click(function () {
-            $('#alertChangesSaved').fadeIn("slow").delay(500).fadeOut("slow");
-        });
+    <!-- Include custom JS files as needed -->
+    <script src="/static/js/primate.js"></script>
 
-        //todo test
-        //$('.passwordLink').click(function () {
-        //    $('#alertPasswordCopied').fadeIn("slow").delay(500).fadeOut("slow");
-        //    id = $(this).attr('id');
-        //    $.post("getRecordData", { uuid: id }, function (result) {
-        //        alert(result);
-        //    });
-        //});
-
-        $('#deleteGroupButton').click(function () {
-            $('#alertDeleted').fadeIn("slow").delay(500).fadeOut("slow");
-            $('#redditPanel').fadeOut("slow");
-        });
-    </script>
-
-
-    <script>
-        $('#listGridToggleButton').click(function () {
-            if ($(this).children('span').hasClass('glyphicon-align-left') == true) {
-                $(this).children('span').removeClass('glyphicon-align-left').addClass('glyphicon-th-large');
-                $('div.writeMain > div').removeClass('col-md-4').addClass('col-md-12');
-            }
-            else {
-                $(this).children('span').removeClass('glyphicon-th-large').addClass('glyphicon-align-left');
-                $('div.writeMain > div').removeClass('col-md-4').addClass('col-md-4');
-            }
-        });
-    </script>
-
-    <!-- Jquery Sortable -->
-    <!-- CDN
-    <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
-    -->
-    <!-- local -->
-    <script src="static/js/jquery-ui.js"></script>
-
-    <script>
-        $(function () {
-            $("#writeMain, #writeOther, #readMain, #readOther, #unassignedMain, #unassignedOther").sortable({
-                connectWith: ".connectedUserPermissions"
-            }).disableSelection();
-        });
-    </script>
-
-    <script>
-        $(function () {
-            $(".writeMain").sortable({
-                connectWith: ".writeMain",
-                placeholder: 'col-xs-4',
-                helper: 'clone',
-                appendTo: 'body',
-                forcePlaceholderSize: true,
-                start: function (event, ui) {
-                    $('.row > div.col-md-4:visible:first').addClass('real-first-child');
-                },
-                stop: function (event, ui) {
-                    $('.row > div.real-first-child').removeClass('real-first-child');
-                },
-                change: function (event, ui) {
-                    $('.row > div.real-first-child').removeClass('real-first-child');
-                    $('.row > div.col-md-4:visible:first').addClass('real-first-child');
-                }
-            });
-        });
-    </script>
-
-
-    <!-- Initialise switches -->
-    <script>
-        $.fn.bootstrapSwitch.defaults.size = 'small';
-        $("[name='autoLogoutCheckbox']").bootstrapSwitch();
-        $("[name='autoLogoutCheckbox']").on('switchChange.bootstrapSwitch', function () {
-            $('#autoLogoutForm').toggle();
-        });
-        $("[name='clearClipboardCheckbox']").bootstrapSwitch();
-        $("[name='clearClipboardCheckbox']").on('switchChange.bootstrapSwitch', function () {
-            $('#clearClipboardForm').toggle();
-        });
-        $("[name='remindersCheckbox']").bootstrapSwitch();
-        $("[name='remindersCheckbox']").on('switchChange.bootstrapSwitch', function () {
-            $('#remindersForm').toggle();
-        });
-    </script>
-
-
-    <!-- crappy jquery -->
-    <script>
-        $('#addUser').hide();
-        //$('#addUserButton').on("click", function () {
-        //    $('#addUser').toggle();
-        //});
-
-        $('#editGroup').hide();
-        $('#editGroupButton').on("click", function () {
-            $('#editGroup').toggle();
-        });
-
-        $('#editUser').hide();
-        $('#editUserButton').on("click", function () {
-            $('#editUser').toggle();
-        });
-
-        $(".hideClass").hide();
-
-        $('.generatorSettings').hide();
-        $('.generatorSettingsButton').on("click", function () {
-            $('.generatorSettings').toggle();
-        });
-
-        $('.togglePassword').on("click", function () {
-            if ($($(this).parent().parent().children()[1]).attr('type') == 'text') {
-                $($(this).children()[0]).removeClass("glyphicon-eye-close").addClass("glyphicon-eye-open");
-                $($(this).parent().parent().children()[1]).removeAttr('type');
-                $($(this).parent().parent().children()[1]).prop('type', 'password');
-            }
-            else {
-                $($(this).children()[0]).removeClass("glyphicon-eye-open").addClass("glyphicon-eye-close");
-                $($(this).parent().parent().children()[1]).removeAttr('type');
-                $($(this).parent().parent().children()[1]).prop('type', 'text');
-            }
-        });
-
-        $('.toggleCopy').on("click", function () {
-            if ($(this).hasClass("glyphicon-user")) {
-                $(this).removeClass("glyphicon-user").addClass("glyphicon-qrcode");
-            }
-            else {
-                $(this).removeClass("glyphicon-qrcode").addClass("glyphicon-user");
-            }
-        });
-
-        $('.generatePasswordButton').on("click", function () {
-            $($(this).parent().parent().children()[1]).val(generatePassword(16, true, true, true, true, true, true, false));
-        });
-
-        $('#lightThemeButton').on("click", function () {
-            $('#darkThemeButton').removeClass('active');
-            $(this).addClass('active');
-            $('link[href="css/bootstrap.dark.min.css"]').attr('href', 'css/bootstrap.min.css');
-        });
-        $('#darkThemeButton').on("click", function () {
-            $('#lightThemeButton').removeClass('active');
-            $(this).addClass('active');
-            $('link[href="css/bootstrap.min.css"]').attr('href', 'css/bootstrap.dark.min.css');
-        });
-
-        function generatePassword(length, lower, upper, digits, hex, symbols, space, easy) {
-            var text = "";
-            var possible = "";
-
-            if (lower == true) {
-                possible += "abcdefghijklmnopqrstuvwxyz";
-            }
-
-            if (upper == true) {
-                possible += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            }
-
-            if (digits == true) {
-                possible += "0123456789";
-            }
-
-            if (hex == true) {
-                if (lower == false) {
-                    possible += 'abcdef'
-                }
-                if (digits == false) {
-                    possible += '0123456789';
-                }
-            }
-
-            if (symbols == true) {
-                possible += "!\"#$%&'()*+,-./\\:;<=>?@[]^_`{}~";
-            }
-
-            if (space == true) {
-                possible += " ";
-            }
-
-            if (easy == true) {
-                possible = possible.replace("0", "");
-                possible = possible.replace("o", "");
-                possible = possible.replace("O", "");
-
-                possible = possible.replace("1", "");
-                possible = possible.replace("i", "");
-                possible = possible.replace("I", "");
-                possible = possible.replace("l", "");
-                possible = possible.replace("|", "");
-            }
-
-            for (var i = 0; i < length; i++) {
-                text += possible.charAt(Math.floor(Math.random() * possible.length));
-            }
-
-            return text;
-        }
-
-    </script>
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
 </body>
 </html>

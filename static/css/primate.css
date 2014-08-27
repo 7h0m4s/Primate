@@ -1,0 +1,12 @@
+﻿
+body {
+    background: url(/static/imgs/logoTrans.png) no-repeat center center fixed;
+}
+
+.col-md-12 .alert {
+    margin: 15px 0 0;
+}
+
+.del-waring {
+    margin-bottom: 0;
+}
