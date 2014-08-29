@@ -120,8 +120,8 @@ var req_posting = function (method, url, postData, successFun) {
 };
 
 function refresh() {
-    //window.location.reload();
-    $("body").fadeOut(fadeTime).load('/').fadeIn(fadeTime);
+    window.location.reload();
+    //$("body").fadeOut(fadeTime).load('/').fadeIn(fadeTime);
 }
 
 $(function () {
@@ -215,7 +215,7 @@ $(function () {
     });
 
 
-    $("#deleteGroupButton").click(function () {
+    $("#deleteGroupButton").on("click",function () {
         var editGroup = $("#form-edit-group");
 
         //temp using this to indicate the request is del or edit   shouldnt be hard coding -->  seek for better solutions
