@@ -145,6 +145,13 @@ $(function () {
     $(".reeditGroup").click(function () {
         var group = $(this).attr("group");
         $("#form-edit-group input[name='group']").val(group);
+		split = group.split(".",1);
+		if (split.length > 1){
+			$("#form-edit-group input[name='groupParent']").val(split[0]);
+			$("#form-edit-group input[name='groupName']").val(split[1]);
+		}else{
+			$("#form-edit-group input[name='groupName']").val(split[0]);
+		}
     });
 
     $("#form-create-user .saveChanges").click(function () {
@@ -214,7 +221,8 @@ $(function () {
         //temp using this to indicate the request is del or edit   shouldnt be hard coding -->  seek for better solutions
         $(editGroup).find(".req").val("del");
         var method = "POST";
-        var url = $(editGroup).attr("target");
+        //var url = $(editGroup).attr("target"); //delete and edit targets are different
+		 var url = "/delete-group";
         var postData = $(editGroup).serialize();
         posting(method, url, postData, function () {
             $('#redditModal').modal('hide');

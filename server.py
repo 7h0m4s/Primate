@@ -35,7 +35,8 @@ class SessionVault:
         return self.vaults.get(session['id']).records
 
     def removeVault(self):
-        del dict[session['id']]
+        del self.vaults[session['id']]
+        
         return
 
 
@@ -163,6 +164,16 @@ def newDB():
 
 
 
+#Closes the user session and loggs them out
+@app.route("/logout")
+def logoff():
+    if isLoggedIn():#redirects if already logged in
+        sessionVault.removeVault()
+        session.clear()
+        return redirect(url_for('dashboard'))
+    return redirect(url_for('index'))
+
+
 
 #Function returns a JSON of details about requested account.
 @app.route("/get-user", methods=['POST', 'GET'])
@@ -176,12 +187,7 @@ def getUser():
             data["userTitle"]=str(record._get_title())
             data["userUrl"]=str(record._get_url())
             data["notes"]=str(record._get_notes())
-            
-##            outString= "uuid: "+ str(record._get_uuid()) + "\n"
-##            outString+="title: "+ str(record._get_title()) + "\n"
-##            outString+="user: "+ str(record._get_user()) + "\n"
-##            outString+="password :"+ str(record._get_passwd()) + "\n"
-##            outString+="url: "+ str(record._get_url()) + "\n"
+
             return json.dumps(data)
         
     return "No Record Found", 500
@@ -216,7 +222,71 @@ def createGroup():
 
     return "Group Added Successfully"
 
-@app.route("/create-user", methods=['POST', 'GET'])
+
+
+@app.route("/edit-group", methods=['POST'])
+def editGroup():
+    try:
+        #sessionData.logger.error("stuff")
+        group=request.form['group']
+        groupParent=request.form['groupParent']
+        groupName=request.form['groupName']
+        outstring=[]
+        if len(groupParent)>0:
+            groupName = groupParent + "." + groupName
+        
+        #update group list
+        if groupName in session['groups']:
+            session['groups'].remove(group)
+            
+        for name in session['groups']:
+            if name == group:
+                session['groups'].remove(name)
+                session['groups'].append(groupName)
+                break
+
+            
+        #update related records
+        for record in sessionVault.getVault().records:
+            if record._get_group() == group:
+                record._set_group(groupName)
+
+        saveDB()
+        return "Group edited Successfully, list=" + str(session['groups'])+"  group="+ str(group)
+    except Exception,e:
+        return str(e),500
+
+
+@app.route("/delete-group", methods=['POST'])
+def deleteGroup():
+    try:
+        #sessionData.logger.error("stuff")
+        group=request.form['group']
+        groupParent=request.form['groupParent']
+        groupName=request.form['groupName']
+       
+        if len(groupParent)>0:
+            groupName = groupParent + "." + groupName
+
+        #delete from group list
+        for name in session['groups']:
+            if name == group:
+                session['groups'].remove(name)
+                break
+            
+        #delete related records
+        for record in sessionVault.getVault().records:
+            if record._get_group() == group:
+                sessionVault.getVault().records.remove(record)
+
+        saveDB()
+        return "Group deleted Successfully"
+    except Exception,e:
+        return str(e),500
+
+
+
+@app.route("/create-user", methods=['POST'])
 def createUser():
     try:
         #sessionData.logger.error("stuff")
