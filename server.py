@@ -422,7 +422,7 @@ if __name__ == "__main__":
     app.secret_key = os.urandom(24)
 
     #This is how long the session will remain active
-    app.permanent_session_lifetime = timedelta(seconds=180)
+    app.permanent_session_lifetime = timedelta(seconds=600)
     
     app.debug = True
     app.run()
