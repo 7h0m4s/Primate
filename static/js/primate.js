@@ -1,43 +1,43 @@
-//http://jsfiddle.net/fluidblue/6scX9/
+
+/*  Password Primate Main Js
+    The Primate js ensures all the front-end features are fully functional.
+    Copyright (c) 2014, Asterix Solutions 
+*/
 
 var fadeTime = 1500;
+var exception_msg = "Unexpected error";
+var del_user_url = "get-user";
+var edit_user_url = "get-user";
+var notifi_fade_time = 500;
+var post = "POST";
+var save_DB_url = "save";
 
-function saveDB() {
-    $.post("save", {}, function (result) {
-        $('#alertChangesSaved').fadeIn("slow").delay(500).fadeOut("slow");
+//use for testing only
+var saveDB = function () {
+    $.post(save_DB_url, {}, function (result) {
+        $('#alertChangesSaved').fadeIn("slow").delay(notifi_fade_time).fadeOut("slow");
     });
 }
 
-function loginDropDown(id, command) {
-    //This function is called if one of the buttons in the account's dropdown menu is clicked.
-    //Please tell Thomas is there is a better way of laying this code out without a million if statements.
-
+/**
+* This function is called if one of the buttons in the account's dropdown menu is clicked
+* It handles copy of user password, url
+* It allows to edit/delete user
+*
+* @return void
+* @private
+*/
+var loginDropDown = function (id, command) {
     if (command == "opnUrl") {
-
-
     } else if (command == "cpyUsr") {
-
-
-
     } else if (command == "cpyPswd") {
-
-
-
     } else if (command == "cpyUrl") {
-
-
-
     } else if (command == "view") {
-
-
-
     } else if (command == "edit") {
         if ($('.del-user-chkbox').is(':checked')) {
             $('.del-user-chkbox').click();
         }
-        //$("#form-edit-user input[name='uuid']").val(id);
-        $.post("get-user", { uuid: id }, function (result) {
-            //result = JSON.stringify(userObjTest);
+        $.post(edit_user_url, { uuid: id }, function (result) {
             var userObj = jQuery.parseJSON(result);
             $("#form-edit-user input[name='uuid']").val(userObj.uuid);
             $("#form-edit-user input[name='usr']").val(userObj.usr);
@@ -47,13 +47,10 @@ function loginDropDown(id, command) {
             $('#editUserModal').modal('show');
         });
     } else if (command == "move") {
-
-
-
     } else if (command == "delete") {
         ResetCheckbox();
-        var method = "POST";
-        var url = "get-user";
+        var method = post;
+        var url = del_user_url;
         var postData = { uuid: id };
         req_posting(method, url, postData, function (result) {
             var userObj = jQuery.parseJSON(result);
@@ -64,24 +61,19 @@ function loginDropDown(id, command) {
             $("#form-del-user input[name='notes']").val(userObj.notes);
             $('#delUserModal').modal('show');
         });
-
-        //$.post("get-user", { uuid: id }, function (result) {
-        //    //alert("this is del func");
-        //    /* 			var userObjTest = {};
-        //                result = JSON.stringify(userObjTest); */
-        //    var userObj = jQuery.parseJSON(result);
-        //    $("#form-del-user input[name='uuid']").val(userObj.uuid);
-        //    $("#form-del-user input[name='usr']").val(userObj.usr);
-        //    $("#form-del-user input[name='userTitle']").val(userObj.userTitle);
-        //    $("#form-del-user input[name='userUrl']").val(userObj.userUrl);
-        //    $("#form-del-user input[name='notes']").val(userObj.notes);
-        //    $('#delUserModal').modal('show');
-        //});
     } else {
-        alert("Error");
-
+        alert(exception_msg);
     }
 }
+
+
+/**
+* This is a helper function that is used to be called by other functions.
+* It is an ajax request used to post data to target url.
+*
+* @return void
+* @private
+*/
 var posting = function (method, url, postData, successFun) {
     $.ajax({
         type: method,
@@ -90,20 +82,25 @@ var posting = function (method, url, postData, successFun) {
     }).done(function (msg) {
         successFun();
         $("#alertChangesSaved").hide();
-        $("#alertChangesSaved").html(msg).fadeIn(500).delay(fadeTime).fadeOut(500);
-        //.fadeOut("slow");
+        $("#alertChangesSaved").html(msg).fadeIn(notifi_fade_time).delay(fadeTime).fadeOut(notifi_fade_time);
     })
       .fail(function (msg) {
           $('*').modal('hide');
           $("#alertMsg").hide();
           if (msg.length) {
-              $("#alertMsg").html(msg).fadeIn(500).delay(fadeTime).fadeOut(500);
+              $("#alertMsg").html(msg).fadeIn(notifi_fade_time).delay(fadeTime).fadeOut(notifi_fade_time);
           } else {
-              $("#alertMsg").html("Unexpected error").fadeIn(500).delay(fadeTime).fadeOut(500);
+              $("#alertMsg").html(exception_msg).fadeIn(notifi_fade_time).delay(fadeTime).fadeOut(notifi_fade_time);
           }
       });
 };
-
+/**
+* This is a helper function that is used to be called by other functions.
+* It is an ajax request used to post data to target url.
+*
+* @return void
+* @private
+*/
 var req_posting = function (method, url, postData, successFun) {
     $.ajax({
         type: method,
@@ -115,22 +112,104 @@ var req_posting = function (method, url, postData, successFun) {
       .fail(function (msg) {
           $('*').modal('hide');
           $("#alertMsg").hide();
-          $("#alertMsg").html("Unexpected error").fadeIn(500).delay(fadeTime).fadeOut(500);
+          $("#alertMsg").html("Unexpected error").fadeIn(notifi_fade_time).delay(fadeTime).fadeOut(notifi_fade_time);
       });
 };
 
-function refresh() {
-    //window.location.reload();
-    $("body").fadeOut(fadeTime).load('/').fadeIn(fadeTime);
+/**
+* This is a helper function that is used to refresh pages with fade out jquery animation.
+*
+* @return void
+* @private
+*/
+var refresh = function () {
+    $("body").fadeOut(fadeTime, function () {
+        window.location.reload();
+    });
+}
+
+/**
+* This is a helper function that is used to reset check box in modal
+*
+* @return void
+* @private
+*/
+var ResetCheckbox = function () {
+    $('.del-user-chkbox').prop("checked", false);
+    var saveChangesBtn = $('.del-user-chkbox').closest("#delUserModal").find("button.saveChanges");
+    $(saveChangesBtn).attr("disabled", "");
+};
+
+/**
+* This is a helper function that is used to generate random password
+*
+* @return the random generated password
+* @return type String
+* @private
+*/
+var generatePassword = function (length, lower, upper, digits, hex, symbols, space, easy) {
+    var text = "";
+    var possible = "";
+
+    if (lower == true) {
+        possible += "abcdefghijklmnopqrstuvwxyz";
+    }
+
+    if (upper == true) {
+        possible += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    }
+
+    if (digits == true) {
+        possible += "0123456789";
+    }
+
+    if (hex == true) {
+        if (lower == false) {
+            possible += 'abcdef';
+        }
+        if (digits == false) {
+            possible += '0123456789';
+        }
+    }
+
+    if (symbols == true) {
+        possible += "!\"#$%&'()*+,-./\\:;<=>?@[]^_`{}~";
+    }
+
+    if (space == true) {
+        possible += " ";
+    }
+
+    if (easy == true) {
+        possible = possible.replace("0", "");
+        possible = possible.replace("o", "");
+        possible = possible.replace("O", "");
+
+        possible = possible.replace("1", "");
+        possible = possible.replace("i", "");
+        possible = possible.replace("I", "");
+        possible = possible.replace("l", "");
+        possible = possible.replace("|", "");
+    }
+
+    for (var i = 0; i < length; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
 }
 
 $(function () {
+    /**
+    * Fade in animation
+    */
+    $("body").fadeIn(fadeTime);
+
+    // Post request when a create group button clicks
     $("#form-create-group .saveChanges").click(function () {
-        //alert($("#form-create-group").serialize());
-        //alert($("#form-create-group").attr("target"));
-        var method = "POST";
-        var url = $("#form-create-group").attr("target");
-        var postData = $("#form-create-group").serialize();
+        var method = post;
+        var $createGroupForm = $("#form-create-group");
+        var url = $createGroupForm.attr("target");
+        var postData = $createGroupForm.serialize();
         posting(method, url, postData, function () {
             refresh();
             $('#createGroupModal').modal('hide');
@@ -145,22 +224,20 @@ $(function () {
     $(".reeditGroup").click(function () {
         var group = $(this).attr("group");
         $("#form-edit-group input[name='group']").val(group);
-		split = group.split(".",1);
-		if (split.length > 1){
-			$("#form-edit-group input[name='groupParent']").val(split[0]);
-			$("#form-edit-group input[name='groupName']").val(split[1]);
-		}else{
-			$("#form-edit-group input[name='groupName']").val(split[0]);
-		}
+        var split = group.split(".", 1);
+        if (split.length > 1) {
+            $("#form-edit-group input[name='groupParent']").val(split[0]);
+            $("#form-edit-group input[name='groupName']").val(split[1]);
+        } else {
+            $("#form-edit-group input[name='groupName']").val(split[0]);
+        }
     });
 
     $("#form-create-user .saveChanges").click(function () {
-        //console.log($("#form-create-group").serialize());
-        //console.log($("#form-create-group").attr("target"));
-        //alert(this.attr("group"));
-        var method = "POST";
-        var url = $("#form-create-user").attr("target");
-        var postData = $("#form-create-user").serialize();
+        var method = post;
+        var $createUserForm = $("#form-create-user");
+        var url = $createUserForm.attr("target");
+        var postData = $createUserForm.serialize();
         posting(method, url, postData, function () {
             refresh();
             $('#createUserModal').modal('hide');
@@ -169,8 +246,8 @@ $(function () {
 
     $('.passwordLink').click(function () {
         var id = $(this).attr('id');
-        var method = "POST";
-        var url = "get-user";
+        var method = post;
+        var url = edit_user_url;
         var postData = { uuid: id };
         req_posting(method, url, postData, function (result) {
             var userObj = jQuery.parseJSON(result);
@@ -185,7 +262,7 @@ $(function () {
 
     $("#form-edit-user .saveChanges").click(function () {
         var editUser = $("#form-edit-user");
-        var method = "POST";
+        var method = post;
         var url = $(editUser).attr("target");
         var postData = $(editUser).serialize();
         posting(method, url, postData, function () {
@@ -214,15 +291,13 @@ $(function () {
         }
     });
 
-
     $("#deleteGroupButton").click(function () {
         var editGroup = $("#form-edit-group");
-
-        //temp using this to indicate the request is del or edit   shouldnt be hard coding -->  seek for better solutions
+        //temp using this to indicate the request is del or edit shouldnt be hard coding -->  seek for better solutions
         $(editGroup).find(".req").val("del");
-        var method = "POST";
+        var method = post;
         //var url = $(editGroup).attr("target"); //delete and edit targets are different
-		 var url = "/delete-group";
+        var url = "/delete-group";
         var postData = $(editGroup).serialize();
         posting(method, url, postData, function () {
             $('#redditModal').modal('hide');
@@ -233,7 +308,7 @@ $(function () {
     $("#form-edit-group .saveChanges").click(function () {
         var editGroup = $("#form-edit-group");
         $(editGroup).find(".req").val("edit");
-        var method = "POST";
+        var method = post;
         var url = $(editGroup).attr("target");
         var postData = $(editGroup).serialize();
         posting(method, url, postData, function () {
@@ -242,10 +317,9 @@ $(function () {
         });
     });
 
-
     $("#form-del-user .saveChanges").click(function () {
         var delUser = $("#form-del-user");
-        var method = "POST";
+        var method = post;
         var url = $(delUser).attr("target");
         var postData = $(delUser).serialize();
         posting(method, url, postData, function () {
@@ -253,40 +327,24 @@ $(function () {
             refresh();
         });
     });
+
+    $(".import-btn").click(function (e) {
+        e.preventDefault();
+        $("#importDialog").click();
+    });
+
+    $("#importDialog").change(function () {
+        var filename = $(this).val().replace(/.*(\/|\\)/, '');
+        if (filename.length > 0) {
+            $(".import-btn").html(filename);
+            $("#import").val($(this).val());
+        }
+    });
 });
-
-var ResetCheckbox = function () {
-    $('.del-user-chkbox').prop("checked", false);
-    var saveChangesBtn = $('.del-user-chkbox').closest("#delUserModal").find("button.saveChanges");
-    $(saveChangesBtn).attr("disabled", "");
-};
-
-
-/////////////////////////////////////////////
-
 
 //Initialise popovers
 $('span').popover();
 $('a').tooltip();
-
-//$('.saveChanges').click(function () {
-//    $('#alertChangesSaved').fadeIn("slow").delay(500).fadeOut("slow");
-//});
-
-////todo test
-////$('.passwordLink').click(function () {
-////    $('#alertPasswordCopied').fadeIn("slow").delay(500).fadeOut("slow");
-////    id = $(this).attr('id');
-////    $.post("getRecordData", { uuid: id }, function (result) {
-////        alert(result);
-////    });
-////});
-
-//$('#deleteGroupButton').click(function () {
-//    $('#alertDeleted').fadeIn("slow").delay(500).fadeOut("slow");
-//    $('#redditPanel').fadeOut("slow");
-//});
-
 
 $('#listGridToggleButton').click(function () {
     if ($(this).children('span').hasClass('glyphicon-align-left') == true) {
@@ -303,8 +361,7 @@ $(function () {
     $("#writeMain, #writeOther, #readMain, #readOther, #unassignedMain, #unassignedOther").sortable({
         connectWith: ".connectedUserPermissions"
     }).disableSelection();
-});
-$(function () {
+
     $(".writeMain").sortable({
         connectWith: ".writeMain",
         placeholder: 'col-xs-4',
@@ -324,7 +381,7 @@ $(function () {
     });
 });
 
-
+//It is a function used to make toggle effect to the panels
 $.fn.bootstrapSwitch.defaults.size = 'small';
 $("[name='autoLogoutCheckbox']").bootstrapSwitch();
 $("[name='autoLogoutCheckbox']").on('switchChange.bootstrapSwitch', function () {
@@ -339,11 +396,7 @@ $("[name='remindersCheckbox']").on('switchChange.bootstrapSwitch', function () {
     $('#remindersForm').toggle();
 });
 
-
 $('#addUser').hide();
-//$('#addUserButton').on("click", function () {
-//    $('#addUser').toggle();
-//});
 
 $('#editGroup').hide();
 $('#editGroupButton').on("click", function () {
@@ -398,56 +451,4 @@ $('#darkThemeButton').on("click", function () {
     $(this).addClass('active');
     $('link[href="css/bootstrap.min.css"]').attr('href', 'css/bootstrap.dark.min.css');
 });
-
-function generatePassword(length, lower, upper, digits, hex, symbols, space, easy) {
-    var text = "";
-    var possible = "";
-
-    if (lower == true) {
-        possible += "abcdefghijklmnopqrstuvwxyz";
-    }
-
-    if (upper == true) {
-        possible += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    }
-
-    if (digits == true) {
-        possible += "0123456789";
-    }
-
-    if (hex == true) {
-        if (lower == false) {
-            possible += 'abcdef'
-        }
-        if (digits == false) {
-            possible += '0123456789';
-        }
-    }
-
-    if (symbols == true) {
-        possible += "!\"#$%&'()*+,-./\\:;<=>?@[]^_`{}~";
-    }
-
-    if (space == true) {
-        possible += " ";
-    }
-
-    if (easy == true) {
-        possible = possible.replace("0", "");
-        possible = possible.replace("o", "");
-        possible = possible.replace("O", "");
-
-        possible = possible.replace("1", "");
-        possible = possible.replace("i", "");
-        possible = possible.replace("I", "");
-        possible = possible.replace("l", "");
-        possible = possible.replace("|", "");
-    }
-
-    for (var i = 0; i < length; i++) {
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-
-    return text;
-}
 

@@ -5,15 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Primate Password</title>
-    <link href="/static/css/bootstrap.min.css" rel="stylesheet" />
-    <!--<link href="https://netdna.bootstrapcdn.com/bootswatch/3.1.1/darkly/bootstrap.min.css" rel="stylesheet">-->
-    <link href="/static/css/bootstrap-switch.min.css" rel="stylesheet">
-    
+    <!-- Bootstrap -->
+    <link href="../static/css/bootstrap.css" rel="stylesheet" />
+    <!-- Bootstrap switch -->
+    <link href="../static/css/bootstrap-switch.min.css" rel="stylesheet">
+
     <!-- Include custom CSS files as needed -->
     <link href="../static/css/primate.css" rel="stylesheet" />
-    <link rel="stylesheet" type="text/css" media="" href="/static/css/style.css" />
 </head>
-<body>
+<body style="display: none">
     <div class="container">
         <div class="row">
             <div class="col-md-12">
@@ -41,6 +41,8 @@
                             <li><a href="#" data-toggle="modal" data-target="#manageUserSettingsModal"><span class="glyphicon glyphicon-calendar"></span> Manage Users</a></li>
                             <li><a href="#" data-toggle="modal" data-target="#userSettingsModal"><span class="glyphicon glyphicon-user"></span> User Settings</a></li>
                             <li><a href="#" data-toggle="modal" data-target="#databaseSettingsModal"><span class="glyphicon glyphicon-tasks"></span> Database Settings</a></li>
+                            <li><a href="#" data-toggle="modal" data-target="#importModal"><span class="glyphicon glyphicon-import"></span> Import</a></li>
+                            <li><a href="#" data-toggle="modal" data-target="#exportModal"><span class="glyphicon glyphicon-export"></span> Export</a></li>
                             <li class="divider"></li>
                             <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Log Out</a></li>
                         </ul>
@@ -48,23 +50,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- <div class="col-xs-6">
-          <div class="pull-right">
-            <div class="btn-group">
-            <button type="button" class="btn btn-default" onclick="saveDB()"><span class="glyphicon glyphicon-floppy-disk"></span> Save Database </button>
-              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span> JohnSmith <span class="caret"></span></button>
-              <ul class="dropdown-menu" role="menu">
-                <li><a href="#" data-toggle="modal" data-target="#manageUserSettingsModal"><span class="glyphicon glyphicon-calendar"></span> Manage Users</a></li>
-                <li><a href="#" data-toggle="modal" data-target="#userSettingsModal"><span class="glyphicon glyphicon-user"></span> User Settings</a></li>
-                <li><a href="#" data-toggle="modal" data-target="#databaseSettingsModal"><span class="glyphicon glyphicon-tasks"></span> Database Settings</a></li>
-                <li class="divider"></li>
-                <li><a href="index.html"><span class="glyphicon glyphicon-log-out"></span> Log Out</a></li>
-              </ul>
-            </div>
-        </div>
-        <br /> -->
-        <!-- Alerts -->
         <div class="row">
             <div class="col-md-12">
                 <div id="alertPasswordCopied" class="alert alert-info" style="display: none">Password Copied</div>
@@ -76,7 +61,6 @@
                 <div id="alertMsg" class="alert alert-danger" style="display: none">Deleted</div>
             </div>
         </div>
-
         <div id="gridview">
             <div class="row">
                 <div class="col-md-12">
@@ -169,6 +153,7 @@
             </div>
         </div>
     </div>
+    <!--edit group modal-->
     <div class="modal fade" id="redditModal" data-groupid="">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -232,6 +217,7 @@
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
+    <!--manage pemission modal-->
     <div class="modal fade" id="permissionsModal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -278,7 +264,7 @@
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
-
+    <!--manage user settings modal-->
     <div class="modal fade" id="manageUserSettingsModal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -321,14 +307,6 @@
 
                         <div class="col-md-12" id="managerUserSettingsEdit">
                             <br />
-                            <!--
-                            <h4>User Settings</h4>
-                            <div class="checkbox">
-                              <label>
-                                <input type="checkbox"> Administrator
-                              </label>
-                            </div>
-                            -->
                             <div class="col-xs-12">
                                 <p class="text-right"><a href="#" class="generatorSettingsButton"><span class="glyphicon glyphicon-cog"></span> Password Generator Settings</a></p>
                                 <div class="generatorSettings">
@@ -358,12 +336,9 @@
                                     </div>
                                 </div>
                             </div>
-
                             <br />
                             <hr />
-
                         </div>
-
                         <div class="col-md-12">
                             <h2>Permissions</h2>
                             <h3>Full Access</h3>
@@ -372,7 +347,6 @@
                                 <li><span class="label label-info"><img src="http://www.google.com/s2/favicons?domain=www.reddit.com" /> Reddit <a href="#" style="color: white">&times;</a></span></li>
                                 <li><span class="label label-danger"><img src="http://www.google.com/s2/favicons?domain=www.pintrest.com" /> Pintrest <a href="#" style="color: white">&times;</a></span></li>
                             </ul>
-
                             <h4>Social</h4>
                             <ul id="writeOther" class="connectedUserPermissions list-unstyled list-inline"></ul>
 
@@ -419,7 +393,7 @@
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
-
+    <!--user settings modal-->
     <div class="modal fade" id="userSettingsModal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -427,7 +401,6 @@
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h4 class="modal-title"><span class=" glyphicon glyphicon-user"></span> User Settings</h4>
                 </div>
-
                 <div class="modal-body">
                     <h2>Administrator</h2>
                     <div class="row">
@@ -454,18 +427,8 @@
                                 </span>
                             </div>
                         </div>
-
                         <div class="col-md-12" id="editUserSettings">
-
                             <br />
-                            <!--
-                              <h4>User Settings</h4>
-                              <div class="checkbox">
-                                <label>
-                                  <input type="checkbox" checked /> Administrator
-                                </label>
-                              </div>
-                            -->
                             <div class="col-xs-12">
                                 <p class="text-right"><a href="#" class="generatorSettingsButton"><span class="glyphicon glyphicon-cog"></span> Password Generator Settings</a></p>
                                 <div class="generatorSettings">
@@ -495,12 +458,9 @@
                                     </div>
                                 </div>
                             </div>
-
                             <br />
                             <hr />
-
                         </div>
-
                         <div class="col-md-12">
                             <h2>Permissions</h2>
                             <h3>Full Access</h3>
@@ -512,7 +472,6 @@
                                 <li><span class="label label-primary"><img src="http://www.google.com/s2/favicons?domain=www.gmail.com" /> G-mail</span></li>
                                 <li><span class="label label-warning"><img src="http://www.google.com/s2/favicons?domain=www.amazon.com" /> Amazon</span></li>
                             </ul>
-
                             <h4>Social</h4>
                             <ul id="writeOther" class="connectedUserPermissions list-unstyled list-inline">
                                 <li><span class="label label-primary"><img src="http://www.google.com/s2/favicons?domain=www.facebook.com" /> Facebook</span></li>
@@ -520,22 +479,17 @@
                                 <li><span class="label label-warning"><img src="http://www.google.com/s2/favicons?domain=www.instagram.com" /> Instagram</span></li>
                                 <li><span class="label label-info"><img src="http://www.google.com/s2/favicons?domain=www.twitter.com" /> Twitter</span></li>
                             </ul>
-
                             <br />
-
                             <h3>Read Only</h3>
                             <h4>Main</h4>
                             <ul id="readMain" class="connectedUserPermissions list-unstyled list-inline">
                                 <li><small><em style="color: #cccccc">None</em></small></li>
                             </ul>
-
                             <h4>Social</h4>
                             <ul id="readOther" class="connectedUserPermissions list-unstyled list-inline">
                                 <li><small><em style="color: #cccccc">None</em></small></li>
                             </ul>
-
                             <br />
-
                             <h3>Unassigned</h3>
                             <h4>Main</h4>
                             <ul id="unassignedMain" class="connectedUserPermissions list-unstyled list-inline">
@@ -549,7 +503,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="modal-footer">
                     <div class="row">
                         <div class="col-md-9 col-sm-12 pull-right">
@@ -561,7 +514,7 @@
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
-
+    <!--database settings modal-->
     <div class="modal fade" id="databaseSettingsModal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -617,9 +570,8 @@
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
-    </div>
-
-    <!--createGroupModal-->
+    </div><!-- /.modal -->
+    <!--create group modal-->
     <div class="modal fade" id="createGroupModal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -676,9 +628,8 @@
                 </form>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
-    </div>
-
-    <!--createUserModal-->
+    </div><!-- /.modal -->
+    <!--create user modal-->
     <div class="modal fade" id="createUserModal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -719,8 +670,37 @@
                 </form>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
-    </div>
-
+    </div><!-- /.modal -->
+    <!--export database modal-->
+    <div class="modal fade" id="exportModal">
+        <div class="modal-dialog center-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title">Export</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger">
+                        <strong>Oh snap!</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis imperdiet sagittis massa. Duis porta convallis tortor, quis efficitur nisi aliquet volutpat.
+                    </div>
+                    <div class="file-info">
+                        <div class="file-thumbnail">
+                            <img src="https://www.dropbox.com/static/images/icons128/page_white_excel.png">
+                        </div>
+                        <div class="file-type">Document</div>
+                        <div class="file-extended-details">
+                            <span class="file-modified">5/2/2013 4:11 PM</span>&nbsp;·&nbsp;<span class="file-size">9.53 KB</span>
+                        </div>
+                        <div class="file-actions">
+                            <!--write your request url here and it will work-->
+                            <a href="#" class="btn btn-primary full" id="export-download">Download</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- /.modal -->
+    <!--edit user modal-->
     <div class="modal fade" id="editUserModal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -761,8 +741,8 @@
                 </form>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
-    </div>
-
+    </div><!-- /.modal -->
+    <!--delete user modal-->
     <div class="modal fade" id="delUserModal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -806,23 +786,24 @@
                 </form>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
-    </div>
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="/static/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/static/js/ZeroClipboard.js"></script>
-
-    <script src="/static/js/jquery-ui.js"></script>
-
-    <!-- Include custom JS files as needed -->
-    <script src="/static/js/primate.js"></script>
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
+    </div><!-- /.modal -->
 </body>
 </html>
+<!-- jQuery (necessary for Bootstrap's and Primate JavaScript plugins) -->
+<script src="../static/js/jquery-1.11.1.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/ZeroClipboard.js"></script>
+
+<!--Jquery UI-->
+<script src="/static/js/jquery-ui.js"></script>
+
+<!-- Include custom JS files as needed -->
+<script src="/static/js/primate.js"></script>
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
