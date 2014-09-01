@@ -216,7 +216,7 @@ def createGroup():
     if len(groupParent) == 0:
         addGroup(groupName)
     else:
-        if groupParent not in session['groups'].getGroups():
+        if groupParent not in getGroups():
             return "Group Parent Not Found", 500
         session['groups'].addGroup(groupParent +"."+ groupName)#
 

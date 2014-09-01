@@ -291,7 +291,7 @@ $(function () {
         }
     });
 
-    $("#deleteGroupButton").click(function () {
+    $("#deleteGroupButton").on("click",function () {
         var editGroup = $("#form-edit-group");
         //temp using this to indicate the request is del or edit shouldnt be hard coding -->  seek for better solutions
         $(editGroup).find(".req").val("del");
