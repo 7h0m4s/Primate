@@ -312,8 +312,9 @@ $(function () {
         var url = $(editGroup).attr("target");
         var postData = $(editGroup).serialize();
         posting(method, url, postData, function () {
-            refresh();
             $("#redditModal").modal('hide');
+			refresh();
+            
         });
     });
 
@@ -331,6 +332,18 @@ $(function () {
     $(".import-btn").click(function (e) {
         e.preventDefault();
         $("#importDialog").click();
+    });
+	
+	 $("#form-import .saveChanges").click(function () {
+		var importForm = $("#form-import");
+        var method = post;
+        var url = $(importForm).attr("target");
+        var postData = $(importForm).serialize();
+        posting(method, url, postData, function () {
+            $("#importModal").modal('hide');
+			refresh();
+            
+        });
     });
 
     $("#importDialog").change(function () {
