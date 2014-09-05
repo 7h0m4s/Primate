@@ -14,6 +14,7 @@ import webbrowser
 import logging
 import json
 import csv
+import StringIO
 
 UPLOAD_FOLDER = 'uploads/'
 ALLOWED_EXTENSIONS = set(['csv'])
@@ -486,12 +487,12 @@ def exportFile():
         for record in sessionVault.getVault().records:
             data.append([str(record._get_uuid()),str(record._get_group()),str(record._get_title()),str(record._get_url()),str(record._get_user()),str(record._get_passwd()),str(record._get_notes())])
 
-        csvString=""
-        writer = csv.writer(csvString, delimiter=',')
+        output = StringIO.StringIO()
+        writer = csv.writer(output, delimiter=',')
         for line in data:
             writer.writerow(line)
 
-        response = make_response(csvString)
+        response = make_response(output.getvalue())
         response.headers["Content-Disposition"] = "attachment; filename=books.csv"
         return response
     #except Exception,e:
