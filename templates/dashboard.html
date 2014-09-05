@@ -708,7 +708,7 @@
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                     <h4 class="modal-title">Import</h4>
                 </div>
-				<form id="form-import" method="POST" target="/import" enctype="multipart/form-data">
+				<form id="form-import" method="post" action="import" target="/import" enctype="multipart/form-data">
                 <div class="modal-body">
 					
 						<input type="hidden" name="group" />
@@ -731,6 +731,10 @@
 							</div>
 						</div>
 				</form>
+				<form action="import" method="post" enctype="multipart/form-data">
+        <input type="file" name="file"><br /><br />
+        <input type="submit" value="Upload">
+      </form>
             </div>
         </div>
     </div><!-- /.modal -->

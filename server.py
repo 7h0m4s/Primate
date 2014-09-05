@@ -13,8 +13,9 @@ import os.path
 import webbrowser
 import logging
 import json
+import csv
 
-UPLOAD_FOLDER = '/uploads'
+UPLOAD_FOLDER = 'uploads/'
 ALLOWED_EXTENSIONS = set(['csv'])
 app = Flask(__name__)
 #something happened
@@ -395,31 +396,31 @@ def saveDB():
 
 #Takes a html form uplaoded csv file and adds it to the DB
 #Current Bugs: Cannot handle if commas are a part of the csv content
-@app.route("/import")
+@app.route("/import",methods=['POST'])
 def importFile():
     try:
-##        if isLoggedIn() == False:
-##            return redirect(url_for('index'))
-##        
-##        f = request.files['file']
-##        if f and allowed_file(f.filename):
-##            filename = secure_filename(f.filename)
-##            f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-##            importedFile = open(str(os.path.join(app.config['UPLOAD_FOLDER'], filename)),'r')
-            importedFile = open("uploads/test.csv",'r')
-            content = importedFile.readlines()
-            if len(content) <=1:
-                return "No accounts found in file", 500
-            for i, line in enumerate(content):
-                if i == 0 and content[0]!="uuid,group,title,url,user,password,notes\n":
-                    return "Incorrect data format on line " + str(i)+" :"+content[0], 500
+        if isLoggedIn() == False:
+            return redirect(url_for('index'))
+        assure_path_exists(UPLOAD_FOLDER)
+        f = request.files['file']
+        if f and allowed_file(f.filename):
+            filename = secure_filename(f.filename)
+            f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            importedFile = open(os.path.join(app.config['UPLOAD_FOLDER'], filename),'r')
+            #importedFile = open("uploads/test.csv",'r')
+            reader = csv.reader(importedFile)
+            i = 0
+            for lineList in reader:
+                #['uuid', 'group', 'title', 'url', 'user', 'password', 'notes']
+                if i == 0 and str(lineList)!=str(['uuid', 'group', 'title', 'url', 'user', 'password', 'notes']):
+                    return "Incorrect data format on line " + str(i)+" :"+ str(lineList), 500
                 if i == 0:
+                    i += 1
                     continue
-                lineList = line.replace("\n","").split(",")
                 if len(lineList)>7:
-                    return "Unhandled comma in CSV data on line " + str(i), 500
+                    return "Incorrect data format on line " + str(i) +" :"+ str(lineList), 500
                 if len(lineList)<7:
-                    return "Incorrect data format on line " + str(i), 500
+                    return "Incorrect data format on line " + str(i) +" :"+ str(lineList), 500
                 if len(lineList[0])!=36:
                     return "Incorrect UUID on line " + str(i),500
 
@@ -436,15 +437,18 @@ def importFile():
                 entry._set_notes(lineList[6])
                 if doesUuidExit(lineList[0])==False:
                     sessionVault.getVault().records.append(entry)
-
+                i += 1
+                
+            if i <=1:
+                return "No accounts found in file", 500
             saveDB()
             importedFile.close()
-            
+            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 
             return "Successfuly Imported."
 
 
-        #return "An Error Occured.", 500
+        return "An Error Occured.", 500
     except Exception,e:
         return str(e),500
 
@@ -474,30 +478,24 @@ def getByUuid(uuid):
 @app.route("/export")
 def exportFile():
 
-    try:
+    #try:
         if isLoggedIn() == False:
             return redirect(url_for('index'))
-        csv = "uuid,group,title,url,user,password,notes\n"
-        tmpStr = ""
-        for record in sessionVault.getVault().records:
-            tmpStr =("%s,%s,%s,%s,%s,%s,%s")%(str(record._get_uuid()),str(record._get_group()),str(record._get_title()),str(record._get_url()),str(record._get_user()),str(record._get_passwd()),str(record._get_notes()))
-
-            #clean string of newlines
-            tmpStr = tmpStr.replace("\n", "\\n").replace("\r", "\\r")
-
-            csv+= tmpStr + "\n"
-            tmpStr=""
         
-        # We need to modify the response, so the first thing we 
-        # need to do is create a response out of the CSV string
-        response = make_response(csv)
-        # This is the key: Set the right header for the response
-        # to be downloaded, instead of just printed on the browser
-        response.headers["Content-Disposition"] = "attachment; filename=books.csv"
+        data = [["uuid","group","title","url","user","password","notes"]]
+        for record in sessionVault.getVault().records:
+            data.append([str(record._get_uuid()),str(record._get_group()),str(record._get_title()),str(record._get_url()),str(record._get_user()),str(record._get_passwd()),str(record._get_notes())])
 
+        csvString=""
+        writer = csv.writer(csvString, delimiter=',')
+        for line in data:
+            writer.writerow(line)
+
+        response = make_response(csvString)
+        response.headers["Content-Disposition"] = "attachment; filename=books.csv"
         return response
-    except Exception,e:
-        return str(e),500
+    #except Exception,e:
+        #return str(e),500
     
 
 #Function tests if the file is on an allowed extension type
@@ -524,6 +522,12 @@ def getAllGroups():
         if rec._get_group() not in groupList:
             groupList.append(rec._get_group())
     return groupList
+
+#tests if a directory exists and if not, creates it.
+def assure_path_exists(path):
+        direc = os.path.dirname(path)
+        if not os.path.exists(direc):
+                os.makedirs(direc)
 
 
 #Code below is equivilent to a "Main" function in Java or C

@@ -336,7 +336,7 @@ $(function () {
 	
 	 $("#form-import .saveChanges").click(function () {
 		var importForm = $("#form-import");
-        var method = post;
+        var method = 'post';
         var url = $(importForm).attr("target");
         var postData = $(importForm).serialize();
         posting(method, url, postData, function () {
