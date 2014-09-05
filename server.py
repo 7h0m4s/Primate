@@ -446,7 +446,7 @@ def importFile():
             importedFile.close()
             os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 
-            return "Successfuly Imported."
+            return redirect(url_for('dashboard'))
 
 
         return "An Error Occured.", 500
