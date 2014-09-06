@@ -228,7 +228,7 @@ def createGroup():
     else:
         if groupParent not in getGroups():
             return "Group Parent Not Found", 500
-        session['groups'].addGroup(groupParent +"."+ groupName)#
+        session['groups'].append(groupParent +"."+ groupName)#
 
     return "Group Added Successfully"
 
@@ -399,64 +399,6 @@ def saveDB():
 
 
 
-#Takes a html form uplaoded csv file and adds it to the DB
-#Current Bugs: Cannot handle if commas are a part of the csv content
-@app.route("/import",methods=['POST'])
-def importFile():
-    try:
-        if isLoggedIn() == False:
-            return redirect(url_for('index'))
-        assure_path_exists(UPLOAD_FOLDER)
-        f = request.files['file']
-        if f and allowed_file(f.filename):
-            filename = secure_filename(f.filename)
-            f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            importedFile = open(os.path.join(app.config['UPLOAD_FOLDER'], filename),'r')
-            #importedFile = open("uploads/test.csv",'r')
-            reader = csv.reader(importedFile)
-            i = 0
-            for lineList in reader:
-                #['uuid', 'group', 'title', 'url', 'user', 'password', 'notes']
-                if i == 0 and str(lineList)!=str(['uuid', 'group', 'title', 'url', 'user', 'password', 'notes']):
-                    return "Incorrect data format on line " + str(i)+" :"+ str(lineList), 500
-                if i == 0:
-                    i += 1
-                    continue
-                if len(lineList)>7:
-                    return "Incorrect data format on line " + str(i) +" :"+ str(lineList), 500
-                if len(lineList)<7:
-                    return "Incorrect data format on line " + str(i) +" :"+ str(lineList), 500
-                if len(lineList[0])!=36:
-                    return "Incorrect UUID on line " + str(i),500
-
-                entry = Vault.Record.create()
-                if doesUuidExit(lineList[0])==False:
-                    entry._set_uuid(uuid.UUID(lineList[0]))
-                    
-
-                entry._set_group(lineList[1])
-                entry._set_title(lineList[2])
-                entry._set_url(lineList[3])
-                entry._set_user(lineList[4])
-                entry._set_passwd(lineList[5])
-                entry._set_notes(lineList[6])
-                if doesUuidExit(lineList[0])==False:
-                    sessionVault.getVault().records.append(entry)
-                i += 1
-                
-            if i <=1:
-                return "No accounts found in file", 500
-            saveDB()
-            importedFile.close()
-            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                
-            return redirect(url_for('dashboard'))
-
-
-        return "An Error Occured.", 500
-    except Exception,e:
-        return str(e),500
-
 
 
 #Opens file broswer dialog for user to select file with.
@@ -502,7 +444,8 @@ def importFileDirect():
             if doesUuidExit(lineList[0])==False:
                 entry._set_uuid(uuid.UUID(lineList[0]))
                 
-
+            if lineList[1] not in getGroups():#Add new groups to the session group list 
+                session['groups'].append(lineList[1])
             entry._set_group(lineList[1])
             entry._set_title(lineList[2])
             entry._set_url(lineList[3])
