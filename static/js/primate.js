@@ -331,7 +331,17 @@ $(function () {
 
     $(".import-btn").click(function (e) {
         e.preventDefault();
-        $("#importDialog").click();
+        $.get( "/get-filepath", function( data ) {
+		  $("#import").val( data );
+		  
+		});
+    });
+	
+	$("#form-import .browse").click(function () {
+		$.get( "/import-browse", function( data ) {
+		  $("#form-import .filepath").val( data );
+		  
+		});
     });
 	
 	 $("#form-import .saveChanges").click(function () {
@@ -346,13 +356,7 @@ $(function () {
         });
     });
 
-    $("#importDialog").change(function () {
-        var filename = $(this).val().replace(/.*(\/|\\)/, '');
-        if (filename.length > 0) {
-            $(".import-btn").html(filename);
-            $("#import").val($(this).val());
-        }
-    });
+
 });
 
 //Initialise popovers

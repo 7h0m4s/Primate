@@ -15,6 +15,8 @@ import logging
 import json
 import csv
 import StringIO
+import Tkinter
+import tkFileDialog
 
 UPLOAD_FOLDER = 'uploads/'
 ALLOWED_EXTENSIONS = set(['csv'])
@@ -152,6 +154,7 @@ def newDB():
         return redirect(url_for('dashboard'))
     if (request.form['Password'].encode('ascii','ignore') != request.form['ConfirmPassword'].encode('ascii','ignore')):
         return render_template('newDB.html', error="Passwords do not match.")
+    session['id']=uuid.uuid4()
     session['username']=request.form['Username']
     session['password']=request.form['Password'].encode('ascii','ignore')
     assert type(session['password']) != unicode
@@ -165,6 +168,7 @@ def newDB():
     #except Exception,e:
     #    return render_template('newDB.html', error="Error:"+str(e))
 
+    session['loggedIn']=True
     getGroups() #important, it populates the group list
     return redirect(url_for('dashboard'))
 
@@ -455,6 +459,75 @@ def importFile():
 
 
 
+#Opens file broswer dialog for user to select file with.
+@app.route("/import-browse")
+def importBrowser():
+    Tkinter.Tk().withdraw() # Close the root window
+    file_path = tkFileDialog.askopenfilename(initialdir=(os.path.expanduser('~/')))
+    return file_path
+
+
+#Takes a html form uplaoded csv file and adds it to the DB
+#Current Bugs: Cannot handle if commas are a part of the csv content
+@app.route("/import-direct",methods=['POST'])
+def importFileDirect():
+    try:
+        if isLoggedIn() == False:
+            return redirect(url_for('index'))
+
+        file_path = request.form['file']
+
+        if str(os.path.splitext(file_path)[1])!=".csv":
+            return "Incorrect file format.", 500
+        
+        importedFile = open(file_path,'r')
+        reader = csv.reader(importedFile)
+        i = 0
+        for lineList in reader:
+            
+            #['uuid', 'group', 'title', 'url', 'user', 'password', 'notes']
+            if i == 0 and str(lineList)!=str(['uuid', 'group', 'title', 'url', 'user', 'password', 'notes']):
+                return "Incorrect data format on line " + str(i)+" :"+ str(lineList), 500
+            if i == 0:
+                i += 1
+                continue
+            if len(lineList)>7:
+                return "Incorrect data format on line " + str(i) +" :"+ str(lineList), 500
+            if len(lineList)<7:
+                return "Incorrect data format on line " + str(i) +" :"+ str(lineList), 500
+            if len(lineList[0])!=36:
+                return "Incorrect UUID on line " + str(i),500
+
+            entry = Vault.Record.create()
+            if doesUuidExit(lineList[0])==False:
+                entry._set_uuid(uuid.UUID(lineList[0]))
+                
+
+            entry._set_group(lineList[1])
+            entry._set_title(lineList[2])
+            entry._set_url(lineList[3])
+            entry._set_user(lineList[4])
+            entry._set_passwd(lineList[5])
+            entry._set_notes(lineList[6])
+            if doesUuidExit(lineList[0])==False:
+                sessionVault.getVault().records.append(entry)
+            i += 1
+            
+        if i <=1:
+            return "No accounts found in file", 500
+        saveDB()
+        importedFile.close()
+        
+            
+        return "Sucessfuly imported."
+
+
+        return "An Error Occured.", 500
+    except Exception,e:
+        return str(e),500
+
+
+
 #Tests if a uuid already exists inthe vault DC
 def doesUuidExit(uuid):
     for record in sessionVault.getVault().records:
@@ -529,6 +602,16 @@ def assure_path_exists(path):
         direc = os.path.dirname(path)
         if not os.path.exists(direc):
                 os.makedirs(direc)
+
+
+
+
+@app.route("/get-filepath")
+def getFilepath():
+    Tkinter.Tk().withdraw() # Close the root window
+    in_path = tkFileDialog.askopenfilename(initialdir=(os.path.expanduser('~/')))
+    return in_path
+
 
 
 #Code below is equivilent to a "Main" function in Java or C
