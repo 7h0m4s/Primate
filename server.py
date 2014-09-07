@@ -5,6 +5,8 @@ from flask import redirect
 from flask import url_for
 from flask import render_template
 from flask import flash
+from flask import make_response
+from werkzeug import secure_filename
 from vault import *
 from datetime import timedelta
 import os.path
@@ -12,6 +14,8 @@ import webbrowser
 import logging
 import json
 
+UPLOAD_FOLDER = '/uploads'
+ALLOWED_EXTENSIONS = set(['csv'])
 app = Flask(__name__)
 #something happened
 
@@ -387,6 +391,124 @@ def saveDB():
     
     return "Database was saved to "+session['dbFile']
 
+
+
+#Takes a html form uplaoded csv file and adds it to the DB
+#Current Bugs: Cannot handle if commas are a part of the csv content
+@app.route("/import")
+def importFile():
+    try:
+##        if isLoggedIn() == False:
+##            return redirect(url_for('index'))
+##        
+##        f = request.files['file']
+##        if f and allowed_file(f.filename):
+##            filename = secure_filename(f.filename)
+##            f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+##            importedFile = open(str(os.path.join(app.config['UPLOAD_FOLDER'], filename)),'r')
+            importedFile = open("uploads/test.csv",'r')
+            content = importedFile.readlines()
+            if len(content) <=1:
+                return "No accounts found in file", 500
+            for i, line in enumerate(content):
+                if i == 0 and content[0]!="uuid,group,title,url,user,password,notes\n":
+                    return "Incorrect data format on line " + str(i)+" :"+content[0], 500
+                if i == 0:
+                    continue
+                lineList = line.replace("\n","").split(",")
+                if len(lineList)>7:
+                    return "Unhandled comma in CSV data on line " + str(i), 500
+                if len(lineList)<7:
+                    return "Incorrect data format on line " + str(i), 500
+                if len(lineList[0])!=36:
+                    return "Incorrect UUID on line " + str(i),500
+
+                entry = Vault.Record.create()
+                if doesUuidExit(lineList[0])==False:
+                    entry._set_uuid(uuid.UUID(lineList[0]))
+                    
+
+                entry._set_group(lineList[1])
+                entry._set_title(lineList[2])
+                entry._set_url(lineList[3])
+                entry._set_user(lineList[4])
+                entry._set_passwd(lineList[5])
+                entry._set_notes(lineList[6])
+                if doesUuidExit(lineList[0])==False:
+                    sessionVault.getVault().records.append(entry)
+
+            saveDB()
+            importedFile.close()
+            
+                
+            return "Successfuly Imported."
+
+
+        #return "An Error Occured.", 500
+    except Exception,e:
+        return str(e),500
+
+
+
+#Tests if a uuid already exists inthe vault DC
+def doesUuidExit(uuid):
+    for record in sessionVault.getVault().records:
+        if record._get_uuid()==uuid:
+            return True
+    return False
+
+#returns a vault record with the given uuid string. Else return None
+def getByUuid(uuid):
+    for record in sessionVault.getVault().records:
+        if record._get_uuid()==uuid:
+            return record
+    return None
+
+
+#Function creates a csv reprisentation of the DB and sends to browser as csv file to download.
+#Example CSV
+    #uuid,group,title,url,user,password,notes
+    #cd1c32cc-0a51-4ca1-6186-d9b631abfd00,Infrastructure.Datacentre.Employees,Anna,,ID: 000002,,
+    #8032f145-6906-4a73-473d-b39d8d9edb0b,Infrastructure.Datacentre,PIN,,Rack F39,1234,This is the PIN code for the cage in the data centre.
+    #26a234e7-97c0-4c16-5e96-de0f34ec78ee,Sites,Facebook,facebook.com,test,1234,
+@app.route("/export")
+def exportFile():
+
+    try:
+        if isLoggedIn() == False:
+            return redirect(url_for('index'))
+        csv = "uuid,group,title,url,user,password,notes\n"
+        tmpStr = ""
+        for record in sessionVault.getVault().records:
+            tmpStr =("%s,%s,%s,%s,%s,%s,%s")%(str(record._get_uuid()),str(record._get_group()),str(record._get_title()),str(record._get_url()),str(record._get_user()),str(record._get_passwd()),str(record._get_notes()))
+
+            #clean string of newlines
+            tmpStr = tmpStr.replace("\n", "\\n").replace("\r", "\\r")
+
+            csv+= tmpStr + "\n"
+            tmpStr=""
+        
+        # We need to modify the response, so the first thing we 
+        # need to do is create a response out of the CSV string
+        response = make_response(csv)
+        # This is the key: Set the right header for the response
+        # to be downloaded, instead of just printed on the browser
+        response.headers["Content-Disposition"] = "attachment; filename=books.csv"
+
+        return response
+    except Exception,e:
+        return str(e),500
+    
+
+#Function tests if the file is on an allowed extension type
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+
+
+    
+
+
 #Returns a list of all Titles in the database.
 def getAllTitles():
     titleList=[]
@@ -424,5 +546,6 @@ if __name__ == "__main__":
     #This is how long the session will remain active
     app.permanent_session_lifetime = timedelta(seconds=600)
     
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     app.debug = True
     app.run()
