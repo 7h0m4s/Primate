@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<!-- saved from url=(0063)https://jqueryui.com/resources/demos/sortable/display-grid.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+	<title>jQuery UI Sortable - Display as grid</title>
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
+	<script src="./jQuery UI Sortable - Display as grid_files/jquery-1.10.2.js"></script>
+	<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+	<script src="./jQuery UI Sortable - Display as grid_files/jquery-ui.js"></script>
+	<link rel="stylesheet" href="https://jqueryui.com/resources/demos/style.css">
+	<style>
+	#sortable { list-style-type: none; margin: 0; padding: 0; width: 450px; }
+	#sortable li { margin: 3px 3px 3px 0; padding: 1px; float: left; width: 100px; height: 90px; font-size: 4em; text-align: center; }
+	</style>
+	<script>
+	$(function() {
+		$( "#sortable" ).sortable();
+		$( "#sortable" ).disableSelection();
+	});
+	</script>
+</head>
+<body>
+
+<ul id="sortable" class="ui-sortable">
+	<li id="ui-1" class="ui-state-default ui-sortable-handle">1</li>
+	<li id="ui-2" class="ui-state-default ui-sortable-handle">2</li>
+	<li id="ui-3" class="ui-state-default ui-sortable-handle">3</li>
+	<li id="ui-4" class="ui-state-default ui-sortable-handle">4</li>
+	<li id="ui-5" class="ui-state-default ui-sortable-handle">5</li>
+	<li id="ui-6" class="ui-state-default ui-sortable-handle">6</li>
+	<li id="ui-7" class="ui-state-default ui-sortable-handle">7</li>
+	<li id="ui-8" class="ui-state-default ui-sortable-handle">8</li>
+	<li id="ui-9" class="ui-state-default ui-sortable-handle">9</li>
+	<li id="ui-10" class="ui-state-default ui-sortable-handle">10</li>
+	<li id="ui-11" class="ui-state-default ui-sortable-handle">11</li>
+	<li id="ui-12" class="ui-state-default ui-sortable-handle">12</li>
+</ul>
+</body>
+</html>
+<script>
+$(function(){
+bindKeyDown();
+});
+
+
+function bindKeyDown() {
+	var foo = $("#sortable").sortable({
+		update: function (e, ui) {
+			var order = foo.sortable("toArray").join();
+			localStorage.sortableOrder=order;
+		}
+	});
+
+var foo = $("#sortable");
+var sequence = localStorage.sortableOrder;
+//var sequence = $.cookie("sortableOrder");
+console.log(sequence);
+if (sequence) {
+　	console.log($(sequence.split(',')));
+	$(sequence.split(',')).each(function (i, id) {
+	//appending the element with the ID given id should move each element to the end of the
+	// list one after another, and at the end, the order should be restored.
+		console.log(id);
+		$("#" + id).appendTo(foo);
+	});
+}
+foo.sortable(
+'options');
+}
+	
+</script>

@@ -21,7 +21,7 @@ a {
     }
 
 body {
-    background: url('/static/imgs/background.jpg');
+    background: url('../imgs/background.jpg');
 }
 
 .clearfix:after {
@@ -156,17 +156,4 @@ a.full {
 .import-btn {
     width: 300px;
     margin-left: 0;
-}
-
-#drop_zone {
-    border: 2px dashed #bbb;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
-    border-radius: 5px;
-    padding: 25px;
-    text-align: center;
-    color: #bbb;
-    margin-right: 15px;
-    margin-left: 15px;
-    width: 300px;
 }

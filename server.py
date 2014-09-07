@@ -426,3 +426,10 @@ if __name__ == "__main__":
     
     app.debug = True
     app.run()
+
+
+@app.route("/testtest")
+def index():
+    f = urllib2.urlopen(url) 
+with open("code2.zip", "wb") as code:
+   code.write(f.read()) 

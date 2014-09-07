@@ -332,14 +332,6 @@ $(function () {
         e.preventDefault();
         $("#importDialog").click();
     });
-
-    $("#importDialog").change(function () {
-        var filename = $(this).val().replace(/.*(\/|\\)/, '');
-        if (filename.length > 0) {
-            $(".import-btn").html(filename);
-            $("#import").val($(this).val());
-        }
-    });
 });
 
 //Initialise popovers
@@ -377,25 +369,24 @@ $(function () {
         change: function (event, ui) {
             $('.row > div.real-first-child').removeClass('real-first-child');
             $('.row > div.col-md-4:visible:first').addClass('real-first-child');
-        }
+        },
     });
 });
 
 //It is a function used to make toggle effect to the panels
-$.fn.bootstrapSwitch.defaults.size = 'small';
-$("[name='autoLogoutCheckbox']").bootstrapSwitch();
-$("[name='autoLogoutCheckbox']").on('switchChange.bootstrapSwitch', function () {
-    $('#autoLogoutForm').toggle();
-});
-$("[name='clearClipboardCheckbox']").bootstrapSwitch();
-$("[name='clearClipboardCheckbox']").on('switchChange.bootstrapSwitch', function () {
-    $('#clearClipboardForm').toggle();
-});
-$("[name='remindersCheckbox']").bootstrapSwitch();
-$("[name='remindersCheckbox']").on('switchChange.bootstrapSwitch', function () {
-    $('#remindersForm').toggle();
-});
-
+//$.fn.bootstrapSwitch.defaults.size = 'small';
+//$("[name='autoLogoutCheckbox']").bootstrapSwitch();
+//$("[name='autoLogoutCheckbox']").on('switchChange.bootstrapSwitch', function () {
+//    $('#autoLogoutForm').toggle();
+//});
+//$("[name='clearClipboardCheckbox']").bootstrapSwitch();
+//$("[name='clearClipboardCheckbox']").on('switchChange.bootstrapSwitch', function () {
+//    $('#clearClipboardForm').toggle();
+//});
+//$("[name='remindersCheckbox']").bootstrapSwitch();
+//$("[name='remindersCheckbox']").on('switchChange.bootstrapSwitch', function () {
+//    $('#remindersForm').toggle();
+//});
 $('#addUser').hide();
 
 $('#editGroup').hide();
@@ -452,30 +443,24 @@ $('#darkThemeButton').on("click", function () {
     $('link[href="css/bootstrap.min.css"]').attr('href', 'css/bootstrap.dark.min.css');
 });
 
-var handleFileSelect = function (evt) {
-    evt.stopPropagation();
-    evt.preventDefault();
+$(function () {
+    bindKeyDown();
+});
 
-    var files = evt.dataTransfer.files; // FileList object.
 
-    // files is a FileList of File objects. List some properties.
-    var output = [];
-    for (var i = 0, f; f = files[i]; i++) {
-        console.log(escape(f.name));
-        console.log(escape(f.type));
-        console.log(escape(f.size));
-        console.log(escape(f.lastModifiedDate));
-        console.log(escape(f.astModifiedDate.toLocaleDateString()));
+function bindKeyDown() {
+    $("#sortable").sortable({
+        update: function (e, ui) {
+            var sequence = foo.sortable("toArray").join();
+            $.cookie("sortableOrder", sequence);
+        }
+    });
+    var foo = $("#sortable");
+    var sequence = $.cookie("sortableOrder");
+    if (sequence) {
+        $(order.split(',')).each(function (i, id) {
+            $("#" + id).appendTo(foo);
+        });
     }
+    foo.sortable('options');
 }
-
-function handleDragOver(evt) {
-    evt.stopPropagation();
-    evt.preventDefault();
-    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-}
-
-// Setup the dnd listeners.
-var dropZone = document.getElementById('drop_zone');
-dropZone.addEventListener('dragover', handleDragOver, false);
-dropZone.addEventListener('drop', handleFileSelect, false);
