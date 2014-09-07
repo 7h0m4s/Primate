@@ -291,7 +291,7 @@ $(function () {
         }
     });
 
-    $("#deleteGroupButton").on("click", function () {
+    $("#deleteGroupButton").on("click",function () {
         var editGroup = $("#form-edit-group");
         //temp using this to indicate the request is del or edit shouldnt be hard coding -->  seek for better solutions
         $(editGroup).find(".req").val("del");
@@ -312,8 +312,9 @@ $(function () {
         var url = $(editGroup).attr("target");
         var postData = $(editGroup).serialize();
         posting(method, url, postData, function () {
-            refresh();
             $("#redditModal").modal('hide');
+			refresh();
+            
         });
     });
 
@@ -331,6 +332,18 @@ $(function () {
     $(".import-btn").click(function (e) {
         e.preventDefault();
         $("#importDialog").click();
+    });
+	
+	 $("#form-import .saveChanges").click(function () {
+		var importForm = $("#form-import");
+        var method = post;
+        var url = $(importForm).attr("target");
+        var postData = $(importForm).serialize();
+        posting(method, url, postData, function () {
+            $("#importModal").modal('hide');
+			refresh();
+            
+        });
     });
 
     $("#importDialog").change(function () {
@@ -452,30 +465,3 @@ $('#darkThemeButton').on("click", function () {
     $('link[href="css/bootstrap.min.css"]').attr('href', 'css/bootstrap.dark.min.css');
 });
 
-var handleFileSelect = function (evt) {
-    evt.stopPropagation();
-    evt.preventDefault();
-
-    var files = evt.dataTransfer.files; // FileList object.
-
-    // files is a FileList of File objects. List some properties.
-    var output = [];
-    for (var i = 0, f; f = files[i]; i++) {
-        console.log(escape(f.name));
-        console.log(escape(f.type));
-        console.log(escape(f.size));
-        console.log(escape(f.lastModifiedDate));
-        console.log(escape(f.astModifiedDate.toLocaleDateString()));
-    }
-}
-
-function handleDragOver(evt) {
-    evt.stopPropagation();
-    evt.preventDefault();
-    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-}
-
-// Setup the dnd listeners.
-var dropZone = document.getElementById('drop_zone');
-dropZone.addEventListener('dragover', handleDragOver, false);
-dropZone.addEventListener('drop', handleFileSelect, false);
