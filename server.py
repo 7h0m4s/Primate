@@ -1,3 +1,9 @@
+"""
+Password Primate Python Backend.
+The Primate Python backend ensures all backend features are fully functional.
+Copyright (c) 2014, Asterix Solutions
+"""
+
 from flask import Flask
 from flask import request
 from flask import session
@@ -18,20 +24,27 @@ import StringIO
 import Tkinter
 import tkFileDialog
 
+#Configuration to handle HTML file uploads if implemented later.
 UPLOAD_FOLDER = 'uploads/'
 ALLOWED_EXTENSIONS = set(['csv'])
-app = Flask(__name__)
-#something happened
 
+app = Flask(__name__)
+
+
+"""
+Class holds session values that are not compatiable with the Flask session variable.
+Data being stored includes:
+-The encrypted password database for the user. Known as a Vault.
+"""
 class SessionVault:
-    """A class to hold all session data in."""
+    
     
     def __init__(self):
         self.vaults = {}
         return
 
     def addVault(self,vault):
-        if session['id'] in self.vaults:######################################need to check if Vault already exists in this dictionary
+        if session['id'] in self.vaults:#TODO check if vault is already loaded
             raise KeyError
         self.vaults[session['id']]=vault
         return
@@ -47,24 +60,25 @@ class SessionVault:
         
         return
 
-
-#Root function that is activated when a user first visits the website
+"""
+Function return the home page which acts as the login page.
+Checks that sesion variables are initiated.
+If logged it it will redirect to dashboard.
+"""
 @app.route("/")
 def index():
     # For the timeout/session lifetime config to work we need
     # to make the sessions permanent. It's false by default
     # +INFO: http://flask.pocoo.org/docs/api/#flask.session.permanent
     session.permanent = True
-    # On each page load we are going to increment a counter
-    # stored on the session data
 
-    
+    #Test if session is initiated.
     try:
         session['groups']==[]
     except KeyError:
         session['groups'] = []
 
-    #test if the session is logged in.
+    #Test if the session is logged in.
     try:
         if session['loggedIn']==True:
             return redirect(url_for('dashboard'))
@@ -76,11 +90,14 @@ def index():
     return render_template('index.html')
 
 
-#MAIN DISPLAY
+"""
+Function returns the main dashboard.
+If user is not logged in they will be redirected to index().
+"""
 @app.route("/dashboard")
 def dashboard():
 
-    #test if the session is NOT logged in.
+    #Test if the session is NOT logged in.
     try:
         if session['loggedIn']==False:
             return redirect(url_for('index'))
@@ -89,15 +106,17 @@ def dashboard():
         #Key error assumes false
         return redirect(url_for('index'))
     
-    #if session IS logged in \/
+    #If session IS logged in \/
     getGroups() #important, it populates the group list
     return render_template('dashboard.html', records=sessionVault.getVault().records)
 
 
-#Please comment if you have abetter name
-#Function will check if user has logged in already
+"""
+Function returns if user is logged in yet or not.
+Returns True if logged in.
+"""
 def isLoggedIn():
-#test if the session is logged in.
+#Test if the session is logged in.
     try:
         if session['loggedIn']==True:
             return True
@@ -105,17 +124,18 @@ def isLoggedIn():
     except KeyError:
         #Key error assumes false
         return False
-    #if session is not logged in \/
+    #If session is not logged in \/
     return False
     
 
-
-#Function that handled the logic of checking if the Login was successful or not.
-#If success then redirect to dashboard.
-#If fail redirect to login page with error message.
+"""
+Function handles login proccess.
+If success then redirect to dashboard.
+If fail redirect to login page with error message.
+"""
 @app.route("/login", methods=['POST', 'GET'])
 def login():
-    if isLoggedIn():#redirects if already logged in
+    if isLoggedIn():#Redirects if already logged in
         return redirect(url_for('dashboard'))
     
     session['id']=uuid.uuid4()
@@ -124,7 +144,7 @@ def login():
     session['dbFile']=request.form['DatabaseFile']
     if (os.path.isfile(session['dbFile'])==False):
         return render_template('index.html', error="Database file does not exist.")
-    #global vault #A temporary mesure, will later replace with a kind of "Session Class Object" that store all session information and we can pass to all functions.
+    
     try:
         sessionVault.addVault(Vault(session['password'],session['dbFile']))
     except 'BadPasswordError':
@@ -133,24 +153,27 @@ def login():
         return render_template('index.html', error=str(e))
 
     session['loggedIn']=True
-    getGroups() #important, it populates the group list
+    getGroups() #Important, it populates the group list
     return redirect(url_for('dashboard'))
 
 
-#Takes user to the new database page 
+"""
+Function redirects user to the New Database template page.
+"""
 @app.route("/NewDatabase")
 def newDatabase():
     if isLoggedIn():#redirects if already logged in
         return redirect(url_for('dashboard'))
     return render_template('newDB.html')
 
-
-#Function that handles the creation of a new DB file and logging the user in.
-#If success then redirect to dashboard.
-#If fail redirect to newDB page with error message.
+"""
+Function that handles the creation of a new DB file and logging the user in.
+If success then redirect to dashboard.
+If fail redirect to newDB page with error message.
+"""
 @app.route("/newDB", methods=['POST', 'GET'])
 def newDB():
-    if isLoggedIn():#redirects if already logged in
+    if isLoggedIn():#Redirects if already logged in
         return redirect(url_for('dashboard'))
     if (request.form['Password'].encode('ascii','ignore') != request.form['ConfirmPassword'].encode('ascii','ignore')):
         return render_template('newDB.html', error="Passwords do not match.")
@@ -165,16 +188,15 @@ def newDB():
         sessionVault.getVault().write_to_file(session['password'].encode('ascii','ignore'),session['dbFile'])
     except 'BadPasswordError':
         return render_template('newDB.html', error="Incorrect Password.")
-    #except Exception,e:
-    #    return render_template('newDB.html', error="Error:"+str(e))
 
     session['loggedIn']=True
-    getGroups() #important, it populates the group list
+    getGroups() #Important, it populates the group list
     return redirect(url_for('dashboard'))
 
 
-
-#Closes the user session and loggs them out
+"""
+Function closes the user session and logs them out
+"""
 @app.route("/logout")
 def logoff():
     if isLoggedIn():#redirects if already logged in
@@ -184,9 +206,11 @@ def logoff():
     return redirect(url_for('index'))
 
 
-
-#Function returns a JSON of details about requested account.
-@app.route("/get-user", methods=['POST', 'GET'])
+"""
+Function returns a JSON of details about requested login account.
+Form Parameter: -String uuid
+"""
+@app.route("/get-user", methods=['POST'])
 def getUser():
     uuid=request.form['uuid']
     for record in sessionVault.getRecords():
@@ -202,8 +226,11 @@ def getUser():
         
     return "No Record Found", 500
 
-#Returns data to populate the Group-Edit menu on the dashboard
-@app.route("/getGroup", methods=['POST', 'GET'])
+"""
+Returns data to populate the Group-Edit menu on the dashboard
+Form Parameter: -String group
+"""
+@app.route("/getGroup", methods=['POST'])
 def getGroup():
     group=request.form['group']
     for record in sessionVault.getVault().records:
@@ -211,14 +238,22 @@ def getGroup():
         
     return "No Record Found"
 
-
+"""
+Function returns the dashboard page
+"""
 @app.route("/refresh")
 def refresh():
 
     return redirect(url_for('dashboard'))
 
 
-
+"""
+Function creates group.
+Form Parameters:    String groupParent
+                    String groupName
+NOTE: The created group does not save to the database
+unless there is a user under that group.
+"""
 @app.route("/create-group", methods=['POST', 'GET'])
 def createGroup():
     groupParent=request.form['groupParent']
@@ -233,7 +268,13 @@ def createGroup():
     return "Group Added Successfully"
 
 
-
+"""
+Function edits existing group's name and all users under it.
+Form Parameters:    String groupParent
+                    String groupName
+                    String group
+TODO: Make it update users recursively to subgroups
+"""
 @app.route("/edit-group", methods=['POST'])
 def editGroup():
     try:
@@ -267,10 +308,17 @@ def editGroup():
         return str(e),500
 
 
+"""
+Function deletes existing group name and all users under it.
+Form Parameters:    String groupParent
+                    String groupName
+                    String group
+                    
+TODO: Make it delete users recursively to subgroups
+"""
 @app.route("/delete-group", methods=['POST'])
 def deleteGroup():
     try:
-        #sessionData.logger.error("stuff")
         group=request.form['group']
         groupParent=request.form['groupParent']
         groupName=request.form['groupName']
@@ -295,20 +343,25 @@ def deleteGroup():
         return str(e),500
 
 
-
+"""
+Function creates account entry into database. Then saves database.
+Form Parameters:    String group
+                    String usr
+                    String pwd
+                    String userTitle
+                    String userUrl
+                    String notes
+"""
 @app.route("/create-user", methods=['POST'])
 def createUser():
     try:
-        #sessionData.logger.error("stuff")
         group=request.form['group']
         usr=request.form['usr']
         pwd=request.form['pwd']
         userTitle=request.form['userTitle']
         userUrl=request.form['userUrl']
         notes=request.form['notes']
-        #sessionData.logger.error("UserGroup:"+str(len(group)))
         if len(group)<= 0:
-            #sessionData.logger.error("UserGroup:"+group)
             return "Cannot create user. No group name given.", 500
         entry = Vault.Record.create()
         entry._set_group(group)
@@ -325,7 +378,15 @@ def createUser():
         return str(e),500
 
 
-
+"""
+Function edits account entry in database. Then saves database.
+Form Parameters:    String uuid
+                    String usr
+                    String pwd
+                    String userTitle
+                    String userUrl
+                    String notes
+"""
 @app.route("/edit-user", methods=['POST', 'GET'])
 def editUser():
     try:
@@ -353,6 +414,11 @@ def editUser():
     except Exception,e:
         return str(e),500
 
+
+"""
+Function deletes account entry from database. Then saves database.
+Form Parameters:    String uuid
+"""
 @app.route("/delete-user", methods=['POST', 'GET'])
 def deleteUser():
     try:
@@ -367,7 +433,12 @@ def deleteUser():
         return str(e),500
     return
 
+"""
+Function returns list of all groups.
+Also populates the session['groups'] if not already populated.
+NOTE: this inclues groups that are created but have no accounts in them so are not yet saved to the database.
 
+"""
 def getGroups():
     try:
         if session['groups'] == []:
@@ -382,6 +453,8 @@ def getGroups():
                     
     return session['groups']
 
+
+
 def addGroup(group):
     if group not in session['groups']:
                 session['groups'].append(group)
@@ -389,9 +462,10 @@ def addGroup(group):
     return
 
 
-
-#Returns data to populate the Group-Edit menu on the dashboard
-@app.route("/save", methods=['POST', 'GET'])
+"""
+Function saves changes to the database to the database file.
+"""
+@app.route("/save", methods=['POST'])
 def saveDB():
     sessionVault.getVault().write_to_file(session['dbFile'], session['password'])
     
@@ -400,17 +474,20 @@ def saveDB():
 
 
 
-
-#Opens file broswer dialog for user to select file with.
+"""
+Function opens file broswer dialog window for user to select file with.
+Returns the selected filepath as a string.
+"""
 @app.route("/import-browse")
 def importBrowser():
     Tkinter.Tk().withdraw() # Close the root window
     file_path = tkFileDialog.askopenfilename(initialdir=(os.path.expanduser('~/')))
     return file_path
 
-
-#Takes a html form uplaoded csv file and adds it to the DB
-#Current Bugs: Cannot handle if commas are a part of the csv content
+"""
+Function takes filepath to a csv file on disk and adds it to the DB.
+TODO: Check if file exists.
+"""
 @app.route("/import-direct",methods=['POST'])
 def importFileDirect():
     try:
@@ -427,7 +504,7 @@ def importFileDirect():
         i = 0
         for lineList in reader:
             
-            #['uuid', 'group', 'title', 'url', 'user', 'password', 'notes']
+            #Example of first line:['uuid', 'group', 'title', 'url', 'user', 'password', 'notes']
             if i == 0 and str(lineList)!=str(['uuid', 'group', 'title', 'url', 'user', 'password', 'notes']):
                 return "Incorrect data format on line " + str(i)+" :"+ str(lineList), 500
             if i == 0:
@@ -470,31 +547,37 @@ def importFileDirect():
         return str(e),500
 
 
-
-#Tests if a uuid already exists inthe vault DC
+"""
+Function tests if a uuid already exists in the vault Database.
+Return True if it does exist.
+"""
 def doesUuidExit(uuid):
     for record in sessionVault.getVault().records:
         if record._get_uuid()==uuid:
             return True
     return False
 
-#returns a vault record with the given uuid string. Else return None
+"""
+Function returns a vault record with the given uuid string.
+Else return None
+"""
 def getByUuid(uuid):
     for record in sessionVault.getVault().records:
         if record._get_uuid()==uuid:
             return record
     return None
 
-
-#Function creates a csv reprisentation of the DB and sends to browser as csv file to download.
-#Example CSV
-    #uuid,group,title,url,user,password,notes
-    #cd1c32cc-0a51-4ca1-6186-d9b631abfd00,Infrastructure.Datacentre.Employees,Anna,,ID: 000002,,
-    #8032f145-6906-4a73-473d-b39d8d9edb0b,Infrastructure.Datacentre,PIN,,Rack F39,1234,This is the PIN code for the cage in the data centre.
-    #26a234e7-97c0-4c16-5e96-de0f34ec78ee,Sites,Facebook,facebook.com,test,1234,
+"""
+#Function creates a csv reprisentation of the DB and sends to front-end as csv file to download.
+#Example CSV:
+    uuid,group,title,url,user,password,notes
+    cd1c32cc-0a51-4ca1-6186-d9b631abfd00,Infrastructure.Datacentre.Employees,Anna,,ID: 000002,,
+    8032f145-6906-4a73-473d-b39d8d9edb0b,Infrastructure.Datacentre,PIN,,Rack F39,1234,This is the PIN code for the cage in the data centre.
+    26a234e7-97c0-4c16-5e96-de0f34ec78ee,Sites,Facebook,facebook.com,test,1234,
+"""
 @app.route("/export")
 def exportFile():
-
+    #Error checking disabled for debuging (counterintuative right? It just means we are using the Flask Debug system instead.)
     #try:
         if isLoggedIn() == False:
             return redirect(url_for('index'))
@@ -514,8 +597,9 @@ def exportFile():
     #except Exception,e:
         #return str(e),500
     
-
-#Function tests if the file is on an allowed extension type
+"""
+Function tests if the file is on an allowed extension type. i.e. '.csv'
+"""
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
@@ -523,8 +607,9 @@ def allowed_file(filename):
 
     
 
-
-#Returns a list of all Titles in the database.
+"""
+Funciton returns a list of all Titles in the database.
+"""
 def getAllTitles():
     titleList=[]
     for rec in sessionVault.getVault().records:
@@ -532,7 +617,9 @@ def getAllTitles():
             titleList.append(rec._get_title())
     return titleList
 
-#Returns a list of all Groups in the database
+"""
+Funciton returns a list of all Groups in the database.
+"""
 def getAllGroups():
     groupList=[]
     for rec in sessionVault.getVault().records:
@@ -540,7 +627,9 @@ def getAllGroups():
             groupList.append(rec._get_group())
     return groupList
 
-#tests if a directory exists and if not, creates it.
+"""
+Funciton tests if a directory exists and if not, creates it.
+"""
 def assure_path_exists(path):
         direc = os.path.dirname(path)
         if not os.path.exists(direc):
@@ -548,7 +637,11 @@ def assure_path_exists(path):
 
 
 
-
+"""
+Function is used in the index.html template JS code.
+Will open a file selection dialog window for user to select the database they want to use.
+Returns selected filepath as a string.
+"""
 @app.route("/get-filepath")
 def getFilepath():
     Tkinter.Tk().withdraw() # Close the root window
@@ -559,24 +652,20 @@ def getFilepath():
 
 #Code below is equivilent to a "Main" function in Java or C
 if __name__ == "__main__":
+    #initiate object that will store the databases.
     global sessionVault
     sessionVault = SessionVault()
+
+    #Open users browser to allow access to the frontend.
     webbrowser.open_new_tab('http://localhost:5000')
 
-    #app.logger = logging.getLogger('Primate')
-    #handler = logging.FileHandler('access.log')
 
-    #app.logger.addHandler(handler)
-    
-    #sessionData.logger.error("herror")
-    #app.logger.addHandler(handler)
-
-    #This key is used to encrypt the sessions
+    #This key is used to encrypt the session cookies for security.
     app.secret_key = os.urandom(24)
 
-    #This is how long the session will remain active
+    #This is how long the session will remain active untill it times-out. 
     app.permanent_session_lifetime = timedelta(seconds=600)
     
-    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-    app.debug = True
-    app.run()
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER # Placeholder for where files should be stored if files are uploaded via HTML form.
+    app.debug = True #Disable this for demonstrations to prevent the double loading problem.
+    app.run()#Start the webserver.
