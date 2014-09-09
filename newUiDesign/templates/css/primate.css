@@ -1,0 +1,98 @@
+﻿.fl {
+    float: left;
+}
+
+.fr {
+    float: right;
+}
+
+#main {
+    overflow-y: auto;
+    overflow-x: visible;
+    position: absolute;
+    top: 45px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    min-width: 960px;
+}
+
+.side-left {
+    width: 20%;
+    float: left;
+    border: 1px #eaeaea solid;
+}
+
+.side-content {
+    width: 80%;
+}
+
+.side-mid {
+    width: 40%;
+    float: left;
+    border-right: 1px #eaeaea solid;
+}
+
+.side-right {
+    width: 60%;
+    float: left;
+}
+
+.metro .sidebar {
+    height: auto;
+}
+
+.nav-search {
+    padding: 10px;
+    border-right: 1px #eaeaea solid;
+}
+
+    .metro .nav-search > form > div.input-control, .nav-search > form {
+        margin: 0;
+    }
+
+.refresh-icon {
+    float: right;
+    padding: 10px;
+}
+
+#content-detail {
+    width: 100%;
+    background-color: #fff;
+}
+
+#loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -64px;
+    margin-top: -64px;
+}
+
+.metro .sidebar > ul li a.dropdown-toggle-fix:after {
+    right: 10px;
+    bottom: 5px;
+}
+
+.metro .dropdown-toggle-fix:after {
+    position: absolute;
+    margin-left: .25em;
+    bottom: 0;
+    font-family: metroSysIcons;
+    font-size: .7em;
+    content: '\e001';
+}
+
+.navigation-bar {
+    min-width: 960px;
+}
+
+/*test only to be removed*/
+.example {
+    height: 100%;
+    overflow: auto;
+}
+.overflow-h {
+    overflow: hidden;
+}
+

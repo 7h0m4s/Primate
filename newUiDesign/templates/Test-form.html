@@ -1,0 +1,133 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link href="css/metro-bootstrap.css" rel="stylesheet">
+    <link href="css/iconFont.css" rel="stylesheet" />
+    <link href="css/primate.css" rel="stylesheet" />
+</head>
+<body class="metro overflow-h">
+    <div id="loader">
+        <img src="img/metro-loader.gif" />
+    </div>
+    <div class="example" style="margin-left: 25%; opacity:0;">
+        <form _lpchecked="1">
+            <fieldset>
+                <legend>Legend</legend>
+                <label>Label name</label>
+                <div class="input-control text" data-role="input-control">
+                    <input type="text" placeholder="type text" style="cursor: auto; background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABHklEQVQ4EaVTO26DQBD1ohQWaS2lg9JybZ+AK7hNwx2oIoVf4UPQ0Lj1FdKktevIpel8AKNUkDcWMxpgSaIEaTVv3sx7uztiTdu2s/98DywOw3Dued4Who/M2aIx5lZV1aEsy0+qiwHELyi+Ytl0PQ69SxAxkWIA4RMRTdNsKE59juMcuZd6xIAFeZ6fGCdJ8kY4y7KAuTRNGd7jyEBXsdOPE3a0QGPsniOnnYMO67LgSQN9T41F2QGrQRRFCwyzoIF2qyBuKKbcOgPXdVeY9rMWgNsjf9ccYesJhk3f5dYT1HX9gR0LLQR30TnjkUEcx2uIuS4RnI+aj6sJR0AM8AaumPaM/rRehyWhXqbFAA9kh3/8/NvHxAYGAsZ/il8IalkCLBfNVAAAAABJRU5ErkJggg==); background-attachment: scroll; background-position: 100% 50%; background-repeat: no-repeat;">
+                    <button class="btn-clear" tabindex="-1" type="button"></button>
+                </div>
+                <label>Label name</label>
+                <div class="input-control password" data-role="input-control">
+                    <input type="password" placeholder="type password" autofocus="" style="cursor: auto; background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACIUlEQVQ4EX2TOYhTURSG87IMihDsjGghBhFBmHFDHLWwSqcikk4RRKJgk0KL7C8bMpWpZtIqNkEUl1ZCgs0wOo0SxiLMDApWlgOPrH7/5b2QkYwX7jvn/uc//zl3edZ4PPbNGvF4fC4ajR5VrNvt/mo0Gr1ZPOtfgWw2e9Lv9+chX7cs64CS4Oxg3o9GI7tUKv0Q5o1dAiTfCgQCLwnOkfQOu+oSLyJ2A783HA7vIPLGxX0TgVwud4HKn0nc7Pf7N6vV6oZHkkX8FPG3uMfgXC0Wi2vCg/poUKGGcagQI3k7k8mcp5slcGswGDwpl8tfwGJg3xB6Dvey8vz6oH4C3iXcFYjbwiDeo1KafafkC3NjK7iL5ESFGQEUF7Sg+ifZdDp9GnMF/KGmfBdT2HCwZ7TwtrBPC7rQaav6Iv48rqZwg+F+p8hOMBj0IbxfMdMBrW5pAVGV/ztINByENkU0t5BIJEKRSOQ3Aj+Z57iFs1R5NK3EQS6HQqF1zmQdzpFWq3W42WwOTAf1er1PF2USFlC+qxMvFAr3HcexWX+QX6lUvsKpkTyPSEXJkw6MQ4S38Ljdbi8rmM/nY+CvgNcQqdH6U/xrYK9t244jZv6ByUOSiDdIfgBZ12U6dHEHu9TpdIr8F0OP692CtzaW/a6y3y0Wx5kbFHvGuXzkgf0xhKnPzA4UTyaTB8Ph8AvcHi3fnsrZ7Wore02YViqVOrRXXPhfqP8j6MYlawoAAAAASUVORK5CYII=); background-attachment: scroll; background-position: 100% 50%; background-repeat: no-repeat;">
+                    <button class="btn-reveal" tabindex="-1" type="button"></button>
+                </div>
+                <div class="input-control text" data-role="input-control">
+                    <input type="text">
+                    <button class="btn-search"></button>
+                </div>
+                <div class="input-control text warning-state" data-role="input-control">
+                    <input type="text" value="warning state">
+                </div>
+                <div class="input-control file" data-role="input-control">
+                    <input type="file" tabindex="-1" style="z-index: 0;"><input type="text" id="__input_file_wrapper__" readonly="" style="z-index: 1; cursor: default;">
+                    <button class="btn-file" type="button"></button>
+                </div>
+
+                <div class="input-control text error-state" data-role="input-control">
+                    <input type="text" value="error state">
+                </div>
+                <div class="input-control text info-state" data-role="input-control">
+                    <input type="text" value="info state">
+                </div>
+                <div class="input-control text success-state" data-role="input-control">
+                    <input type="text" value="info state">
+                </div>
+
+                <div class="input-control checkbox" data-role="input-control">
+                    <label class="inline-block">
+                        <input type="checkbox">
+                        <span class="check"></span>
+                        Check me out
+                    </label>
+                    <label class="inline-block">
+                        <input type="checkbox" checked="">
+                        <span class="check"></span>
+                        Check me out
+                    </label>
+                    <label class="inline-block">
+                        Check me out
+                        <input type="checkbox" disabled="">
+                        <span class="check"></span>
+                    </label>
+                    <label class="inline-block">
+                        Check me out
+                        <input type="checkbox" disabled="" checked="">
+                        <span class="check"></span>
+                    </label>
+                    <label class="inline-block">
+                        Intermediate
+                        <input type="checkbox" data-show="intermediate">
+                        <span class="check"></span>
+                    </label>
+                </div>
+
+                <div>
+                    <div class="clearfix">
+                        <div class="input-control radio inline-block" data-role="input-control">
+                            <label class="inline-block">
+                                <input type="radio" name="r1" checked="">
+                                <span class="check"></span>
+                                R1
+                            </label>
+                            <label class="inline-block">
+                                <input type="radio" name="r1">
+                                <span class="check"></span>
+                                R1
+                            </label>
+                        </div>
+                        <div class="input-control radio default-style inline-block" data-role="input-control">
+                            <label class="inline-block">
+                                <input type="radio" name="r2" checked="">
+                                <span class="check"></span>
+                                R1
+                            </label>
+                            <label class="inline-block">
+                                <input type="radio" name="r2">
+                                <span class="check"></span>
+                                R2
+                            </label>
+                        </div>
+                    </div>
+                    <div class="input-control switch" data-role="input-control">
+                        <label class="inline-block" style="margin-right: 20px">
+                            Switch me
+                            <input type="checkbox" checked="">
+                            <span class="check"></span>
+                        </label>
+                        <label class="inline-block">
+                            <input type="checkbox" disabled="">
+                            <span class="check"></span>
+                            Switch disabled
+                        </label>
+                    </div>
+                </div>
+
+                <input type="submit" value="Submit">
+                <input type="reset" value="Reset">
+                <input type="button" value="Button">
+
+                <div style="margin-top: 20px">
+                </div>
+
+            </fieldset>
+        </form>
+    </div>
+</body>
+</html>
+<script src="js/jquery.min.js"></script>
+<script src="js/jquery.widget.min.js"></script>
+<script src="js/metro.min.js"></script>
+<script src="js/primate.js"></script>
