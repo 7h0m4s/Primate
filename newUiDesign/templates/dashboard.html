@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" ng-app>
 <head>
     <title>Dashboard</title>
     <link href="css/metro-bootstrap.css" rel="stylesheet">
@@ -34,11 +34,11 @@
         </nav>
     </header>
     <div id="main">
-        <section class="side-left">
+        <section class="side-left" ng-controller="SideBarListCtr">
             <div class="nav-search">
                 <form>
                     <div class="input-control text">
-                        <input type="text" placeholder="Search...">
+                        <input type="text" placeholder="Search..." ng-model="query">
                         <button class="btn-search"></button>
                     </div>
                 </form>
@@ -48,11 +48,12 @@
                     <li class="stick bg-yellow">
                         <a class="dropdown-toggle" href="#"><i class="icon-tree-view"></i>Database Name</a>
                         <ul data-role="dropdown" style="display: block;">
-                            <li><a href="">Infrastructure</a></li>
+                            <li ng-repeat="root in roots | filter:query"><a href="">{{root.name}}</a></li>
+                            <!--<li><a href="">Infrastructure</a></li>
                             <li><a href="">Sites</a></li>
                             <li><a href="">Subitem 3</a></li>
                             <li class="divider"></li>
-                            <li><a href="">New Group</a></li>
+                            <li><a href="">New Group</a></li>-->
                         </ul>
                     </li>
                 </ul>
@@ -136,6 +137,8 @@
 </body>
 </html>
 <script src="js/jquery.min.js"></script>
+<script src="js/Angular/angular-1.0.1.min.js"></script>
+<script src="js/Angular/DashboardCtr.js"></script>
 <script src="js/jquery.widget.min.js"></script>
 <script src="js/metro.min.js"></script>
 <script src="js/jquery.splitter-0.14.0.js"></script>
