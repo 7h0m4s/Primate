@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <style>
+        ul {
+            list-style: circle;
+        }
+
+        li {
+            margin-left: 20px;
+        }
+    </style>
+    <script src="https://code.angularjs.org/angular-1.0.0rc8.js"></script>
+</head>
+<body ng-app="myApp">
+    <script type="text/ng-template" id="tree_item_renderer.html">
+        {{data.name}}
+        <button ng-click="add(data)">Add node</button>
+        <button ng-click="delete(data)" ng-show="data.nodes.length > 0">Delete nodes</button>
+        <ul>
+            <li ng-repeat="data in data.nodes" ng-include="'tree_item_renderer.html'"></li>
+        </ul>
+    </script>
+
+    <ul ng-app="my1App" ng-controller="TreeController">
+        <li ng-repeat="data in tree" ng-include="'tree_item_renderer.html'"></li>
+    </ul>
+</body>
+<script>
+    angular.module("myApp", []).
+    controller("TreeController", ['$scope', function ($scope) {
+        $scope.delete = function (data) {
+            data.nodes = [];
+        };
+        $scope.add = function (data) {
+            var post = data.nodes.length + 1;
+            var newName = data.name + '-' + post;
+            data.nodes.push({ name: newName, nodes: [] });
+        };
+        $scope.tree = [{ name: "Node", nodes: [] }];
+    }]);
+</script>
+</html>
