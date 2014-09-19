@@ -25,6 +25,8 @@
 
 .side-content {
     width: 80%;
+    float:left;
+    position: relative;
 }
 
 .side-mid {
@@ -96,3 +98,37 @@
     overflow: hidden;
 }
 
+.breadcrumb {
+    list-style: none;
+}
+.breadcrumb>li {
+display: inline-block;
+}
+
+.breadcrumb>li a {
+color: #428bca;
+text-decoration: none;
+}
+
+.breadcrumb > li:first-child:before {
+content: "";
+margin: 0 ;
+position: relative;
+}
+
+.breadcrumb > li:before {
+content: "/";
+color: #16a085;
+margin: 0 0.75rem;
+position: relative;
+top: 1px;
+}
+
+li.unavailable>a {
+    color: #bdc3c7;
+    cursor: default;
+}
+li.unavailable>a:hover {
+    color: #bdc3c7;
+    cursor: default;
+}
