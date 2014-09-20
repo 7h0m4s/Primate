@@ -33,6 +33,7 @@
     width: 40%;
     float: left;
     border-right: 1px #eaeaea solid;
+    outline: 0 none!important;
 }
 
 .side-right {

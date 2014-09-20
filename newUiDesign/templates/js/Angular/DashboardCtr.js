@@ -1,5 +1,6 @@
 ﻿var treeStructure = { groupName: "", children: [{ uuid: "79873249827346", title: "hello1", user: "username", passwd: "1234", notes: "this is a note", last_mod: 0, url: "google.com" }, { uuid: "68678676867", title: "hello2", user: "username", passwd: "1234", notes: "this is a note", last_mod: 0, url: "google.com" }, { uuid: "123123131", title: "hello3", user: "username", passwd: "1234", notes: "this is a note", last_mod: 0, url: "google.com" }], groups: [{ groupName: "Sites", children: [{ uuid: "79873249827346", title: "hello4", user: "username", passwd: "1234", notes: "this is a note", last_mod: 0, url: "google.com" }, { uuid: "79873249827346", title: "hello4", user: "username", passwd: "1234", notes: "this is a note", last_mod: 0, url: "google.com" }, { uuid: "79873249827346", title: "hello4.1", user: "username", passwd: "1234", notes: "this is a note", last_mod: 0, url: "google.com" }], groups: [{ groupName: "siteSub1", children: [{ uuid: "79873249827346", title: "hello5", user: "username", passwd: "1234", notes: "this is a note", last_mod: 0, url: "google.com" }], groups: [{ groupName: "Sitessub2.1", children: [{ uuid: "79873249827346", title: "hello6", user: "username", passwd: "1234", notes: "this is a note", last_mod: 0, url: "google.com" }], groups: [] }, { groupName: "subsub2.2", children: [], groups: [] }] }] }, { groupName: "sub2", children: [], groups: [] }] };
 var NO_GROUP_NAME = "Empty Group";
+var _backspace_keycode = 8;
 
 function keyPressCtr($scope) {
     $scope.onKeydown = function (keycode) {
@@ -8,9 +9,30 @@ function keyPressCtr($scope) {
 }
 
 var mainApp = angular.module("mainApp", []);
+
+mainApp.directive('onKeydown', function () {
+    return {
+        restrict: 'A',
+        link: function (scope, elem, attrs) {
+            // this next line will convert the string
+            // function name into an actual function
+            var functionToCall = scope.$eval(attrs.ngKeydown);
+            elem.on('keydown', function (e) {
+                console.log("onekeydown function");
+                // on the keydown event, call my function
+                // and pass it the keycode of the key
+                // that was pressed
+                // ex: if ENTER was pressed, e.which == 13
+                functionToCall(e.which);
+            });
+        }
+    };
+});
+
 function mainCtr($scope) {
     $scope.tree = treeStructure;
     $scope.childIndex = -1;
+    $scope.breadcrumbs = [];
 
     $scope.AssessName = function (str) {
         if (str.length == 0) {
@@ -44,29 +66,19 @@ function mainCtr($scope) {
     };
 
     $scope.SetActive = function (index) {
-        console.log(index);
         $scope.childIndex = index;
     }
 
     //todo: testing 
-    $scope.Back = function (obj) {
-        $scope.children = obj.parent.parent.children;
-        $scope.groups = obj.parent.parent.groups;
-        $scope.breadcrumbs.splice($scope.breadcrumbs.length - 1, 1);
-    };
-
-    var handler = function (e) {
-        if (e.keyCode === 8) {
-            console.log("click test");
-            angular.element(".breadcrumb").children().eq(0).triggerHandler('click').trigger('click');
+    $scope.Back = function ($event) {
+        var currentKeyCode = $event.keyCode;
+        if (currentKeyCode == _backspace_keycode) {
+            var backcrumbIndex = $scope.breadcrumbs.length - 2;
+            if (backcrumbIndex >= 0) {
+                $scope.BreadcrumbRedirect($scope.breadcrumbs[backcrumbIndex]);
+            }
         }
     };
-    var $doc = angular.element(document);
-    $doc.on('keydown', handler);
-    $scope.$on('$destroy', function () {
-        $doc.off('keydown', handler);
-    });
-
 
     //$scope.CheckIfLastBreadcrumb = function (breadcrumb) {
     //    console.log("I was called");
@@ -76,7 +88,6 @@ function mainCtr($scope) {
     //    }
     //    return null;
     //};
-
 
     var addParentToEachChild = function (obj) {
         for (var a = 0; a < obj.children.length; a++) {
@@ -89,7 +100,7 @@ function mainCtr($scope) {
         scope.children = obj.children;
     };
 
-    var resetChildIndex=function() {
+    var resetChildIndex = function () {
         $scope.childIndex = -1;
     }
 
