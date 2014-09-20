@@ -2,32 +2,7 @@
 var NO_GROUP_NAME = "Empty Group";
 var _backspace_keycode = 8;
 
-function keyPressCtr($scope) {
-    $scope.onKeydown = function (keycode) {
-        console.log(keycode);
-    }
-}
-
 var mainApp = angular.module("mainApp", []);
-
-mainApp.directive('onKeydown', function () {
-    return {
-        restrict: 'A',
-        link: function (scope, elem, attrs) {
-            // this next line will convert the string
-            // function name into an actual function
-            var functionToCall = scope.$eval(attrs.ngKeydown);
-            elem.on('keydown', function (e) {
-                console.log("onekeydown function");
-                // on the keydown event, call my function
-                // and pass it the keycode of the key
-                // that was pressed
-                // ex: if ENTER was pressed, e.which == 13
-                functionToCall(e.which);
-            });
-        }
-    };
-});
 
 function mainCtr($scope) {
     $scope.tree = treeStructure;
@@ -105,7 +80,6 @@ function mainCtr($scope) {
     }
 
 };
-
 
 //prevent backspance button navigate back in all browser
 $(document).unbind('keydown').bind('keydown', function (event) {

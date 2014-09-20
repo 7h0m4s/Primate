@@ -97,10 +97,11 @@ var evaluateStatusCode = function () {
 var contextMenu = function () {
     var fileChild = $(".file-child");
     if (fileChild.length > 0) {
-        $.contextMenu({
+         $.contextMenu({
             selector: '.file-child',
             callback: function (key, options) {
                 // $(this); here refers to the object that is being clicked --> <div class="context-menu-one" id="t1" name="name1">
+                $(this)[0].click();
                 var m = "clicked: " + key;
                 window.console && console.log(m) || alert(m);
             },
@@ -134,6 +135,7 @@ var init = function () {
     calFrameHeight();
     evaluateStatusCode();
 }
+
 $(function () {
     init();
     setTimeout(function () { $('.example').animate({ margin: "0", opacity: '1', }, 600); $("#loader").hide(); }, 2000);

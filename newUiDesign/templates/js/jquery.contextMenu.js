@@ -263,7 +263,7 @@ var // currently active contextMenu trigger
             }
         },
         // contextMenu left-click trigger
-        click: function(e) {
+        click: function (e) {
             e.preventDefault();
             e.stopImmediatePropagation();
             $(this).trigger($.Event("contextmenu", { data: e.data, pageX: e.pageX, pageY: e.pageY }));
@@ -272,7 +272,6 @@ var // currently active contextMenu trigger
         mousedown: function(e) {
             // register mouse down
             var $this = $(this);
-            
             // hide any previous menus
             if ($currentTrigger && $currentTrigger.length && !$currentTrigger.is($this)) {
                 $currentTrigger.data('contextMenu').$menu.trigger('contextmenu:hide');
@@ -415,7 +414,7 @@ var // currently active contextMenu trigger
             
             e.stopPropagation();
         },
-        key: function(e) {
+        key: function (e) {
             var opt = $currentTrigger.data('contextMenu') || {};
 
             switch (e.keyCode) {
@@ -785,7 +784,8 @@ var // currently active contextMenu trigger
     },
     // operations
     op = {
-        show: function(opt, x, y) {
+        show: function (opt, x, y) {
+            $(this)[0].click();
             var $trigger = $(this),
                 offset,
                 css = {};
