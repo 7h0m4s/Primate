@@ -1,28 +1,30 @@
 ﻿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <title></title>
-        <style>
-            body#error-page {
-                font-size: 1.5rem;
-                font-family: "Open Sans",Arial,sans-serif;
-                padding: 0;
-                background: #F6F6F6 url('img/paper.png') repeat right top;
-            }
-            #error-main {
-                width: 600px;
-                height: 400px;
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                margin: auto;
-            }
+<head>
+    <title>Error Page</title>
+    <!--use queryString code to indicate http status-->
+    <style>
+        body#error-page {
+            font-size: 1.5rem;
+            font-family: "Open Sans",Arial,sans-serif;
+            padding: 0;
+            background: #F6F6F6 url('img/paper.png') repeat right top;
+        }
 
-            #error-content {
-                padding: 5px 10px;
-            }
+        #error-main {
+            width: 600px;
+            height: 400px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+        }
+
+        #error-content {
+            padding: 5px 10px;
+        }
 
             #error-content h1 {
                 font-size: 60px;
@@ -47,24 +49,25 @@
                 color: #000;
                 text-decoration: none;
             }
-        </style>
-    </head>
-    <body id="error-page">
-        <div id="error-main">
-            <div id="error-content">
-                <div class="span12">
-                    <h2>
-                        Not sure if
-                    </h2>
-                    <h1>
-                        404 Page
-                    </h1>
-                    <h3>Oopss... this is embarassing,</h3>
-                </div>
-                <p><a href="#">click here</a> to go back home</p>
+    </style>
+</head>
+<body id="error-page">
+    <div id="error-main">
+        <div id="error-content">
+            <div class="span12">
+                <h2>
+                    Not sure if
+                </h2>
+                <h1>
+                    <span id="statusCode">404</span> Page
+                </h1>
+                <h3>Oopss... this is embarassing,</h3>
             </div>
+            <p><a href="#">click here</a> to go back home</p>
         </div>
-    </body>
+    </div>
+</body>
 </html>
-<script></script>
-
+<script src="js/jquery.min.js"></script>
+<script src="js/jquery.splitter-0.14.0.js"></script>
+<script src="js/primate.js"></script>

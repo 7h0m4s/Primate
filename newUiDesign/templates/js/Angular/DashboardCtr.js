@@ -1,28 +1,4 @@
-﻿//function SideBarListCtr($scope) {
-//    $scope.roots = [
-//      {
-//          "name": "Infrastructure",
-//      },
-//      {
-//          "name": "Sites",
-//      },
-//      {
-//          "name": "Server",
-//      },
-//      {
-//          "name": "Finance",
-//      },
-//      {
-//          "name": "Games",
-//      },
-//      {
-//          "name": "Stocks",
-//      }
-//    ];
-//}
-
-
-var treeStructure = { groupName: "", children: [{ uuid: "79873249827346", title: "hello1", user: "username", passwd: "1234", notes: "this is a note", last_mod: 0, url: "google.com" }, { uuid: "68678676867", title: "hello2", user: "username", passwd: "1234", notes: "this is a note", last_mod: 0, url: "google.com" }, { uuid: "123123131", title: "hello3", user: "username", passwd: "1234", notes: "this is a note", last_mod: 0, url: "google.com" }], groups: [{ groupName: "Sites", children: [{ uuid: "79873249827346", title: "hello4", user: "username", passwd: "1234", notes: "this is a note", last_mod: 0, url: "google.com" }, { uuid: "79873249827346", title: "hello4", user: "username", passwd: "1234", notes: "this is a note", last_mod: 0, url: "google.com" }, { uuid: "79873249827346", title: "hello4.1", user: "username", passwd: "1234", notes: "this is a note", last_mod: 0, url: "google.com" }], groups: [{ groupName: "siteSub1", children: [{ uuid: "79873249827346", title: "hello5", user: "username", passwd: "1234", notes: "this is a note", last_mod: 0, url: "google.com" }], groups: [{ groupName: "Sitessub2.1", children: [{ uuid: "79873249827346", title: "hello6", user: "username", passwd: "1234", notes: "this is a note", last_mod: 0, url: "google.com" }], groups: [] }, { groupName: "subsub2.2", children: [], groups: [] }] }] }, { groupName: "sub2", children: [], groups: [] }] };
+﻿var treeStructure = { groupName: "", children: [{ uuid: "79873249827346", title: "hello1", user: "username", passwd: "1234", notes: "this is a note", last_mod: 0, url: "google.com" }, { uuid: "68678676867", title: "hello2", user: "username", passwd: "1234", notes: "this is a note", last_mod: 0, url: "google.com" }, { uuid: "123123131", title: "hello3", user: "username", passwd: "1234", notes: "this is a note", last_mod: 0, url: "google.com" }], groups: [{ groupName: "Sites", children: [{ uuid: "79873249827346", title: "hello4", user: "username", passwd: "1234", notes: "this is a note", last_mod: 0, url: "google.com" }, { uuid: "79873249827346", title: "hello4", user: "username", passwd: "1234", notes: "this is a note", last_mod: 0, url: "google.com" }, { uuid: "79873249827346", title: "hello4.1", user: "username", passwd: "1234", notes: "this is a note", last_mod: 0, url: "google.com" }], groups: [{ groupName: "siteSub1", children: [{ uuid: "79873249827346", title: "hello5", user: "username", passwd: "1234", notes: "this is a note", last_mod: 0, url: "google.com" }], groups: [{ groupName: "Sitessub2.1", children: [{ uuid: "79873249827346", title: "hello6", user: "username", passwd: "1234", notes: "this is a note", last_mod: 0, url: "google.com" }], groups: [] }, { groupName: "subsub2.2", children: [], groups: [] }] }] }, { groupName: "sub2", children: [], groups: [] }] };
 var NO_GROUP_NAME = "Empty Group";
 
 function keyPressCtr($scope) {
@@ -71,6 +47,35 @@ function mainCtr($scope) {
         console.log(index);
         $scope.childIndex = index;
     }
+
+    //todo: testing 
+    $scope.Back = function (obj) {
+        $scope.children = obj.parent.parent.children;
+        $scope.groups = obj.parent.parent.groups;
+        $scope.breadcrumbs.splice($scope.breadcrumbs.length - 1, 1);
+    };
+
+    var handler = function (e) {
+        if (e.keyCode === 8) {
+            console.log("click test");
+            angular.element(".breadcrumb").children().eq(0).triggerHandler('click').trigger('click');
+        }
+    };
+    var $doc = angular.element(document);
+    $doc.on('keydown', handler);
+    $scope.$on('$destroy', function () {
+        $doc.off('keydown', handler);
+    });
+
+
+    //$scope.CheckIfLastBreadcrumb = function (breadcrumb) {
+    //    console.log("I was called");
+    //    var inactiveClass = "unavailable";
+    //    if (breadcrumb.groups.length == 0) {
+    //        return inactiveClass;
+    //    }
+    //    return null;
+    //};
 
 
     var addParentToEachChild = function (obj) {

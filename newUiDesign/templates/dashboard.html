@@ -33,7 +33,7 @@
             </div>
         </nav>
     </header>
-    <div id="main" ng-app="mainApp" ng-controller="mainCtr" ng-keypress="onKeyDown($event)" tabindex="1">
+    <div id="main" ng-app="mainApp" ng-controller="mainCtr">
         <section class="side-left">
             <div class="nav-search">
                 <form>
@@ -48,7 +48,7 @@
                     <li class="stick bg-yellow">
                         <a class="dropdown-toggle" href="#"><i class="icon-tree-view"></i>Database Name</a>
                         <ul data-role="dropdown" style="display: block;">
-                            <li ng-repeat="node in tree.groups" ng-click="SelectRoot(node)"><a href="">{{AssessName(node.groupName)}}</a></li>
+                            <li ng-repeat="node in tree.groups" ng-click="SelectRoot(node)"><a>{{AssessName(node.groupName)}}</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -59,7 +59,8 @@
                 <div>
                     <div class="fl">
                         <ul class="breadcrumb">
-                            <li ng-repeat="breadcrumb in breadcrumbs"><a href="#" ng-click="BreadcrumbRedirect(breadcrumb)">{{breadcrumb.groupName}}</a></li>
+                            <!--ng-class="CheckIfLastBreadcrumb(breadcrumb)"-->
+                            <li ng-repeat="breadcrumb in breadcrumbs"><a ng-click="BreadcrumbRedirect(breadcrumb)">{{breadcrumb.groupName}}</a></li>
                             <!--<li class="unavailable"><a href="#">Data</a></li>-->
                         </ul>
                     </div>
@@ -79,7 +80,7 @@
                                     <span class="list-remark">Hello friend! Newest for Metro UI CSS</span>
                                 </div>
                             </a>
-                          
+
                             <a class="list" ng-repeat="child in children" ng-class="{'active': childIndex == $index}" ng-click="SetActive($index)">
                                 <div class="list-content">
                                     <span class="list-title"><span class="place-right icon-flag-2 fg-red smaller"></span>{{child.title}}</span>
@@ -97,7 +98,7 @@
             </section>
         </section>
         <div class="clearfix"></div>
-        
+
     </div>
 </body>
 </html>
@@ -108,4 +109,3 @@
 <script src="js/metro.min.js"></script>
 <script src="js/jquery.splitter-0.14.0.js"></script>
 <script src="js/primate.js"></script>
-
