@@ -81,7 +81,7 @@
                                 </div>
                             </a>
 
-                            <a class="list" ng-repeat="child in children" ng-class="{'active': childIndex == $index}" ng-click="SetActive($index)">
+                            <a class="list file-child" ng-repeat="child in children" ng-class="{'active': childIndex == $index}" ng-click="SetActive($index)">
                                 <div class="list-content">
                                     <span class="list-title"><span class="place-right icon-flag-2 fg-red smaller"></span>{{child.title}}</span>
                                     <span class="list-subtitle">Last Modified: {{child.last_mod}} 26/10/2013</span>
@@ -108,4 +108,5 @@
 <script src="js/jquery.widget.min.js"></script>
 <script src="js/metro.min.js"></script>
 <script src="js/jquery.splitter-0.14.0.js"></script>
+<script src="js/jquery.contextMenu.js"></script>
 <script src="js/primate.js"></script>

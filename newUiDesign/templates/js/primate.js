@@ -93,6 +93,43 @@ var evaluateStatusCode = function () {
         }
     }
 }
+
+var contextMenu = function () {
+    var fileChild = $(".file-child");
+    if (fileChild.length > 0) {
+        $.contextMenu({
+            selector: '.file-child',
+            callback: function (key, options) {
+                // $(this); here refers to the object that is being clicked --> <div class="context-menu-one" id="t1" name="name1">
+                var m = "clicked: " + key;
+                window.console && console.log(m) || alert(m);
+            },
+            items: {
+                "RedirectUrl": {
+                    name: "Redirect to website",
+                },
+                "sep1": "---------",
+                "viewAcc": {
+                    name: "View account",
+                },
+                "editAcc": {
+                    name: "Edit account",
+                },
+                "delAcc": {
+                    name: "Delete account",
+                },
+                "sep2": "---------",
+                "copyCuser": {
+                    name: "Copy username",
+                },
+                "copyPasswrd": {
+                    name: "Copy password",
+                },
+            }
+        });
+    }
+}
+contextMenu();
 var init = function () {
     calFrameHeight();
     evaluateStatusCode();
@@ -100,7 +137,7 @@ var init = function () {
 $(function () {
     init();
     setTimeout(function () { $('.example').animate({ margin: "0", opacity: '1', }, 600); $("#loader").hide(); }, 2000);
-    $('#main').split({ orientation: 'vertical', limit: 220, position: '20%'});
+    $('#main').split({ orientation: 'vertical', limit: 220, position: '20%' });
     $('.side-content').split({ orientation: 'vertical', limit: 220, position: '40%' });
 });
 $(window).resize(function () {
