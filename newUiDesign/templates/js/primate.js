@@ -94,14 +94,21 @@ var evaluateStatusCode = function () {
     }
 }
 
+var responsiveFrame = function () {
+    $(window).resize(function () {
+        calFrameHeight();
+    }).load(function () {
+        calFrameHeight();
+    });
+}
+
 var contextMenu = function () {
     var fileChild = $(".file-child");
     if (fileChild.length > 0) {
-         $.contextMenu({
+        $.contextMenu({
             selector: '.file-child',
             callback: function (key, options) {
                 // $(this); here refers to the object that is being clicked --> <div class="context-menu-one" id="t1" name="name1">
-                $(this)[0].click();
                 var m = "clicked: " + key;
                 window.console && console.log(m) || alert(m);
             },
@@ -130,20 +137,29 @@ var contextMenu = function () {
         });
     }
 }
-contextMenu();
+
+//due to jquery version, it throws an error. try catch can patch it properly
+var initSplitter = function () {
+    try {
+        $('#main').split({ orientation: 'vertical', limit: 220, position: '20%' });
+        $('.side-content').split({ orientation: 'vertical', limit: 220, position: '40%' });
+    } catch (ex) {
+        //console.log(ex.message);
+    }
+};
+
+var self_invoke_func = (function () {
+    contextMenu();
+    responsiveFrame();
+})();
+
 var init = function () {
     calFrameHeight();
     evaluateStatusCode();
-}
+    initSplitter();
+};
 
 $(function () {
     init();
     setTimeout(function () { $('.example').animate({ margin: "0", opacity: '1', }, 600); $("#loader").hide(); }, 2000);
-    $('#main').split({ orientation: 'vertical', limit: 220, position: '20%' });
-    $('.side-content').split({ orientation: 'vertical', limit: 220, position: '40%' });
-});
-$(window).resize(function () {
-    calFrameHeight();
-}).load(function () {
-    calFrameHeight();
 });
