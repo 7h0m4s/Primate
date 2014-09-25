@@ -3,7 +3,6 @@ Password Primate Python Backend.
 The Primate Python backend ensures all backend features are fully functional.
 Copyright (c) 2014, Asterix Solutions
 """
-
 from flask import Flask
 from flask import request
 from flask import session
@@ -480,8 +479,19 @@ Returns the selected filepath as a string.
 """
 @app.route("/import-browse")
 def importBrowser():
-    Tkinter.Tk().withdraw() # Close the root window
-    file_path = tkFileDialog.askopenfilename(initialdir=(os.path.expanduser('~/')))
+    root = Tkinter.Tk()
+    root.withdraw()# Close the root window
+    root.overrideredirect(True)
+    root.geometry('0x0+0+0')#make tkinter window invisible
+
+    # Show window again and lift it to top so it can get focus,
+    # otherwise dialogs will end up behind the terminal.
+    root.deiconify()
+    root.lift()
+    root.focus_force()
+    
+    file_path = tkFileDialog.askopenfilename(initialdir=(os.path.expanduser('~/')),parent=root)
+    root.destroy()
     return file_path
 
 """
@@ -644,8 +654,20 @@ Returns selected filepath as a string.
 """
 @app.route("/get-filepath")
 def getFilepath():
-    Tkinter.Tk().withdraw() # Close the root window
-    in_path = tkFileDialog.askopenfilename(initialdir=(os.path.expanduser('~/')))
+    root = Tkinter.Tk()
+    root.withdraw()
+    root.overrideredirect(True)
+    root.geometry('0x0+0+0')#make tkinter window invisible
+    #Tkinter.Tk().withdraw() # Close the root window
+
+    # Show window again and lift it to top so it can get focus,
+    # otherwise dialogs will end up behind the terminal.
+    root.deiconify()
+    root.lift()
+    root.focus_force()
+    
+    in_path = tkFileDialog.askopenfilename(initialdir=(os.path.expanduser('~/')),parent=root)
+    root.destroy()
     return in_path
 
 
@@ -668,4 +690,5 @@ if __name__ == "__main__":
     
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER # Placeholder for where files should be stored if files are uploaded via HTML form.
     app.debug = True #Disable this for demonstrations to prevent the double loading problem.
+    #app.threaded = True #Change if the server handles multiple requests at once.
     app.run()#Start the webserver.
