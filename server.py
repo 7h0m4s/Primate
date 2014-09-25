@@ -20,8 +20,11 @@ import logging
 import json
 import csv
 import StringIO
+import cStringIO
 import Tkinter
 import tkFileDialog
+import pyperclip
+from ConfigParser import SafeConfigParser
 
 #Configuration to handle HTML file uploads if implemented later.
 UPLOAD_FOLDER = 'uploads/'
@@ -41,7 +44,7 @@ class SessionVault:
     def __init__(self):
         self.vaults = {}
         return
-
+ty
     def addVault(self,vault):
         if session['id'] in self.vaults:#TODO check if vault is already loaded
             raise KeyError
@@ -671,6 +674,197 @@ def getFilepath():
     return in_path
 
 
+
+
+"""
+Function copies specified value from specified login account to clipboard.
+uuid: UUID of account that needs value copied
+attribute: the attribute that is to be copied.
+    e.g. 'url','username','password'
+"""
+@app.route("/copy",methods=['POST'])
+def copy():
+    out = ""
+    uuid = request.form['uuid']
+    attribute = request.form['attribute']
+    account = None
+
+    for record in sessionVault.getVault().records:
+            if str(record._get_uuid())== str(uuid):
+                account = record
+                break
+    
+    if account is None:
+        return "No Account Found With That UUID.", 500
+
+    if attribute=="username":
+        out = str(account._get_user())
+    elif attribute=="password":
+        out = str(account._get_passwd())
+    elif attribute=="url":
+        out = str(account._get_url())
+    else:
+        return "Invalid attribute.", 500
+    
+    pyperclip.copy(out)
+    return "Copied to clipboard!"
+
+"""
+Function initiates configuration file.
+"""
+def initConfig():
+    global confParser
+    confParser = SafeConfigParser()
+    confPath = 'config.ini'
+    if not os.path.isfile(confPath):
+        file(confPath, 'w').close()
+    confParser.read(confPath)
+    if not confParser.has_section("general"):
+        confParser.add_section('general')
+    if not confParser.has_section("passwords"):
+        confParser.add_section('passwords')
+
+    if not confParser.has_option("general", "time_to_timeout"):
+        confParser.set('general', 'time_to_timeout', '300')
+
+    if not confParser.has_option("passwords", "password_length"):
+        confParser.set('passwords', 'password_length', '8')
+    if not confParser.has_option("passwords", "lowercase_letters"):
+        confParser.set('passwords', 'lowercase_letters', '1')
+    if not confParser.has_option("passwords", "uppercase_letters"):
+        confParser.set('passwords', 'uppercase_letters', '1')
+    if not confParser.has_option("passwords", "digits"):
+        confParser.set('passwords', 'digits', '1')
+    if not confParser.has_option("passwords", "hexadecimal_digits"):
+        confParser.set('passwords', 'hexadecimal_digits', '0')
+    if not confParser.has_option("passwords", "symbols"):
+        confParser.set('passwords', 'symbols', '0')
+    if not confParser.has_option("passwords", "restrict_to_easy_read_chars"):
+        confParser.set('passwords', 'restrict_to_easy_read_chars', '0')
+
+    cfgFile = open(confPath,'w')
+    confParser.write(cfgFile)
+    cfgFile.close()
+    return
+
+"""
+Function sets configuration file to default settings
+"""
+def confSetToDefault():
+
+    confParser.set('general', 'time_to_timeout', '300')
+    confParser.set('passwords', 'password_length', '8')
+    confParser.set('passwords', 'lowercase_letters', '1')
+    confParser.set('passwords', 'uppercase_letters', '1')
+    confParser.set('passwords', 'digits', '1')
+    confParser.set('passwords', 'hexadecimal_digits', '0')
+    confParser.set('passwords', 'symbols', '0')
+    confParser.set('passwords', 'restrict_to_easy_read_chars', '0')
+    
+    return
+
+@app.route("/getConfig")
+def getConfig():
+    try:
+        data={}
+
+        data["time_to_timeout"]=confParser.getint("general",'time_to_timeout')
+        data["password_length"]=confParser.getint("passwords",'password_length')
+        data["lowercase_letters"]=confParser.getint("passwords",'lowercase_letters')
+        data["uppercase_letters"]=confParser.getint("passwords",'uppercase_letters')
+        data["digits"]=confParser.getint("passwords",'digits')
+        data["hexadecimal_digits"]=confParser.getint("passwords",'hexadecimal_digits')
+        data["symbols"]=confParser.getint("passwords",'symbols')
+        data["restrict_to_easy_read_chars"]=confParser.getint("passwords",'restrict_to_easy_read_chars')
+        
+
+        return json.dumps(data)
+    except Exception,e:
+            return str(e),500
+        
+
+@app.route("/setConfig",methods=['POST'])
+def setConfig():
+    try:
+        confParser.set("general",'time_to_timeout',request.form['time_to_timeout'])
+        confParser.set("passwords",'password_length',request.form['password_length'])
+        confParser.set("passwords",'lowercase_letters',request.form['lowercase_letters'])
+        confParser.set("passwords",'uppercase_letters',request.form['uppercase_letters'])
+        confParser.set("passwords",'digits',request.form['digits'])
+        confParser.set("passwords",'hexadecimal_digits',request.form['hexadecimal_digits'])
+        confParser.set("passwords",'symbols',request.form['symbols'])
+        confParser.set("passwords",'restrict_to_easy_read_chars',request.form['restrict_to_easy_read_chars'])
+        return
+    except Exception,e:
+            return str(e),500
+
+    return
+
+
+
+
+"""
+Function returns a Json tree datastructure representation of password database
+e.g.: {groupName:"",children:[{uuid:"79873249827346",title:"hello",user:"username",passwd:"1234",notes:"this is a note",last_mod:0,url:"google.com"}],groups:[{groupName:"Sites",children:[{uuid:"79873249827346",title:"hello",user:"username",passwd:"1234",notes:"this is a note",last_mod:0,url:"google.com"}],groups:[]},{groupName:"",children:[],groups:[]}]}
+"""
+@app.route("/get-db-json")
+def getDbJson():
+    dbDict={}
+    #dbDict= {"groupName":"","children":[],"groups":[]}
+    dbDict = getChildren("")
+
+
+    return json.dumps(dbDict)
+
+"""
+Helper function for getDbJson(). Uses recursion to find an collect passwords and groups recursively.
+single.
+"""
+def getChildren(groupName):
+    returnDict={"groupName":"","children":[],"groups":[]}
+    returnDict["groupName"] = groupName
+    groupList=[]
+    for record in sessionVault.getVault().records:
+        if record._get_group() == groupName:
+            returnDict["children"] = getChild(record)
+        
+        elif record._get_group().find(groupName+".")==0 or (groupName=="" and record._get_group()!=""):
+            groupList.append(record._get_group())
+    for group in groupList:        
+        returnDict["groups"].append(getChildren(group))
+
+    return returnDict
+
+"""
+Helper function for getChildren().
+Returns a single dict representation of a child.
+"""
+def getChild(record):
+    data={
+            "uuid" : "",
+            "title" : "",
+            "user" : "",
+            "passwd" : "",
+            "notes" : "",
+            "last_mod" : 0,
+            "url" : ""
+            }
+    data["uuid"]=str(record._get_uuid())
+    data["title"]=str(record._get_title())
+    data["user"]=str(record._get_user())
+    data["passwd"]=str(record._get_passwd())
+    data["notes"]=str(record._get_notes())
+    data["last_mod"]=int(record._get_last_mod())
+    data["url"]=str(record._get_url())
+    return data
+
+"""
+Function is a helper for getChildren.
+Returns a list of groups split up by the delimiter '.'
+"""
+def splitGroups(groups):
+    groupList= csv.reader(cStringIO.StringIO(groups), delimiter='.', escapechar='\\').next()
+    return groupList
 
 #Code below is equivilent to a "Main" function in Java or C
 if __name__ == "__main__":
