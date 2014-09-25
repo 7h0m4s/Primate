@@ -264,7 +264,7 @@ def createGroup():
             return "Group Parent Not Found", 500
         session['groups'].append(groupParent +"."+ groupName)#
 
-    return "Group Added Successfully"
+    return "Group Added Successfully", 304
 
 
 """
@@ -302,7 +302,7 @@ def editGroup():
                 record._set_group(groupName)
 
         saveDB()
-        return "Group edited Successfully, list=" + str(session['groups'])+"  group="+ str(group)
+        return "Group edited Successfully, list=" + str(session['groups'])+"  group="+ str(group), 304
     except Exception,e:
         return str(e),500
 
@@ -337,7 +337,7 @@ def deleteGroup():
                 sessionVault.getVault().records.remove(record)
 
         saveDB()
-        return "Group deleted Successfully"
+        return "Group deleted Successfully", 304
     except Exception,e:
         return str(e),500
 
@@ -372,7 +372,7 @@ def createUser():
         sessionVault.getVault().records.append(entry)
 
         saveDB()
-        return "Group Added Successfully"
+        return "Group Added Successfully", 304
     except Exception,e:
         return str(e),500
 
@@ -407,7 +407,7 @@ def editUser():
                 record._set_notes(notes)
             
                 saveDB()
-                return "Account Edited Successfully"
+                return "Account Edited Successfully", 304
             
         return "Account was not found.", 500
     except Exception,e:
@@ -426,7 +426,7 @@ def deleteUser():
             if str(record._get_uuid()) == uuid:
                 sessionVault.getVault().records.remove(record)
                 saveDB()
-                return "Account Deleted Successfully"
+                return "Account Deleted Successfully", 304
         return "Cannot find account tobe deleted.", 500
     except Exception,e:
         return str(e),500
