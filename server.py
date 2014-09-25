@@ -44,7 +44,7 @@ class SessionVault:
     def __init__(self):
         self.vaults = {}
         return
-ty
+
     def addVault(self,vault):
         if session['id'] in self.vaults:#TODO check if vault is already loaded
             raise KeyError
@@ -822,14 +822,25 @@ single.
 """
 def getChildren(groupName):
     returnDict={"groupName":"","children":[],"groups":[]}
-    returnDict["groupName"] = groupName
+    if groupName!="":
+        returnDict["groupName"] = splitGroups(groupName)[-1]
+    else:
+        returnDict["groupName"]= ""
     groupList=[]
     for record in sessionVault.getVault().records:
         if record._get_group() == groupName:
-            returnDict["children"] = getChild(record)
-        
-        elif record._get_group().find(groupName+".")==0 or (groupName=="" and record._get_group()!=""):
-            groupList.append(record._get_group())
+            returnDict["children"].append(getChild(record))
+
+
+    for record in sessionVault.getVault().records:
+        if groupName=="":
+            if splitGroups(record._get_group())[0] not in groupList:
+                groupList.append(splitGroups(record._get_group())[0])
+        elif splitGroups(record._get_group())[:-1] == splitGroups(groupName):
+            if '.'.join(splitGroups(record._get_group())[:len(splitGroups(groupName))+1]) not in groupList:
+                groupList.append('.'.join(splitGroups(record._get_group())[:len(splitGroups(groupName))+1]))
+
+                
     for group in groupList:        
         returnDict["groups"].append(getChildren(group))
 
@@ -863,8 +874,11 @@ Function is a helper for getChildren.
 Returns a list of groups split up by the delimiter '.'
 """
 def splitGroups(groups):
+    if groups == "":
+        return []
     groupList= csv.reader(cStringIO.StringIO(groups), delimiter='.', escapechar='\\').next()
     return groupList
+
 
 #Code below is equivilent to a "Main" function in Java or C
 if __name__ == "__main__":
