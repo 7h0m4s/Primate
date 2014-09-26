@@ -1,0 +1,238 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <style>
+        body {
+            font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+            font-size: 14px;
+            line-height: 1.42857143;
+            color: #333;
+            background-color: #fff;
+        }
+
+        .am-fade {
+            background: rgba(0,0,0,.5);
+            -webkit-animation-duration: .15s;
+            animation-duration: .15s;
+            -webkit-animation-duration: .3s;
+            animation-duration: .3s;
+            -webkit-animation-timing-function: linear;
+            animation-timing-function: linear;
+            -webkit-animation-fill-mode: backwards;
+            animation-fill-mode: backwards;
+            opacity: 0.3;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 1040;
+            background-color: #000;
+        }
+
+        .am-fade-and-slide-right {
+            display: block;
+            left: auto;
+            right: 0;
+            -webkit-animation-duration: .3s;
+            animation-duration: .3s;
+            -webkit-animation-timing-function: ease-in-out;
+            animation-timing-function: ease-in-out;
+            -webkit-animation-fill-mode: backwards;
+            animation-fill-mode: backwards;
+            z-index: 1049;
+            background: #fff;
+            position: fixed;
+            overflow: auto;
+            min-width: 320px;
+            top: 0;
+            bottom: 0;
+        }
+
+        .aside .aside-dialog .aside-header {
+            border-bottom: 1px solid #e5e5e5;
+            min-height: 16.42857143px;
+            padding: 6px 15px;
+            background: #428bca;
+            color: #fff;
+        }
+
+            .aside .aside-dialog .aside-header .close {
+                color: #fff;
+                font-size: 25px;
+                opacity: .8;
+                padding: 4px 8px;
+                margin-right: -8px;
+            }
+
+        .am-fade {
+            -webkit-animation-duration: .3s;
+            animation-duration: .3s;
+            -webkit-animation-timing-function: linear;
+            animation-timing-function: linear;
+            -webkit-animation-fill-mode: backwards;
+            animation-fill-mode: backwards;
+            opacity: 0.3;
+            display: block;
+        }
+
+        button.close {
+            padding: 0;
+            cursor: pointer;
+            background: 0 0;
+            border: 0;
+            -webkit-appearance: none;
+        }
+
+        .close {
+            float: right;
+            font-size: 21px;
+            font-weight: 700;
+            line-height: 1;
+            color: #000;
+            text-shadow: 0 1px 0 #fff;
+            opacity: .2;
+            filter: alpha(opacity=20);
+        }
+
+        h4, .h4, h5, .h5, h6, .h6 {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        h4, .h4 {
+            font-size: 18px;
+        }
+
+        .aside .aside-dialog .aside-body {
+            position: relative;
+            padding: 20px;
+        }
+
+        .aside .aside-dialog .aside-footer {
+            margin-top: 15px;
+            padding: 19px 20px 20px;
+            text-align: right;
+            border-top: 1px solid #e5e5e5;
+        }
+
+        .btn {
+            display: inline-block;
+            margin-bottom: 0;
+            font-weight: 400;
+            text-align: center;
+            vertical-align: middle;
+            cursor: pointer;
+            background-image: none;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            padding: 6px 12px;
+            font-size: 14px;
+            line-height: 1.42857143;
+            border-radius: 4px;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .btn-default {
+            color: #333;
+            background-color: #fff;
+            border-color: #ccc;
+        }
+
+        /*used*/
+        .slide-right {
+            display: none;
+        }
+        /*used*/
+        .slide-right-wrapper {
+            opacity: 0.1;
+            filter: alpha(opacity=0);
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 1040;
+            background: rgba(0,0,0,.5);
+            background-color: #000;
+            display: block;
+        }
+        /*used*/
+        .slide-right-wrapper-on {
+            opacity: 0.4;
+            filter: alpha(opacity=30);
+            display: block;
+        }
+        /*used*/
+        .slide-right-panel {
+            display: block;
+            left: auto;
+            right: 0;
+            z-index: 1049;
+            background: #fff;
+            position: fixed;
+            overflow: auto;
+            min-width: 320px;
+            top: 0;
+            bottom: 0;
+            margin-right: -150px;
+            opacity: 0.3;
+            filter: alpha(opacity=30);
+        }
+        /*used*/
+        .slide-right-panel-on {
+            margin-right: 0;
+            opacity: 1;
+            filter: alpha(opacity=100);
+            display: block;
+        }
+        /*used*/
+        /*.slide-right, .slide-right-panel, .slide-right-wrapper {
+            -webkit-transition: all 0.5s ease;
+            -moz-transition: all 0.5s ease;
+            -o-transition: all 0.5s ease;
+            transition: all 0.5s ease;
+        }*/
+    </style>
+</head>
+<body ng-app="mainApp" ng-controller="testctrl">
+    <button type="button" class="btn btn-primary">aside from left<br><small>(am-fade-and-slide-left)</small></button>
+    <div class="slide-right" style="display: none;">
+        <div class="slide-right-wrapper" style="opacity:0"></div>
+        <div class="slide-right-panel aside am-fade-and-slide-right" style="margin-right: -320px; opacity: -0.5">
+            <div class="aside-dialog">
+                <div class="aside-header">
+                    <button type="button" class="close">×</button>
+                    <h4 class="ng-binding">Title</h4>
+                </div><div class="aside-body ng-binding">
+                    Hello Aside
+                    <br>This is a multiline message!
+                </div><div class="aside-footer">
+                    <button type="button" class="btn btn-default close-button">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../newUiDesign/templates/js/jquery.min.js"></script>
+    <script src="../../newUiDesign/templates/js/angular.min.js"></script>
+    <script>
+        $(".btn-primary").click(function () {
+            $(".slide-right").show();
+            $(".slide-right-wrapper").animate({ 'opacity': 0.3 });
+            $(".slide-right-panel").animate({ 'margin-right': 0, 'opacity': 1 });
+        });
+        $(".close,.close-button,.slide-right-wrapper").click(function (e) {
+            if (e == null || !$(e.target).is(".slide-right-panel")) {
+                $(".slide-right-wrapper").animate({ 'opacity': 0 });
+                $(".slide-right-panel").animate({ 'margin-right': '-320px', 'opacity': -0.5 }, function () {
+                    $(".slide-right").hide();
+                });
+            }
+        });
+    </script>
+</body>
+</html>
