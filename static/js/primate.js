@@ -30,8 +30,20 @@ var saveDB = function () {
 var loginDropDown = function (id, command) {
     if (command == "opnUrl") {
     } else if (command == "cpyUsr") {
+        posting(post, '/copy', {uuid:id,attribute:'username'}, function () {
+
+        });
+	
     } else if (command == "cpyPswd") {
+	    posting(post, '/copy', {uuid:id,attribute:'password'}, function () {
+
+        });
+	
     } else if (command == "cpyUrl") {
+	    posting(post, '/copy', {uuid:id,attribute:'url'}, function () {
+
+        });
+	
     } else if (command == "view") {
     } else if (command == "edit") {
         if ($('.del-user-chkbox').is(':checked')) {
