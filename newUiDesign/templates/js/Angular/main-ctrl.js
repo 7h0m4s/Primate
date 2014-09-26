@@ -4,7 +4,7 @@ var _backspace_keycode = 8;
 
 var mainApp = angular.module("mainApp", []);
 
-function mainCtr($scope) {
+function mainCtr($scope, $location) {
     $scope.tree = treeStructure;
     $scope.childIndex = -1;
     $scope.breadcrumbs = [];
@@ -44,7 +44,6 @@ function mainCtr($scope) {
         $scope.childIndex = index;
     }
 
-    //todo: testing 
     $scope.Back = function ($event) {
         var currentKeyCode = $event.keyCode;
         if (currentKeyCode == _backspace_keycode) {
@@ -79,42 +78,7 @@ function mainCtr($scope) {
         $scope.childIndex = -1;
     }
 
+
+    console.log("Run ng js");
 };
-
-//prevent backspance button navigate back in all browser
-$(document).unbind('keydown').bind('keydown', function (event) {
-    var doPrevent = false;
-    if (event.keyCode === 8) {
-        var d = event.srcElement || event.target;
-        if ((d.tagName.toUpperCase() === 'INPUT' &&
-             (
-                 d.type.toUpperCase() === 'TEXT' ||
-                 d.type.toUpperCase() === 'PASSWORD' ||
-                 d.type.toUpperCase() === 'FILE' ||
-                 d.type.toUpperCase() === 'EMAIL' ||
-                 d.type.toUpperCase() === 'SEARCH' ||
-                 d.type.toUpperCase() === 'DATE')
-             ) ||
-             d.tagName.toUpperCase() === 'TEXTAREA') {
-            doPrevent = d.readOnly || d.disabled;
-        }
-        else {
-            doPrevent = true;
-        }
-    }
-    if (doPrevent) {
-        event.preventDefault();
-    }
-});
-//$('html').on('keydown', function (event) {
-
-//    if (!$(event.target).is('input')) {
-//        console.log(event.which);
-//        //event.preventDefault();
-//        if (event.which == 8) {
-//            //  alert('backspace pressed');
-//            return false;
-//        }
-//    }
-//});
 

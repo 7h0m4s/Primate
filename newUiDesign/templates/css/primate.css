@@ -18,7 +18,7 @@
 }
 
 .side-left {
-    width: 20%;
+    /*max-width: 20%;*/
     float: left;
     border: 1px #eaeaea solid;
 }
@@ -137,7 +137,6 @@
         color: #bdc3c7;
         cursor: default;
     }*/
-
 /*context menu*/
 ul.context-menu-list {
     margin: 0;
@@ -187,3 +186,96 @@ li.context-menu-separator {
     background-color: #e5e5e5;
 }
 /*end of context menu*/
+
+/*loading page*/
+#loader-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: #fff;
+    z-index: 9999;
+}
+
+.loader {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    margin: -96.5px 0 0 -176px;
+}
+
+    .loader > h1 {
+        font-size: 48px;
+        font-weight: normal;
+        color: #0072c6;
+        font-family: 'Segoe UI', 'Segoe WP', 'Segoe UI WPC', Tahoma, Arial, sans-serif;
+        display: block;
+        margin-bottom: 12px;
+    }
+
+    .loader img {
+        width: 24px;
+    }
+
+.load-icon, .load-status {
+    display: block;
+    text-align: center;
+}
+
+.load-status {
+    color: #0072c6;
+    font-family: 'Segoe UI', 'Segoe WP', 'Segoe UI WPC', Tahoma, Arial, sans-serif;
+    font-size: 12px;
+    margin-top: 12px;
+}
+/*end of loading page*/
+
+
+/*error page*/
+body#error-page {
+    font-size: 1.5rem;
+    font-family: "Open Sans",Arial,sans-serif;
+    padding: 0;
+    background: #F6F6F6 url('../img/paper.png') repeat right top;
+}
+
+#error-main {
+    width: 600px;
+    height: 400px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+}
+
+#error-content {
+    padding: 5px 10px;
+}
+
+    #error-content h1 {
+        font-size: 60px;
+        font-family: arial;
+        font-weight: bold;
+    }
+
+    #error-content h2 {
+        font-size: 36px;
+        font-weight: normal;
+        margin: 40px 0 -15px 0;
+    }
+
+    #error-content h3 {
+        font-size: 26px;
+        font-weight: bold;
+    }
+
+    #error-content a {
+        display: inline-block;
+        border-bottom: 1px dotted #000;
+        color: #000;
+        text-decoration: none;
+    }
+/*end of error page*/

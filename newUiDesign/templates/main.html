@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" ng-app>
 <head>
-    <title>Password Primate</title>
+    <title>Password Primate - Main</title>
     <link href="css/metro-bootstrap.css" rel="stylesheet">
     <link href="css/iconFont.css" rel="stylesheet" />
     <link href="css/jquery.splitter.css" rel="stylesheet" />
@@ -27,7 +27,7 @@
                     <span class="element-divider place-right"></span>
                     <button class="element image-button image-left place-right">
                         Allen She
-                        <img src="https://a.gfx.ms/ic/bluemanm.png" />
+                        <img src="img/bluemanm.png" />
                     </button>
                 </div>
             </div>
@@ -48,7 +48,7 @@
                     <li class="stick bg-yellow">
                         <a class="dropdown-toggle" href="#"><i class="icon-tree-view"></i>Database Name</a>
                         <ul data-role="dropdown" style="display: block;">
-                            <li ng-repeat="node in tree.groups" ng-click="SelectRoot(node)"><a>{{AssessName(node.groupName)}}</a></li>
+                            <li ng-repeat="node in tree.groups" ng-click="SelectRoot(node)"><a ng-bind="AssessName(node.groupName)"></a></li>
                         </ul>
                     </li>
                 </ul>
@@ -60,7 +60,7 @@
                     <div class="fl">
                         <ul class="breadcrumb">
                             <!--ng-class="CheckIfLastBreadcrumb(breadcrumb)"-->
-                            <li ng-repeat="breadcrumb in breadcrumbs"><a ng-click="BreadcrumbRedirect(breadcrumb)">{{breadcrumb.groupName}}</a></li>
+                            <li ng-repeat="breadcrumb in breadcrumbs"><a ng-click="BreadcrumbRedirect(breadcrumb)" ng-bind="breadcrumb.groupName"></a></li>
                             <!--<li class="unavailable"><a href="#">Data</a></li>-->
                         </ul>
                     </div>
@@ -88,7 +88,6 @@
                                     <span class="list-remark">{{child.notes}}</span>
                                 </div>
                             </a>
-
                         </div>
                     </div>
                 </div>
@@ -99,6 +98,17 @@
         </section>
         <div class="clearfix"></div>
     </div>
+    <div id="loader-wrapper" style="display:none;">
+        <div class="loader">
+            <h1>Asterix Solutions</h1>
+            <div class="load-icon">
+                <img src="img/loader24.gif" />
+            </div>
+            <div class="load-status">
+                <span>Loading...</span>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
 <script src="js/jquery.min.js"></script>
@@ -107,5 +117,5 @@
 <script src="js/metro.min.js"></script>
 <script src="js/jquery.splitter-0.14.0.js"></script>
 <script src="js/jquery.contextMenu.js"></script>
-<script src="js/Angular/DashboardCtr.js"></script>
+<script src="js/Angular/main-ctrl.js"></script>
 <script src="js/primate.js"></script>

@@ -1,11 +1,13 @@
 ﻿var _errorPage_name = "Error-page.html";
 var _undefined = "undefined";
+var _backspace_keycode = 8;
 
 var calFrameHeight = function () {
     var headerDimensions = $('header.bg-blue').height();
     var bordertopbottom = 4;
     $('#content-detail').height($(window).height() - headerDimensions - bordertopbottom);
 }
+
 var urlObject = function (options) {
     "use strict";
     /*global window, document*/
@@ -148,9 +150,39 @@ var initSplitter = function () {
     }
 };
 
+var unbindBackspace = function () {
+    //prevent backspance button navigate back in all browser
+    $(document).unbind('keydown').bind('keydown', function (event) {
+        var doPrevent = false;
+        if (event.keyCode === _backspace_keycode) {
+            var d = event.srcElement || event.target;
+            if ((d.tagName.toUpperCase() === 'INPUT' &&
+                 (
+                     d.type.toUpperCase() === 'TEXT' ||
+                     d.type.toUpperCase() === 'PASSWORD' ||
+                     d.type.toUpperCase() === 'FILE' ||
+                     d.type.toUpperCase() === 'EMAIL' ||
+                     d.type.toUpperCase() === 'SEARCH' ||
+                     d.type.toUpperCase() === 'DATE')
+                 ) ||
+                 d.tagName.toUpperCase() === 'TEXTAREA') {
+                doPrevent = d.readOnly || d.disabled;
+            }
+            else {
+                doPrevent = true;
+            }
+        }
+        if (doPrevent) {
+            event.preventDefault();
+        }
+    });
+
+};
+
 var self_invoke_func = (function () {
     contextMenu();
     responsiveFrame();
+    unbindBackspace();
 })();
 
 var init = function () {
@@ -163,3 +195,4 @@ $(function () {
     init();
     setTimeout(function () { $('.example').animate({ margin: "0", opacity: '1', }, 600); $("#loader").hide(); }, 2000);
 });
+
