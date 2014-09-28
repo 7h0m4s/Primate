@@ -6,6 +6,23 @@
     float: right;
 }
 
+.pos-r {
+    position: relative;
+}
+
+.margin-top0 {
+    margin-top: 0!important;
+}
+
+.dis-block {
+    display: block;
+}
+
+.metro h5 {
+    font-size: 1.6rem;
+    margin: 18px 0;
+}
+
 #main {
     overflow-y: auto;
     overflow-x: visible;
@@ -279,3 +296,223 @@ body#error-page {
         text-decoration: none;
     }
 /*end of error page*/
+
+/*slide left*/
+.aside .aside-dialog .aside-header {
+    border-bottom: 1px solid #e5e5e5;
+    min-height: 16.42857143px;
+    padding: 6px 15px;
+    background: #428bca;
+    color: #fff;
+}
+
+    .aside .aside-dialog .aside-header .close {
+        color: #fff;
+        font-size: 25px;
+        opacity: .8;
+        padding: 4px 8px;
+        margin-right: -8px;
+    }
+
+.am-fade {
+    -webkit-animation-duration: .3s;
+    animation-duration: .3s;
+    -webkit-animation-timing-function: linear;
+    animation-timing-function: linear;
+    -webkit-animation-fill-mode: backwards;
+    animation-fill-mode: backwards;
+    opacity: 0.3;
+    display: block;
+}
+
+button.close {
+    padding: 0;
+    cursor: pointer;
+    background: 0 0;
+    border: 0;
+    -webkit-appearance: none;
+}
+
+.close {
+    float: right;
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1;
+    color: #000;
+    text-shadow: 0 1px 0 #fff;
+    opacity: .2;
+    filter: alpha(opacity=20);
+}
+
+.metro h4 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #fff;
+}
+
+.aside .aside-dialog .aside-body {
+    position: relative;
+    padding: 20px;
+}
+
+.aside-footer {
+    padding: 19px 20px 20px;
+    text-align: right;
+    border-top: 1px solid #e5e5e5;
+}
+
+.metro .btn {
+    display: inline-block;
+    margin-bottom: 0;
+    font-weight: 400;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.metro .btn-default {
+    color: #333;
+    background-color: #fff;
+    border-color: #ccc;
+}
+
+.btn-default:hover, .btn-default:focus, .btn-default:active {
+    color: #333;
+    background-color: #ebebeb;
+    border-color: #adadad;
+}
+
+.metro .btn-primary {
+    color: #fff;
+    background-color: #428bca;
+    border-color: #357ebd;
+}
+
+    .metro .btn-primary:hover, .metro .btn-primary:focus,.metro .btn-primary:active {
+        color: #fff;
+        background-color: #3276b1;
+        border-color: transparent;
+    }
+
+.slide-right {
+    display: none;
+}
+
+.slide-right-wrapper {
+    opacity: 0.1;
+    filter: alpha(opacity=0);
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1040;
+    background: rgba(0,0,0,.5);
+    background-color: #000;
+    display: block;
+}
+
+.slide-right-panel {
+    display: block;
+    left: auto;
+    right: 0;
+    z-index: 1049;
+    background: #fff;
+    position: fixed;
+    overflow: auto;
+    min-width: 320px;
+    top: 0;
+    bottom: 0;
+}
+
+.policy-font {
+    float: left;
+    font-size: 16px;
+}
+
+/*end of slide left*/
+
+/*spinner*/
+.input-append, .input-prepend {
+    display: inline-block;
+    margin-bottom: 10px;
+    vertical-align: middle;
+    font-size: 0;
+    white-space: nowrap;
+}
+
+.spinner input {
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    display: inline-block;
+    height: 24px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #555555;
+    padding: 0;
+    width: 42px;
+text-align: center;
+border: 2px #d9d9d9 solid;
+}
+
+.spinner input:focus {outline:none;}
+
+.spinner .add-on {
+    margin-left: -2px;
+    vertical-align: top;
+    display: inline-block;
+    width: auto;
+    height: 24px;
+    min-width: 16px;
+    padding: 0;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 20px;
+    text-align: center;
+    text-shadow: 0 1px 0 #ffffff;
+    background-color: #eeeeee;
+    border: 2px #d9d9d9 solid;
+}
+
+    .spinner .add-on a.spin-up, .spinner .add-on a.spin-down {
+        height: 8px;
+        overflow: hidden;
+        display: block;
+        position: relative;
+        width: auto;
+        min-width: 16px;
+        padding: 0 4px;
+        font-size: 12px;
+        font-weight: normal;
+        line-height: 23px;
+        text-align: center;
+        color: #999;
+        text-decoration: none;
+    }
+
+a>.icon-arrow-up-4, a>.icon-arrow-down-4 {
+    content: "\f0de";
+    text-decoration: inherit;
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    line-height: 0;
+    vertical-align: text-top;
+    background-position: 14px 14px;
+    background-repeat: no-repeat;
+}
+a.spin-up {
+    margin-top: 3px;
+}
+/*end of spinner*/

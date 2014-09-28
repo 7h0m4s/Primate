@@ -189,10 +189,32 @@ var init = function () {
     calFrameHeight();
     evaluateStatusCode();
     initSplitter();
+    loadingWrapper();
 };
 
 $(function () {
     init();
-    setTimeout(function () { $('.example').animate({ margin: "0", opacity: '1', }, 600); $("#loader").hide(); }, 2000);
+    setTimeout(function () { $('.example').animate({ margin: "0", opacity: '1', }, 500); $("#loader").hide(); }, 350);
 });
+
+
+var loadingWrapper = function () {
+    $('#loader-wrapper').delay(350).fadeOut('fast');
+};
+
+var ajaxPost = function ($formObj, isAsync, successFun) {
+    var method = "POST";
+    var url = $formObj.attr("target");
+    var postData = $formObj.serialize();
+    $.ajax({
+        type: method,
+        url: url,
+        data: postData,
+        async: isAsync
+    }).done(function (msg) {
+        successFun();
+    }).fail(function (msg) {
+        successFun();
+    });
+};
 
