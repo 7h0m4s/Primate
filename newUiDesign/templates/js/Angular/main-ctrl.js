@@ -4,7 +4,7 @@ var _backspace_keycode = 8;
 
 var mainApp = angular.module("mainApp", []);
 
-function mainCtr($scope) {
+function mainCtr($scope, $location) {
     $scope.tree = treeStructure;
     $scope.childIndex = -1;
     $scope.breadcrumbs = [];
@@ -44,7 +44,6 @@ function mainCtr($scope) {
         $scope.childIndex = index;
     }
 
-    //todo: testing 
     $scope.Back = function ($event) {
         var currentKeyCode = $event.keyCode;
         if (currentKeyCode == _backspace_keycode) {
@@ -55,6 +54,12 @@ function mainCtr($scope) {
         }
     };
 
+    $scope.SubmitSettingForm = function () {
+        ajaxPost($("#settingForm"), false, function () {
+            closeSilder();
+            $.Notify({ style: { background: '#1ba1e2', color: 'white' }, caption: 'Setting', content: "Saved Successfully" });
+        });
+    };
     //$scope.CheckIfLastBreadcrumb = function (breadcrumb) {
     //    console.log("I was called");
     //    var inactiveClass = "unavailable";
@@ -63,7 +68,6 @@ function mainCtr($scope) {
     //    }
     //    return null;
     //};
-
     var addParentToEachChild = function (obj) {
         for (var a = 0; a < obj.children.length; a++) {
             obj.children[a].parent = obj;
@@ -77,44 +81,24 @@ function mainCtr($scope) {
 
     var resetChildIndex = function () {
         $scope.childIndex = -1;
-    }
+    };
 
+    $scope.TriggerSlider = function () {
+        $(".slide-right").show();
+        $(".slide-right-wrapper").animate({ 'opacity': 0.3, 'filter': 'alpha(opacity=30)' });
+        $(".slide-right-panel").animate({ 'margin-right': 0, 'opacity': 1, 'filter': 'alpha(opacity=100)' });
+    };
+    $scope.CloseSlider = function () {
+        closeSilder();
+    };
+
+    var closeSilder = function () {
+        $(".slide-right-wrapper").animate({ 'opacity': 0 });
+        $(".slide-right-panel").animate({ 'margin-right': '-320px', 'opacity': -0.5, 'filter': 'alpha(opacity=-150)' }, function () {
+            $(".slide-right").hide();
+        });
+    }
 };
 
-//prevent backspance button navigate back in all browser
-$(document).unbind('keydown').bind('keydown', function (event) {
-    var doPrevent = false;
-    if (event.keyCode === 8) {
-        var d = event.srcElement || event.target;
-        if ((d.tagName.toUpperCase() === 'INPUT' &&
-             (
-                 d.type.toUpperCase() === 'TEXT' ||
-                 d.type.toUpperCase() === 'PASSWORD' ||
-                 d.type.toUpperCase() === 'FILE' ||
-                 d.type.toUpperCase() === 'EMAIL' ||
-                 d.type.toUpperCase() === 'SEARCH' ||
-                 d.type.toUpperCase() === 'DATE')
-             ) ||
-             d.tagName.toUpperCase() === 'TEXTAREA') {
-            doPrevent = d.readOnly || d.disabled;
-        }
-        else {
-            doPrevent = true;
-        }
-    }
-    if (doPrevent) {
-        event.preventDefault();
-    }
-});
-//$('html').on('keydown', function (event) {
 
-//    if (!$(event.target).is('input')) {
-//        console.log(event.which);
-//        //event.preventDefault();
-//        if (event.which == 8) {
-//            //  alert('backspace pressed');
-//            return false;
-//        }
-//    }
-//});
 
