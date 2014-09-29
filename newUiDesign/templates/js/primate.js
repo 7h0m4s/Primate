@@ -218,3 +218,36 @@ var ajaxPost = function ($formObj, isAsync, successFun) {
     });
 };
 
+
+var triggerDialog = function ($title, $content) {
+    $.Dialog({
+        overlay: true,
+        shadow: true,
+        flat: true,
+        title: $title,
+        content: $content,
+        padding: 10,
+        onShow: function () {
+            //var content = '<div class="modal-body">                                                                                                              ' +
+            //              '      <div class="alert alert-danger">                                                                                                ' +
+            //              '          <strong>Warning!</strong> Exporting the database will mean that your passwords will no longer be securely encrypted.        ' +
+            //              '      </div>                                                                                                                          ' +
+            //              '      <div class="file-info">                                                                                                         ' +
+            //              '          <div class="file-thumbnail">                                                                                                ' +
+            //              '              <img src="img/export_text-icon.gif" />                                                                                  ' +
+            //              '          </div>                                                                                                                      ' +
+            //              '          <div>Document</div>                                                                                                         ' +
+            //              '          <div>                                                                                                                       ' +
+            //              '              <span>5/2/2013 4:11 PM</span>&nbsp;·&nbsp;<span>9.53 KB</span>                                                          ' +
+            //              '          </div>                                                                                                                      ' +
+            //              '          <div>                                                                                                                       ' +
+            //              '              <a href="/export" class="btn btn-lead full" id="export-download">Download</a>                                           ' +
+            //              '          </div>                                                                                                                      ' +
+            //              '      </div>                                                                                                                          ' +
+            //              '  </div>                                                                                                                              '
+            //;
+            //$.Dialog.content(content);
+            $.Metro.initInputs();
+        }
+    });
+};

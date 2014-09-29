@@ -20,7 +20,7 @@
                         </a>
                         <ul class="dropdown-menu place-right" data-role="dropdown">
                             <li><a href="#" ng-click="TriggerSlider()">Settings</a></li>
-                            <li><a href="#">Import</a></li>
+                            <li><a href="#" ng-click="TriggerDialog('Export')">Import</a></li>
                             <li><a href="#">Export</a></li>
                             <li><a href="#">Log Out</a></li>
                         </ul>
@@ -189,7 +189,7 @@
                         </p>
                     </form>
                 </div><div class="aside-footer">
-                    <button type="button" class="btn btn-primary" ng-click="SubmitSettingForm()">Save Changes</button>
+                    <button type="button" class="btn btn-lead" ng-click="SubmitSettingForm()">Save Changes</button>
                     <button type="button" class="btn btn-default" ng-click="CloseSlider()">Close</button>
                 </div>
             </div>
@@ -217,5 +217,3 @@
 <script src="js/jquery.spinner.min.js"></script>
 <script src="js/primate.js"></script>
 <script src="js/Angular/main-ctrl.js"></script>
-
-
