@@ -24,6 +24,7 @@ import cStringIO
 import Tkinter
 import tkFileDialog
 import pyperclip
+import time
 from ConfigParser import SafeConfigParser
 
 #Configuration to handle HTML file uploads if implemented later.
@@ -865,7 +866,7 @@ def getChild(record):
     data["user"]=str(record._get_user())
     data["passwd"]=str(record._get_passwd())
     data["notes"]=str(record._get_notes())
-    data["last_mod"]=int(record._get_last_mod())
+    data["last_mod"]=str(time.strftime("%H:%M %d-%m-%Y", time.localtime(record._get_last_mod())))
     data["url"]=str(record._get_url())
     return data
 
