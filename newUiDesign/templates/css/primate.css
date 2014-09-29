@@ -628,7 +628,9 @@ a.spin-up {
     height: 54px;
     padding: 15px 20px 10px;
 }
-
+.metro .window.flat .caption .btn-close {
+    border:0;
+}
     .metro .window.flat .caption .btn-close:hover, .metro .window.flat .caption .btn-close:focus,.metro .window.flat .caption .btn-close:active{
         background-color: #fff!important;
         background-color: transparent!important;

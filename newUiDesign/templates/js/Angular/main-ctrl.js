@@ -7,12 +7,12 @@ var _urlDialogTemplate = "dialog-template.html";
 
 var mainApp = angular.module("mainApp", []);
 
-function mainCtr($scope, $http, $q, $location) {
+function mainCtr($scope, $http, $q, $compile) {
     $scope.tree = treeStructure;
     $scope.childIndex = -1;
     $scope.breadcrumbs = [];
     $scope.cacheDialogTemplate = "";
-
+    $scope.importFile = {};
 
     $scope.AssessName = function (str) {
         if (str.length == 0) {
@@ -85,12 +85,14 @@ function mainCtr($scope, $http, $q, $location) {
     };
 
     $scope.TriggerDialog = function ($title) {
+        getImportFileInfo();
         if ($scope.dialogTemplate) {
             triggerDialog($title, $scope.cacheDialogTemplate);
         } else {
             $http.get(_urlDialogTemplate).success(function ($content) {
-                $scope.cacheDialogTemplate = $content;
-                triggerDialog($title, $content);
+                var $compileContent = getCompileContent($content);
+                $scope.cacheDialogTemplate = $compileContent;
+                triggerDialog($title, $compileContent);
             })
             .error(function () {
                 window.location.href = _urlErrorPage500;
@@ -120,6 +122,14 @@ function mainCtr($scope, $http, $q, $location) {
         });
     };
 
+    var getImportFileInfo = function () {
+        //ajax get file info
+        $scope.importFile = { date: "2014/09/29 04:10PM", size: "10.45 KB" };
+    };
+
+    var getCompileContent = function ($content) {
+        return $compile($content)($scope)[0];
+    };
 };
 
 
