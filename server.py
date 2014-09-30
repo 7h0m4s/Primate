@@ -725,23 +725,19 @@ def initConfig():
     if not confParser.has_section("passwords"):
         confParser.add_section('passwords')
 
-    if not confParser.has_option("general", "time_to_timeout"):
-        confParser.set('general', 'time_to_timeout', '300')
+    if not confParser.has_option("general", "sessionTimeOut"):
+        confParser.set('general', 'sessionTimeOut', '300')
 
-    if not confParser.has_option("passwords", "password_length"):
-        confParser.set('passwords', 'password_length', '8')
-    if not confParser.has_option("passwords", "lowercase_letters"):
-        confParser.set('passwords', 'lowercase_letters', '1')
-    if not confParser.has_option("passwords", "uppercase_letters"):
-        confParser.set('passwords', 'uppercase_letters', '1')
-    if not confParser.has_option("passwords", "digits"):
-        confParser.set('passwords', 'digits', '1')
-    if not confParser.has_option("passwords", "hexadecimal_digits"):
-        confParser.set('passwords', 'hexadecimal_digits', '0')
-    if not confParser.has_option("passwords", "symbols"):
-        confParser.set('passwords', 'symbols', '0')
-    if not confParser.has_option("passwords", "restrict_to_easy_read_chars"):
-        confParser.set('passwords', 'restrict_to_easy_read_chars', '0')
+    if not confParser.has_option("passwords", "passwrdMinLenth"):
+        confParser.set('passwords', 'passwrdMinLenth', '8')
+    if not confParser.has_option("passwords", "isLowercase"):
+        confParser.set('passwords', 'isLowercase', '1')
+    if not confParser.has_option("passwords", "isUppercase"):
+        confParser.set('passwords', 'isUppercase', '1')
+    if not confParser.has_option("passwords", "isDigit"):
+        confParser.set('passwords', 'isDigit', '1')
+    if not confParser.has_option("passwords", "isSymbol"):
+        confParser.set('passwords', 'isSymbol', '0')
 
     cfgFile = open(confPath,'w')
     confParser.write(cfgFile)
@@ -753,30 +749,51 @@ Function sets configuration file to default settings
 """
 def confSetToDefault():
 
-    confParser.set('general', 'time_to_timeout', '300')
-    confParser.set('passwords', 'password_length', '8')
-    confParser.set('passwords', 'lowercase_letters', '1')
-    confParser.set('passwords', 'uppercase_letters', '1')
-    confParser.set('passwords', 'digits', '1')
-    confParser.set('passwords', 'hexadecimal_digits', '0')
-    confParser.set('passwords', 'symbols', '0')
-    confParser.set('passwords', 'restrict_to_easy_read_chars', '0')
+    confParser.set('general', 'sessionTimeOut', '300')
+    confParser.set('passwords', 'passwrdMinLenth', '8')
+    confParser.set('passwords', 'isLowercase', '1')
+    confParser.set('passwords', 'isUppercase', '1')
+    confParser.set('passwords', 'isDigit', '1')
+    confParser.set('passwords', 'isSymbol', '0')
     
     return
 
-@app.route("/getConfig")
+##sessionTimeOut:
+## 1
+## passwrdMinLenth:
+## 1
+## isLowercase:
+## on
+## isUppercase:
+## on
+## isDigit:
+## on
+## isSymbol:
+## on
+
+## sessionTimeOut:
+## 1
+## passwrdMinLenth:
+## 1
+## isLowercase:
+## on
+## isUppercase:
+## on
+## isDigit:
+## on
+## isSymbol:
+## on
+@app.route("/config-get")
 def getConfig():
     try:
         data={}
 
-        data["time_to_timeout"]=confParser.getint("general",'time_to_timeout')
-        data["password_length"]=confParser.getint("passwords",'password_length')
-        data["lowercase_letters"]=confParser.getint("passwords",'lowercase_letters')
-        data["uppercase_letters"]=confParser.getint("passwords",'uppercase_letters')
-        data["digits"]=confParser.getint("passwords",'digits')
-        data["hexadecimal_digits"]=confParser.getint("passwords",'hexadecimal_digits')
-        data["symbols"]=confParser.getint("passwords",'symbols')
-        data["restrict_to_easy_read_chars"]=confParser.getint("passwords",'restrict_to_easy_read_chars')
+        data["time_to_timeout"]=confParser.getint("general",'sessionTimeOut')
+        data["password_length"]=confParser.getint("passwords",'passwrdMinLenth')
+        data["lowercase_letters"]=confParser.getint("passwords",'isLowercase')
+        data["uppercase_letters"]=confParser.getint("passwords",'isUppercase')
+        data["digits"]=confParser.getint("passwords",'isDigit')
+        data["symbols"]=confParser.getint("passwords",'isSymbol')
         
 
         return json.dumps(data)
@@ -784,25 +801,32 @@ def getConfig():
             return str(e),500
         
 
-@app.route("/setConfig",methods=['POST'])
+@app.route("/config-set",methods=['POST'])
 def setConfig():
-    try:
-        confParser.set("general",'time_to_timeout',request.form['time_to_timeout'])
-        confParser.set("passwords",'password_length',request.form['password_length'])
-        confParser.set("passwords",'lowercase_letters',request.form['lowercase_letters'])
-        confParser.set("passwords",'uppercase_letters',request.form['uppercase_letters'])
-        confParser.set("passwords",'digits',request.form['digits'])
-        confParser.set("passwords",'hexadecimal_digits',request.form['hexadecimal_digits'])
-        confParser.set("passwords",'symbols',request.form['symbols'])
-        confParser.set("passwords",'restrict_to_easy_read_chars',request.form['restrict_to_easy_read_chars'])
+    try:#request.form.get('test1', default=False, type=bool)
+        confParser.set("general",'time_to_timeout',request.form.get('sessionTimeOut'))
+        confParser.set("passwords",'password_length',request.form.get('passwrdMinLenth'))
+        setCheckBoxConfig(request,'isLowercase',"passwords")
+        setCheckBoxConfig(request,'isUppercase',"passwords")
+        setCheckBoxConfig(request,'isDigit',"passwords")
+        setCheckBoxConfig(request,'isSymbol',"passwords")
+
         return
     except Exception,e:
             return str(e),500
 
     return
 
-
-
+"""
+Function tests if a checkbox value exists or not and sets the approperiate value to disk.
+"""
+def setCheckBoxConfig(request,cfgOption,cfgSection):
+    if request.form.get(cfgOption,False):
+        confParser.set(cfgSection,cfgOption,1)
+    else:
+        confParser.set(cfgSection,cfgOption,0)
+    
+    return
 
 """
 Function returns a Json tree datastructure representation of password database
