@@ -218,3 +218,17 @@ var ajaxPost = function ($formObj, isAsync, successFun) {
     });
 };
 
+
+var triggerDialog = function ($title, $content) {
+    $.Dialog({
+        overlay: true,
+        shadow: true,
+        flat: true,
+        title: $title,
+        content: $content,
+        padding: 10,
+        onShow: function () {
+            $.Metro.initInputs();
+        }
+    });
+};
