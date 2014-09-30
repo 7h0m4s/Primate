@@ -30,8 +30,20 @@ var saveDB = function () {
 var loginDropDown = function (id, command) {
     if (command == "opnUrl") {
     } else if (command == "cpyUsr") {
+        posting(post, '/copy', {uuid:id,attribute:'username'}, function () {
+
+        });
+	
     } else if (command == "cpyPswd") {
+	    posting(post, '/copy', {uuid:id,attribute:'password'}, function () {
+
+        });
+	
     } else if (command == "cpyUrl") {
+	    posting(post, '/copy', {uuid:id,attribute:'url'}, function () {
+
+        });
+	
     } else if (command == "view") {
     } else if (command == "edit") {
         if ($('.del-user-chkbox').is(':checked')) {
@@ -328,9 +340,31 @@ $(function () {
         });
     });
 
-    $(".import-btn").click(function (e) {
+     $(".import-btn").click(function (e) {
         e.preventDefault();
-        $("#importDialog").click();
+        $.get( "/get-filepath", function( data ) {
+		  $("#import").val( data );
+		  
+		});
+    });
+	
+	$("#form-import .browse").click(function () {
+		$.get( "/import-browse", function( data ) {
+		  $("#form-import .filepath").val( data );
+		  
+		});
+    });
+	
+	 $("#form-import .saveChanges").click(function () {
+		var importForm = $("#form-import");
+        var method = 'post';
+        var url = $(importForm).attr("target");
+        var postData = $(importForm).serialize();
+        posting(method, url, postData, function () {
+            $("#importModal").modal('hide');
+			refresh();
+            
+        });
     });
 });
 

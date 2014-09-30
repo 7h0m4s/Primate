@@ -103,9 +103,9 @@
                                             <ul class="dropdown-menu" role="menu">
                                                 <li><a target="_blank" href="http://{{ record._get_url() }}"><span class="glyphicon glyphicon-link"></span> Open URL</a></li>
                                                 <hr>
-                                                <li><a href="#"><span class="glyphicon glyphicon-file"></span> Copy Username</a></li>
-                                                <li><a href="#"><span class="glyphicon glyphicon-file"></span> Copy Password</a></li>
-                                                <li><a href="#"><span class="glyphicon glyphicon-file"></span> Copy URL</a></li>
+                                                <li><a href="#" onclick="loginDropDown('{{ record._get_uuid() }}','cpyUsr')"><span class="glyphicon glyphicon-file copy-username"></span> Copy Username</a></li>
+                                                <li><a href="#" onclick="loginDropDown('{{ record._get_uuid() }}','cpyPswd')"><span class="glyphicon glyphicon-file copy-password"></span> Copy Password</a></li>
+                                                <li><a href="#" onclick="loginDropDown('{{ record._get_uuid() }}','cpyUrl')"><span class="glyphicon glyphicon-file copy-url"></span> Copy URL</a></li>
                                                 <hr>
                                                 <li><a href="#" onclick="loginDropDown('{{ record._get_uuid() }}','view')"><span class="glyphicon glyphicon-eye-open"></span> View</a></li>
                                                 <li><a href="#" onclick="loginDropDown('{{ record._get_uuid() }}','edit')"><span class="glyphicon glyphicon-edit"></span> Edit</a></li>
