@@ -94,7 +94,7 @@ function mainCtr($scope, $http, $q, $compile) {
                 $scope.cacheDialogTemplate = $compileContent;
                 triggerDialog($title, $compileContent);
             })
-            .error(function () {
+            .error(function ($content, status) {
                 window.location.href = _urlErrorPage500;
             });
         }
