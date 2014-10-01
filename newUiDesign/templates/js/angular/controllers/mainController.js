@@ -8,91 +8,50 @@ var _defaultCheckboxValue = "on";
 var _urlErrorPage404 = "error-page.html";
 var _urlErrorPage500 = "error-page.html?code=500";
 var _urlExportDialogTemplate = "dialog-export-template.html";
+var _urlImportDialogTemplate = "dialog-import-template.html";
 var _urlSaveUserSetting = "/config-set";
-//var _urlGetUserSetting = "/config-get";
 var _urlGetUserSetting = "json/config-get.txt";
 var _urlGetTree = "json/tree-data.txt";
+var _urlGetTree2 = "json/tree-data2.txt";
+
+var _urlBrowse = "json/url-browse.txt";
+//var _urlBrowse = "/import-browse";
+var _urlImportSubmit = "/import-direct";
+
 
 var mainApp = angular.module("mainApp", ['ngRoute'])
 
-//.config(function ($routeProvider, $q, $http, $locationProvider) {
-//    $routeProvider.when('/', {
-//        templateUrl: 'main.html',
-//        controller: "mainController",
-//        resolve: {
-//            prepTree: function () {
-//                var defer = $q.defer();
-//                $http.get(_urlGetTree).success(function (result) {
-//                    defer.resolve(result.data);
-//                });
-//                return defer.promise;
-//            }
-//        }
-//    });
-//    $locationProvider.html5Mode(true);
-//})
-//.service('ajaxRequest', function ($http, $q) {
-//    var promise = $http.get(_urlGetTree).success(function (result) {
-//        return result.data;
-//    });
-//    return promise;
-//})
 .factory('requestFactory', function ($q, $http) {
     var myService = {
-        get: function () {
+        get: function (url) {
             var deferred = $q.defer();
-
-            var defs = [];
-            var promises = [];
-
-            var i = 0;
-            var length = 1;
-
-            for (var j = 0; j < length; ++j) {
-                defs[j] = $q.defer();
-                promises[j] = defs[j].promise;
-            }
-
-            makeCall(i, length, defs);
-
-            $q.all(promises).then(function (datas) {
+            var def = $q.defer();
+            request(def, url);
+            def.promise.then(function (datas) {
                 deferred.resolve(datas);
             });
-
             return deferred.promise;
         }
     }
-
-    function makeCall(i, length, defs) {
-        if (i < length) {
-            $http.get('json/tree-data.txt').then(function (resp) {
-                defs[i].resolve(resp.data);
-                ++i;
-                makeCall(i, length, defs);
-            });
-        }
+    function request(def, url) {
+        $http.get(url).then(function (response) {
+            def.resolve(response.data);
+        });
     }
     return myService;
 })
 .controller('mainController', function ($scope, $http, $q, $compile, $window, requestFactory) {
     $scope.childIndex = -1;
     $scope.breadcrumbs = [];
-    $scope.templates = { cacheExportDialogTemplate: "" }
+    $scope.templates = { cacheExportDialogTemplate: "", cacheImportDialogTemplate: "" }
     $scope.importFile = {};
     $scope.userSetting = null;
-
-    requestFactory.get().then(function (datas) {
-        $scope.tree = datas[0];
-    });
+    $scope.tree = null;
 
     $scope.init = function () {
-        //initTree($scope);
-        //initSetting($scope);
+        initTree($scope);
+        initSetting($scope);
     };
-
-    //$scope.$watch('tree', function (newValue, oldvalue) {
-    //    console.log($scope.tree);
-    //});
 
     $scope.$watch('userSetting', function (newValue, oldvalue) {
         if (newValue != oldvalue) {
@@ -165,15 +124,6 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
             closeSilder();
         });
     };
-    //$scope.CheckIfLastBreadcrumb = function (breadcrumb) {
-    //    console.log("I was called");
-    //    var inactiveClass = "unavailable";
-    //    if (breadcrumb.groups.length == 0) {
-    //        return inactiveClass;
-    //    }
-    //    return null;
-    //};
-
     $scope.TriggerSlider = function () {
         $(".slide-right").show();
         $(".slide-right-wrapper").animate({ 'opacity': 0.3, 'filter': 'alpha(opacity=30)' });
@@ -184,9 +134,9 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
         closeSilder();
     };
 
-    $scope.TriggerDialog = function ($title) {
+    $scope.TriggerExportDialog = function ($title) {
         getImportFileInfo();
-        if ($scope.dialogTemplate) {
+        if ($scope.templates.cacheExportDialogTemplate) {
             triggerDialog($title, getCompileContent($scope.templates.cacheExportDialogTemplate));
         } else {
             $http.get(_urlExportDialogTemplate).success(function ($content) {
@@ -198,6 +148,36 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
                 redirectToError500();
             });
         }
+    };
+
+    $scope.TriggerImportDialog = function ($title) {
+        if ($scope.templates.cacheImportDialogTemplate) {
+            triggerDialog($title, getCompileContent($scope.templates.cacheImportDialogTemplate));
+        } else {
+            $http.get(_urlImportDialogTemplate).success(function ($content) {
+                $scope.templates.cacheImportDialogTemplate = $content;
+                var $compileContent = getCompileContent($content);
+                triggerDialog($title, $compileContent);
+            })
+            .error(function ($content, status) {
+                redirectToError500();
+            });
+        }
+    };
+
+    $scope.Browse = function () {
+        $.get(_urlBrowse, function (data) {
+            $("#import-dialog .file-path").val(data);
+        });
+    };
+
+    $scope.ImportSubmit = function () {
+        //$.get(_urlBrowse, function (data) {
+        //    $("#import-dialog .file-path").val(data);
+        //});
+        //_urlImportSubmit Post request
+        initTree2($scope);
+        $.Dialog.close();
     };
 
     var addParentToEachChild = function (obj) {
@@ -221,7 +201,6 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
             $(".slide-right").hide();
         });
     };
-
     var getImportFileInfo = function () {
         //ajax get file info
         $scope.importFile = { date: "2014/09/29 04:10PM", size: "10.45 KB" };
@@ -238,6 +217,7 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
         }
         $.Notify({ style: { background: '#1ba1e2', color: 'white' }, caption: _caption, content: msg });
     };
+
     var notifiFailure = function (_caption, msg) {
         if (!_caption) {
             _caption = _DEFAULT_FAILURE_CAPTION;
@@ -253,14 +233,20 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
     };
 
     var initSetting = function (scope) {
-        $q.defer();
-        ajaxRequest.getRequest(_urlGetUserSetting).then(function (data) {
+        requestFactory.get(_urlGetUserSetting).then(function (data) {
             scope.userSetting = data;
         });
     };
     var initTree = function (scope) {
-        //ajaxRequest.getRequest(_urlGetTree).then(function (data) {
-        //    scope.tree = data;
-        //});
+        requestFactory.get(_urlGetTree).then(function (data) {
+            scope.tree = data;
+        });
+    };
+
+    //todo test only to be removed
+    var initTree2 = function (scope) {
+        requestFactory.get(_urlGetTree2).then(function (data) {
+            scope.tree = data;
+        });
     };
 });

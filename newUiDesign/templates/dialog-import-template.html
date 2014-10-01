@@ -1,17 +1,14 @@
-﻿<div class="modal-body">
+﻿<div class="modal-body" id="import-dialog">
     <div class="alert alert-danger">
-        <strong>Warning!</strong> Exporting the database will mean that your passwords will no longer be securely encrypted.
+        <strong>Warning!</strong> Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit
     </div>
-    <div class="file-info">
-        <div class="file-thumbnail">
-            <img src="img/export_text-icon.gif" />
-        </div>
-        <div>Document</div>
-        <div>
-            <span>{{importFile.date}}</span>&nbsp;·&nbsp;<span>{{importFile.size}}</span>
+    <div class="file-info margin-top10">
+        <div class="input-control file" data-role="input-control">
+            <input type="text" readonly class="file-path">
+            <button class="btn-file browse-btn" type="button" ng-click="Browse()"></button>
         </div>
         <div>
-            <a href="/export" class="btn btn-lead full" id="export-download">Download</a>
+            <a href="#" class="btn btn-lead full" id="import-download" ng-click="ImportSubmit()">Import</a>
         </div>
     </div>
 </div>

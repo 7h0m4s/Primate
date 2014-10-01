@@ -14,6 +14,10 @@
     margin-top: 0 !important;
 }
 
+.margin-top10 {
+    margin-top: 10px !important;
+}
+
 .dis-block {
     display: block;
 }
@@ -628,15 +632,18 @@ a.spin-up {
     height: 54px;
     padding: 15px 20px 10px;
 }
-.metro .window.flat .caption .btn-close {
-    border:0;
-}
-    .metro .window.flat .caption .btn-close:hover, .metro .window.flat .caption .btn-close:focus,.metro .window.flat .caption .btn-close:active{
-        background-color: #fff!important;
-        background-color: transparent!important;
-        color: #777777!important;
-        border:0;
+
+    .metro .window.flat .caption .btn-close {
+        border: 0;
     }
+
+        .metro .window.flat .caption .btn-close:hover, .metro .window.flat .caption .btn-close:focus, .metro .window.flat .caption .btn-close:active {
+            background-color: #fff !important;
+            background-color: transparent !important;
+            color: #777777 !important;
+            border: 0;
+        }
+
 .metro .modal-title, .metro .window .caption .title {
     color: #000;
     margin: 0;
@@ -667,6 +674,16 @@ a.spin-up {
     color: #a94442;
 }
 
+.alert-info {
+    background-color: #5bc0de;
+    border-color: #3db5d8;
+    color: #ffffff;
+}
+
+#import-download {
+    margin: 10px 0 5px;
+}
+
 .file-info {
     margin-top: 60px;
     text-align: center;
@@ -695,18 +712,14 @@ a.full {
 .metro .window.flat {
     width: 550px;
 }
-/*.modal-backdrop.in {
-    filter: alpha(opacity=30);
-    opacity: .3;
-}
-
-.modal-backdrop {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 1040;
-    background-color: #000;
-}*/
 /*end of modal box*/
+
+/*browse button*/
+.browse-input {
+    cursor: default;
+    z-index: 1;
+}
+.browse-btn:focus {
+    outline: 0!important;
+}
+/*end of browse button*/
