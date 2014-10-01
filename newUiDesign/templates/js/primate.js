@@ -202,19 +202,39 @@ var loadingWrapper = function () {
     $('#loader-wrapper').delay(350).fadeOut('fast');
 };
 
-var ajaxPost = function ($formObj, isAsync, successFun) {
-    var method = "POST";
-    var url = $formObj.attr("target");
+var ajaxPost = function ($formObj, isAsync, requestUrl, successFunc, failureFunc) {
+    var method = "Post";
+    var url = "";
+    if (!requestUrl) {
+        url = $formObj.attr("target");
+    } else {
+        url = requestUrl;
+    }
     var postData = $formObj.serialize();
+    console.log(postData);
     $.ajax({
         type: method,
         url: url,
         data: postData,
         async: isAsync
     }).done(function (msg) {
-        successFun();
+        successFunc(msg);
     }).fail(function (msg) {
-        successFun();
+        failureFunc(msg);
+    });
+};
+
+var ajaxGet = function (isAsync, requestUrl, successFunc, failureFunc) {
+    var method = "Get";
+    var url = requestUrl;
+    $.ajax({
+        type: method,
+        url: url,
+        async: isAsync
+    }).done(function (msg) {
+        return msg;
+    }).fail(function (msg) {
+        return msg;
     });
 };
 
