@@ -21,10 +21,11 @@ import json
 import csv
 import StringIO
 import cStringIO
-import Tkinter
-import tkFileDialog
+#import Tkinter
+#import tkFileDialog
 import pyperclip
 import time
+import easygui
 from ConfigParser import SafeConfigParser
 
 #Configuration to handle HTML file uploads if implemented later.
@@ -483,19 +484,7 @@ Returns the selected filepath as a string.
 """
 @app.route("/import-browse")
 def importBrowser():
-    root = Tkinter.Tk()
-    root.withdraw()# Close the root window
-    root.overrideredirect(True)
-    root.geometry('0x0+0+0')#make tkinter window invisible
-
-    # Show window again and lift it to top so it can get focus,
-    # otherwise dialogs will end up behind the terminal.
-    root.deiconify()
-    root.lift()
-    root.focus_force()
-    
-    file_path = tkFileDialog.askopenfilename(initialdir=(os.path.expanduser('~/')),parent=root)
-    root.destroy()
+    file_path = easygui.fileopenbox(default="/")
     return file_path
 
 """
@@ -658,20 +647,8 @@ Returns selected filepath as a string.
 """
 @app.route("/get-filepath")
 def getFilepath():
-    root = Tkinter.Tk()
-    root.withdraw()
-    root.overrideredirect(True)
-    root.geometry('0x0+0+0')#make tkinter window invisible
-    #Tkinter.Tk().withdraw() # Close the root window
-
-    # Show window again and lift it to top so it can get focus,
-    # otherwise dialogs will end up behind the terminal.
-    root.deiconify()
-    root.lift()
-    root.focus_force()
+    in_path = easygui.fileopenbox(default="/")
     
-    in_path = tkFileDialog.askopenfilename(initialdir=(os.path.expanduser('~/')),parent=root)
-    root.destroy()
     return in_path
 
 
@@ -782,7 +759,8 @@ def confSetToDefault():
 ## isDigit:
 ## on
 ## isSymbol:
-## on
+## on
+
 @app.route("/config-get")
 def getConfig():
     try:
