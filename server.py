@@ -14,6 +14,7 @@ from flask import make_response
 from werkzeug import secure_filename
 from vault import *
 from datetime import timedelta
+import os
 import os.path
 import webbrowser
 import logging
@@ -21,9 +22,11 @@ import json
 import csv
 import StringIO
 import cStringIO
-import Tkinter
-import tkFileDialog
+#import Tkinter
+#import tkFileDialog
 import pyperclip
+import time
+import easygui
 from ConfigParser import SafeConfigParser
 
 #Configuration to handle HTML file uploads if implemented later.
@@ -469,11 +472,49 @@ Function saves changes to the database to the database file.
 """
 @app.route("/save", methods=['POST'])
 def saveDB():
+    if isLoggedIn()==False:
+        return "user not logged in.",500
     sessionVault.getVault().write_to_file(session['dbFile'], session['password'])
     
     return "Database was saved to "+session['dbFile']
 
 
+"""
+Function saves database under a new master password
+Parameter: newPassword= string of new password
+            oldPassword= string of old password for validation
+"""
+@app.route("/new-master-password", methods=['POST'])
+def newMasterPasword():
+    try:
+        if isLoggedIn()==False:
+            return "user not logged in.",500
+        newPass = request.values.get('newPassword', default="")
+        oldPass = request.values.get('oldPassword', default="")
+        if newPass == "":
+            return "No new password recived",500
+        if oldPass != session['password']:
+            return "Old password does not match backend records.",500
+        if oldPass == newPass:
+            return "Must choose a new password.",500
+        session['password'] = newPass
+        saveDB()
+        return "Master Password changed."
+    except Exception,e:
+        return str(e),500
+
+
+
+"""
+Function is used in the index.html template JS code.
+Will open a file selection dialog window for user to select the database they want to use.
+Returns selected filepath as a string.
+"""
+@app.route("/get-filepath")
+def getFilepath():
+    in_path = easygui.fileopenbox(default=os.getenv("HOME"))
+    
+    return in_path
 
 
 """
@@ -482,19 +523,7 @@ Returns the selected filepath as a string.
 """
 @app.route("/import-browse")
 def importBrowser():
-    root = Tkinter.Tk()
-    root.withdraw()# Close the root window
-    root.overrideredirect(True)
-    root.geometry('0x0+0+0')#make tkinter window invisible
-
-    # Show window again and lift it to top so it can get focus,
-    # otherwise dialogs will end up behind the terminal.
-    root.deiconify()
-    root.lift()
-    root.focus_force()
-    
-    file_path = tkFileDialog.askopenfilename(initialdir=(os.path.expanduser('~/')),parent=root)
-    root.destroy()
+    file_path = easygui.fileopenbox(default=os.getenv("HOME"))
     return file_path
 
 """
@@ -650,31 +679,6 @@ def assure_path_exists(path):
 
 
 
-"""
-Function is used in the index.html template JS code.
-Will open a file selection dialog window for user to select the database they want to use.
-Returns selected filepath as a string.
-"""
-@app.route("/get-filepath")
-def getFilepath():
-    root = Tkinter.Tk()
-    root.withdraw()
-    root.overrideredirect(True)
-    root.geometry('0x0+0+0')#make tkinter window invisible
-    #Tkinter.Tk().withdraw() # Close the root window
-
-    # Show window again and lift it to top so it can get focus,
-    # otherwise dialogs will end up behind the terminal.
-    root.deiconify()
-    root.lift()
-    root.focus_force()
-    
-    in_path = tkFileDialog.askopenfilename(initialdir=(os.path.expanduser('~/')),parent=root)
-    root.destroy()
-    return in_path
-
-
-
 
 """
 Function copies specified value from specified login account to clipboard.
@@ -684,6 +688,8 @@ attribute: the attribute that is to be copied.
 """
 @app.route("/copy",methods=['POST'])
 def copy():
+    if isLoggedIn()==False:
+            return "user not logged in.",500
     out = ""
     uuid = request.form['uuid']
     attribute = request.form['attribute']
@@ -714,6 +720,7 @@ Function initiates configuration file.
 """
 def initConfig():
     global confParser
+    global confPath
     confParser = SafeConfigParser()
     confPath = 'config.ini'
     if not os.path.isfile(confPath):
@@ -724,24 +731,29 @@ def initConfig():
     if not confParser.has_section("passwords"):
         confParser.add_section('passwords')
 
-    if not confParser.has_option("general", "time_to_timeout"):
-        confParser.set('general', 'time_to_timeout', '300')
+    if not confParser.has_option("general", "sessionTimeOut"):
+        confParser.set('general', 'sessionTimeOut', '300')
 
-    if not confParser.has_option("passwords", "password_length"):
-        confParser.set('passwords', 'password_length', '8')
-    if not confParser.has_option("passwords", "lowercase_letters"):
-        confParser.set('passwords', 'lowercase_letters', '1')
-    if not confParser.has_option("passwords", "uppercase_letters"):
-        confParser.set('passwords', 'uppercase_letters', '1')
-    if not confParser.has_option("passwords", "digits"):
-        confParser.set('passwords', 'digits', '1')
-    if not confParser.has_option("passwords", "hexadecimal_digits"):
-        confParser.set('passwords', 'hexadecimal_digits', '0')
-    if not confParser.has_option("passwords", "symbols"):
-        confParser.set('passwords', 'symbols', '0')
-    if not confParser.has_option("passwords", "restrict_to_easy_read_chars"):
-        confParser.set('passwords', 'restrict_to_easy_read_chars', '0')
+    if not confParser.has_option("passwords", "passwrdMinLenth"):
+        confParser.set('passwords', 'passwrdMinLenth', '8')
+    if not confParser.has_option("passwords", "isLowercase"):
+        confParser.set('passwords', 'isLowercase', '1')
+    if not confParser.has_option("passwords", "isUppercase"):
+        confParser.set('passwords', 'isUppercase', '1')
+    if not confParser.has_option("passwords", "isDigit"):
+        confParser.set('passwords', 'isDigit', '1')
+    if not confParser.has_option("passwords", "isSymbol"):
+        confParser.set('passwords', 'isSymbol', '0')
 
+    saveConfig()
+    return
+
+"""
+Function saves conficuration to file.
+"""
+def saveConfig():
+    if not os.path.isfile(confPath):
+        file(confPath, 'w').close()
     cfgFile = open(confPath,'w')
     confParser.write(cfgFile)
     cfgFile.close()
@@ -752,56 +764,77 @@ Function sets configuration file to default settings
 """
 def confSetToDefault():
 
-    confParser.set('general', 'time_to_timeout', '300')
-    confParser.set('passwords', 'password_length', '8')
-    confParser.set('passwords', 'lowercase_letters', '1')
-    confParser.set('passwords', 'uppercase_letters', '1')
-    confParser.set('passwords', 'digits', '1')
-    confParser.set('passwords', 'hexadecimal_digits', '0')
-    confParser.set('passwords', 'symbols', '0')
-    confParser.set('passwords', 'restrict_to_easy_read_chars', '0')
-    
+    confParser.set('general', 'sessionTimeOut', '300')
+    confParser.set('passwords', 'passwrdMinLenth', '8')
+    confParser.set('passwords', 'isLowercase', '1')
+    confParser.set('passwords', 'isUppercase', '1')
+    confParser.set('passwords', 'isDigit', '1')
+    confParser.set('passwords', 'isSymbol', '0')
+    saveConfig()
     return
 
-@app.route("/getConfig")
+
+
+@app.route("/config-get")
 def getConfig():
     try:
         data={}
 
-        data["time_to_timeout"]=confParser.getint("general",'time_to_timeout')
-        data["password_length"]=confParser.getint("passwords",'password_length')
-        data["lowercase_letters"]=confParser.getint("passwords",'lowercase_letters')
-        data["uppercase_letters"]=confParser.getint("passwords",'uppercase_letters')
-        data["digits"]=confParser.getint("passwords",'digits')
-        data["hexadecimal_digits"]=confParser.getint("passwords",'hexadecimal_digits')
-        data["symbols"]=confParser.getint("passwords",'symbols')
-        data["restrict_to_easy_read_chars"]=confParser.getint("passwords",'restrict_to_easy_read_chars')
         
+        data["sessionTimeOut"]=confParser.getint("general",'sessionTimeOut')
+        data["passwrdMinLenth"]=confParser.getint("passwords",'passwrdMinLenth')
+        getConfCheckboxes(data,"passwords","isLowercase")
+        getConfCheckboxes(data,"passwords","isUppercase")
+        getConfCheckboxes(data,"passwords","isDigit")
+        getConfCheckboxes(data,"passwords","isSymbol")
+      
 
         return json.dumps(data)
     except Exception,e:
             return str(e),500
-        
 
-@app.route("/setConfig",methods=['POST'])
+"""
+Helper fuction for getConfig() to help with checkbox wierdness.
+"""
+def getConfCheckboxes(dataDict, cfgSection, cfgOption):
+    if confParser.getint(cfgSection,cfgOption)==1:
+        dataDict[cfgOption]= "on"
+        
+    return
+
+@app.route("/config-set",methods=['POST'])
 def setConfig():
-    try:
-        confParser.set("general",'time_to_timeout',request.form['time_to_timeout'])
-        confParser.set("passwords",'password_length',request.form['password_length'])
-        confParser.set("passwords",'lowercase_letters',request.form['lowercase_letters'])
-        confParser.set("passwords",'uppercase_letters',request.form['uppercase_letters'])
-        confParser.set("passwords",'digits',request.form['digits'])
-        confParser.set("passwords",'hexadecimal_digits',request.form['hexadecimal_digits'])
-        confParser.set("passwords",'symbols',request.form['symbols'])
-        confParser.set("passwords",'restrict_to_easy_read_chars',request.form['restrict_to_easy_read_chars'])
+    try:#request.form.get('test1', default=False, type=bool)
+        if (request.form.get('sessionTimeOut', False) != False) and int(request.form.get('sessionTimeOut'))>0:
+            confParser.set("general",'time_to_timeout',request.values.get('sessionTimeOut'))
+        else:
+            return "No sessionTimeOut set",500
+        if request.form.get('passwrdMinLenth', False) and int(request.form.get('passwrdMinLenth'))>=0:
+            confParser.set("passwords",'password_length',request.values.get('passwrdMinLenth'))
+        else:
+            return "No password_length set",500
+        setCheckBoxConfig(request,'isLowercase',"passwords")
+        setCheckBoxConfig(request,'isUppercase',"passwords")
+        setCheckBoxConfig(request,'isDigit',"passwords")
+        setCheckBoxConfig(request,'isSymbol',"passwords")
+
+        saveConfig()
         return
     except Exception,e:
             return str(e),500
 
     return
 
-
-
+"""
+Function tests if a checkbox value exists or not and sets the approperiate value to disk.
+"""
+def setCheckBoxConfig(request,cfgOption,cfgSection):
+    if request.values.get(cfgOption,False):
+        confParser.set(cfgSection,cfgOption,1)
+    else:
+        confParser.set(cfgSection,cfgOption,0)
+    
+    return
 
 """
 Function returns a Json tree datastructure representation of password database
@@ -809,6 +842,8 @@ e.g.: {groupName:"",children:[{uuid:"79873249827346",title:"hello",user:"usernam
 """
 @app.route("/get-db-json")
 def getDbJson():
+    if isLoggedIn()==False:
+            return "user not logged in.",500
     dbDict={}
     #dbDict= {"groupName":"","children":[],"groups":[]}
     dbDict = getChildren("")
@@ -865,7 +900,7 @@ def getChild(record):
     data["user"]=str(record._get_user())
     data["passwd"]=str(record._get_passwd())
     data["notes"]=str(record._get_notes())
-    data["last_mod"]=int(record._get_last_mod())
+    data["last_mod"]=str(time.strftime("%H:%M %d-%m-%Y", time.localtime(record._get_last_mod())))
     data["url"]=str(record._get_url())
     return data
 
@@ -880,8 +915,34 @@ def splitGroups(groups):
     return groupList
 
 
+"""
+Function safely closes the backend server.
+"""
+@app.route('/shutdown')
+def shutdown():
+    if isLoggedIn():#redirects if already logged in
+        sessionVault.removeVault()
+        session.clear()
+    shutdown_server()    
+
+
+    return "Shutting down server."
+
+def shutdown_server():
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is None:
+        raise RuntimeError('Not running with the Werkzeug Server')
+    func()
+
+
+
+
 #Code below is equivilent to a "Main" function in Java or C
 if __name__ == "__main__":
+
+    #initiate server config
+    initConfig()
+    
     #initiate object that will store the databases.
     global sessionVault
     sessionVault = SessionVault()

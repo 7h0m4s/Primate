@@ -1,0 +1,16 @@
+This cache concept will be only implemented if we have extra time
+
+-->How it works
+1. Keep account object in an $array.
+2. Each request will search through the $array by account ID
+	2.1. If not exist an request send to server side and push it in the $array
+	2.2  Else directly retrieve from $array 
+3. Each insert create update will be verified from server side. If success, the object will sychronize with $array. 
+4. In order to prevent any refresh requests (retype URL or F5 refresh page) which will clear the object. Each insert/update/delete will trigger a function that stores it in cookie.
+
+-->The cookie life cycle
+The cookie should be clear when session expired or each login.
+
+-->Cookie security
+
+1. if the cookie 

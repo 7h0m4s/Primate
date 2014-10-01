@@ -1796,8 +1796,8 @@ a {
   text-decoration: none !important;
 }
 .metro button:active {
-  background-color: #1d1d1d !important;
-  color: #ffffff !important;
+  /*background-color: #1d1d1d !important;
+  color: #ffffff !important;*/
   border-color: transparent;
 }
 .metro button.large {
