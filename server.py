@@ -883,6 +883,28 @@ def splitGroups(groups):
     return groupList
 
 
+"""
+Function safely closes the backend server.
+"""
+@app.route('/shutdown')
+def shutdown():
+    if isLoggedIn():#redirects if already logged in
+        sessionVault.removeVault()
+        session.clear()
+    shutdown_server()    
+
+
+    return "Shutting down server."
+
+def shutdown_server():
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is None:
+        raise RuntimeError('Not running with the Werkzeug Server')
+    func()
+
+
+
+
 #Code below is equivilent to a "Main" function in Java or C
 if __name__ == "__main__":
     #initiate object that will store the databases.
