@@ -14,6 +14,7 @@ from flask import make_response
 from werkzeug import secure_filename
 from vault import *
 from datetime import timedelta
+import os
 import os.path
 import webbrowser
 import logging
@@ -471,11 +472,49 @@ Function saves changes to the database to the database file.
 """
 @app.route("/save", methods=['POST'])
 def saveDB():
+    if isLoggedIn()==False:
+        return "user not logged in.",500
     sessionVault.getVault().write_to_file(session['dbFile'], session['password'])
     
     return "Database was saved to "+session['dbFile']
 
 
+"""
+Function saves database under a new master password
+Parameter: newPassword= string of new password
+            oldPassword= string of old password for validation
+"""
+@app.route("/new-master-password", methods=['POST'])
+def newMasterPasword():
+    try:
+        if isLoggedIn()==False:
+            return "user not logged in.",500
+        newPass = request.values.get('newPassword', default="")
+        oldPass = request.values.get('oldPassword', default="")
+        if newPass == "":
+            return "No new password recived",500
+        if oldPass != session['password']:
+            return "Old password does not match backend records.",500
+        if oldPass == newPass:
+            return "Must choose a new password.",500
+        session['password'] = newPass
+        saveDB()
+        return "Master Password changed."
+    except Exception,e:
+        return str(e),500
+
+
+
+"""
+Function is used in the index.html template JS code.
+Will open a file selection dialog window for user to select the database they want to use.
+Returns selected filepath as a string.
+"""
+@app.route("/get-filepath")
+def getFilepath():
+    in_path = easygui.fileopenbox(default=os.getenv("HOME"))
+    
+    return in_path
 
 
 """
@@ -484,7 +523,7 @@ Returns the selected filepath as a string.
 """
 @app.route("/import-browse")
 def importBrowser():
-    file_path = easygui.fileopenbox(default="/")
+    file_path = easygui.fileopenbox(default=os.getenv("HOME"))
     return file_path
 
 """
@@ -640,16 +679,6 @@ def assure_path_exists(path):
 
 
 
-"""
-Function is used in the index.html template JS code.
-Will open a file selection dialog window for user to select the database they want to use.
-Returns selected filepath as a string.
-"""
-@app.route("/get-filepath")
-def getFilepath():
-    in_path = easygui.fileopenbox(default="/")
-    
-    return in_path
 
 
 
@@ -662,6 +691,8 @@ attribute: the attribute that is to be copied.
 """
 @app.route("/copy",methods=['POST'])
 def copy():
+    if isLoggedIn()==False:
+            return "user not logged in.",500
     out = ""
     uuid = request.form['uuid']
     attribute = request.form['attribute']
@@ -812,6 +843,8 @@ e.g.: {groupName:"",children:[{uuid:"79873249827346",title:"hello",user:"usernam
 """
 @app.route("/get-db-json")
 def getDbJson():
+    if isLoggedIn()==False:
+            return "user not logged in.",500
     dbDict={}
     #dbDict= {"groupName":"","children":[],"groups":[]}
     dbDict = getChildren("")
