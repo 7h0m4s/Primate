@@ -21,6 +21,29 @@ var _urlImportSubmit = "/import-direct";
 
 var mainApp = angular.module("mainApp", ['ngRoute'])
 
+.config(function ($routeProvider, $locationProvider) {
+    $routeProvider
+        .when('/', {
+            template: '<h1>Not applicable</h1>',
+            controller: 'mainController'
+        })
+        .when('/group-create-template', {
+            templateUrl: 'group-create-template.html',
+            controller: 'mainController'
+        })
+        .when('/group-edit-template', {
+            templateUrl: 'group-edit-template.html',
+            controller: 'mainController'
+        })
+        .when('/group-view-template', {
+            templateUrl: 'group-view-template.html',
+            controller: 'mainController'
+        });
+
+    $locationProvider.html5Mode(true);
+    $locationProvider.hashPrefix('!');
+})
+
 .factory('requestFactory', function ($q, $http) {
     var myService = {
         get: function (url) {
@@ -83,7 +106,8 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
         $scope.breadcrumbs.push(obj);
     };
 
-    $scope.NavIn = function (obj) {
+    $scope.NavIn = function (obj, e) {
+        debugger;
         addParentToEachChild(obj);
         resetChildIndex();
         setGroupandChildren($scope, obj);

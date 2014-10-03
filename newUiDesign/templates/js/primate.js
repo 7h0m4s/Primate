@@ -138,7 +138,36 @@ var contextMenu = function () {
             }
         });
     }
-}
+};
+var contextFileGroupMenu = function () {
+    var fileGroup = $(".file-group");
+    if (fileGroup.length > 0) {
+        $.contextMenu({
+            selector: '.file-group',
+            callback: function (key, options) {
+                // $(this); here refers to the object that is being clicked --> <div class="context-menu-one" id="t1" name="name1">
+                var m = "clicked: " + key;
+                window.console && console.log(m) || alert(m);
+            },
+            items: {
+                "ViewGroup": {
+                    name: "Group Detail",
+                },
+                "EditGroup": {
+                    name: "Edit Group",
+                },
+                "DeleteGroup": {
+                    name: "Delete Group",
+                },
+                "editAcc": {
+                    name: "Edit account",
+                }
+            }
+        });
+    }
+};
+
+
 
 //due to jquery version, it throws an error. try catch can patch it properly
 var initSplitter = function () {
@@ -181,6 +210,7 @@ var unbindBackspace = function () {
 
 var self_invoke_func = (function () {
     contextMenu();
+    contextFileGroupMenu();
     responsiveFrame();
     unbindBackspace();
 })();
