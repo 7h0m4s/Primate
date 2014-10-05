@@ -27,6 +27,10 @@
     margin: 18px 0;
 }
 
+.ofh {
+    overflow: hidden;
+}
+
 #main {
     overflow-y: auto;
     overflow-x: visible;
@@ -83,6 +87,10 @@
 #content-detail {
     width: 100%;
     background-color: #fff;
+}
+
+.metro .example {
+    border: 0;
 }
 
 #loader {
@@ -446,6 +454,12 @@ button.close {
     border: 1px #258cd1 solid;
 }
 
+.metro button.btn-lead:disabled {
+    border: 1px #258cd1 solid!important;
+    background-color: #3498db!important;
+    color: #fff!important;
+}
+
     .metro .btn-lead:hover {
         background-color: #217dbb;
         color: #fff;
@@ -703,7 +717,7 @@ a.spin-up {
             width: 128px;
         }
 
-a.full {
+button.full, a.full {
     display: block;
     width: 100%;
     margin: 40px 0 10px;
@@ -719,7 +733,118 @@ a.full {
     cursor: default;
     z-index: 1;
 }
+
 .browse-btn:focus {
-    outline: 0!important;
+    outline: 0 !important;
 }
 /*end of browse button*/
+
+/*Manage group*/
+.metro legend {
+    overflow: hidden;
+}
+
+.btn.btn-white {
+    background-color: white;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25) !important;
+    -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+    -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.btn-group > .btn {
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.42857;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    white-space: nowrap;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+    color: #222222;
+    text-shadow: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    text-decoration: none;
+    background-color: whitesmoke;
+    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+    -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.btn-group {
+    overflow: hidden;
+}
+
+.btn.btn-white:hover {
+    background-color: #e6e6e6;
+}
+
+.metro .clip-group .btn:hover, .metro .clip-group .btn:focus {
+    color: #333333;
+    text-decoration: none;
+}
+
+.btn-group > a {
+    -webkit-border-radius: 0 !important;
+    -moz-border-radius: 0 !important;
+    border-radius: 0 !important;
+    margin-left: -1px;
+    float: left;
+}
+
+.btn[disabled] {
+    cursor: default;
+    pointer-events: none;
+    opacity: .65;
+    filter: alpha(opacity=65);
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+
+.metro h3.frame-title {
+    float: left;
+    margin: 15px 0;
+}
+
+.clip-group {
+    float: right;
+    margin-top: 10px;
+}
+
+.validation {
+    cursor: default;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    color: #b94a48;
+}
+
+/*.error-state>div>a.select2-choice {
+    border-color: #e51400;
+}*/
+
+.select-search {
+    width: 100%;
+    height: 34px;
+}
+
+.metro a.select2-choice:hover {
+    color: #444;
+}
+/*end of Manage group*/
+.icon-style {
+    font-size: 24px;
+
+}

@@ -1,8 +1,10 @@
 ﻿var _NO_GROUP_NAME = "Empty Group";
 var _NOTIFI_SETTING_CAPTION = "Setting";
+var _NOTIFI_GROUP_CAPTION = "Group";
 var _DEFAULT_FAILURE_CAPTION = "Error";
 var _DEFAULT_SUCCESS_MSG = "Saved successfully";
 var _DEFAULT_FAILURE_MSG = "Save failed";
+var _EDIT_SUCCESS_MSG = "Edit successfully";
 var _backspace_keycode = 8;
 var _defaultCheckboxValue = "on";
 var _urlErrorPage404 = "error-page.html";
@@ -17,31 +19,38 @@ var _urlGetTree2 = "json/tree-data2.txt";
 var _urlBrowse = "json/url-browse.txt";
 //var _urlBrowse = "/import-browse";
 var _urlImportSubmit = "/import-direct";
-
+var _urlEditGroupSubmit = "/edit-group";
+var global_tree = null;
 
 var mainApp = angular.module("mainApp", ['ngRoute'])
-
 .config(function ($routeProvider, $locationProvider) {
     $routeProvider
-        .when('/', {
-            template: '<h1>Not applicable</h1>',
-            controller: 'mainController'
-        })
+        //.when('/', {
+        //    template: '<h1>Not applicable</h1>',
+        //    controller: 'mainController'
+        //})
         .when('/group-create-template', {
             templateUrl: 'group-create-template.html',
             controller: 'mainController'
         })
-        .when('/group-edit-template', {
-            templateUrl: 'group-edit-template.html',
+        .when('/group-edit-template/:groupId', {
+            templateUrl: '/group-edit-template.html',
             controller: 'mainController'
         })
         .when('/group-view-template', {
             templateUrl: 'group-view-template.html',
             controller: 'mainController'
+        })
+        .when('/test-form-template', {
+            templateUrl: 'test-form-template.html',
+            controller: 'mainController'
         });
-
-    $locationProvider.html5Mode(true);
-    $locationProvider.hashPrefix('!');
+    //.otherwise({
+    //    redirectTo: '/'
+    //});
+    ////$locationProvider.html5Mode(true);
+    //$locationProvider.html5Mode(false);
+    //$locationProvider.hashPrefix("");
 })
 
 .factory('requestFactory', function ($q, $http) {
@@ -63,7 +72,7 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
     }
     return myService;
 })
-.controller('mainController', function ($scope, $http, $q, $compile, $window, requestFactory) {
+.controller('mainController', function ($scope, $http, $q, $compile, $window, $location, requestFactory) {
     $scope.childIndex = -1;
     $scope.breadcrumbs = [];
     $scope.templates = { cacheExportDialogTemplate: "", cacheImportDialogTemplate: "" }
@@ -107,7 +116,6 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
     };
 
     $scope.NavIn = function (obj, e) {
-        debugger;
         addParentToEachChild(obj);
         resetChildIndex();
         setGroupandChildren($scope, obj);
@@ -124,7 +132,9 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
         }
     };
 
-    $scope.SetActive = function (index) {
+    $scope.SetActive = function (index, $event) {
+        $($event.target).closest(".group-content").find("a").removeClass("active");
+        $($event.target).closest("a").addClass("active");
         $scope.childIndex = index;
     };
 
@@ -204,6 +214,34 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
         $.Dialog.close();
     };
 
+    $scope.SetIframeUrl = function () {
+        //$location.path("group-edit-template").replace();
+       // $location.reload();
+        //$scope.$apply();
+    }
+
+    $scope.InitGroupEdit = function () {
+        var groupArr = getAllGroup(global_tree);
+        calFrameHeight();
+        initSelect2(groupArr);
+        setTimeout(function () { $('.example').animate({ margin: "0", opacity: '1', }, 500); $("#loader").hide(); }, 350);
+
+    };
+
+    $scope.EditGroupSubmit = function () {
+        console.log($("#editGroupForm").serialize());
+        ajaxPost($("#editGroupForm"), true, _urlEditGroupSubmit, function (msg) {
+            notifiSuccess(_NOTIFI_SETTING_CAPTION, _EDIT_SUCCESS_MSG);
+            $location.path("/group-view-template");
+        }, function () {
+            //redirectToError500();
+        });
+    };
+
+
+
+
+
     var addParentToEachChild = function (obj) {
         for (var a = 0; a < obj.children.length; a++) {
             obj.children[a].parent = obj;
@@ -234,7 +272,6 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
         return $compile($content)($scope)[0];
     };
 
-
     var notifiSuccess = function (_caption, msg) {
         if (!msg) {
             msg = _DEFAULT_SUCCESS_MSG;
@@ -264,6 +301,7 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
     var initTree = function (scope) {
         requestFactory.get(_urlGetTree).then(function (data) {
             scope.tree = data;
+            global_tree = data;
         });
     };
 
@@ -272,5 +310,44 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
         requestFactory.get(_urlGetTree2).then(function (data) {
             scope.tree = data;
         });
+    };
+
+    // group model
+    var GroupModel = function (id) {
+        this.id = id;
+        this.text = id;
+    };
+
+    var getAllGroup = function (tree) {
+        var groupArr = [];
+        var rootGroupObj = tree;
+        var recursiveGroup = function (nameChain, tree) {
+            for (var a = 0; a < tree.groups.length; a++) {
+                if (rootGroupObj == tree) {
+                    nameChain = "";
+                }
+                if (tree.groups[a] != null) {
+                    var groupName = tree.groups[a].groupName;
+                    if (nameChain.length > 0) {
+                        nameChain = nameChain + " / " + groupName;
+                    } else {
+                        nameChain = groupName;
+                    }
+                    var group = new GroupModel(nameChain);
+                    groupArr.push(group);
+                    recursiveGroup(nameChain, tree.groups[a]);
+                }
+            }
+        };
+        recursiveGroup("", tree);
+        return groupArr;
+    };
+
+    var replaceDot = function (str) {
+        var dotSymbol = ".";
+        if (str.indexOf(dotSymbol)) {
+            str = str.replace(dotSymbol, "\.");
+        }
+        return str;
     };
 });

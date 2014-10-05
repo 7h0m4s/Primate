@@ -785,9 +785,12 @@
         // operations
         op = {
             show: function (opt, x, y) {
-                if ($(this)[0].className.indexOf("file-child ") >= 0) {
-                    $(this)[0].click();
-                }
+                var targetObJ = $(this).context;
+                $(targetObJ).closest(".group-content").find("a").removeClass("active");
+                $(targetObJ).addClass("active");
+                //if ($(this)[0].className.indexOf("file-child ") >= 0) {
+                //    $(this)[0].click();
+                //}
                 var $trigger = $(this),
                     offset,
                     css = {};
