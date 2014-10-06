@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link href="select2.css" rel="stylesheet" />
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="select2.min.js"></script>
+
+    <script>
+        //$(document).ready(function () {
+        //    $('#e24').select2({
+        //        query: function (query){
+        //            var data = {
+        //                results: [
+        //                    { id: 1, text: "I'm selectable" },
+        //                    { id: 2, text: "I'm a disabled option", disabled: true },
+        //                    { id: 3, text: "I'm selectable too!" }
+        //                ]
+        //            };
+ 
+        //            query.callback(data);
+        //        }
+        //    });
+
+
+        $(document).ready(function () {
+            $("#selectPretty").select2({
+                sortResults: function (results, container, query) {
+                    if (query.term) {
+                        // use the built in javascript sort function
+                        return results.sort();
+                    }
+                    return results;
+                }
+            });
+        });
+    </script>
+    <style>
+        select, #s2id_selectPretty {
+            min-width: 400px;
+        }
+    </style>
+</head>
+<body>
+    <select id="selectPretty">
+        <optgroup label="Alaskan/Hawaiian Time Zone">
+            <option value="AK">Alaska</option>
+            <option value="HI">Hawaii</option>
+        </optgroup>
+        <optgroup label="Alaskan/Hawaiian Time Zone">
+            <option value="AK">Alaska</option>
+            <option value="HI">Hawaii</option>
+        </optgroup>
+    </select>
+</body>
+</html>

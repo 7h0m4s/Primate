@@ -1,14 +1,15 @@
 ﻿<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" ng-app>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>Password Primate - Main</title>
     <link href="css/metro-bootstrap.css" rel="stylesheet">
     <link href="css/iconFont.css" rel="stylesheet" />
     <link href="css/jquery.splitter.css" rel="stylesheet" />
+    <link href="css/select2.css" rel="stylesheet" />
     <link href="css/primate.css" rel="stylesheet" />
 </head>
-<body class="metro" ng-app="mainApp" ng-controller="mainCtr">
-    <header class="bg-blue" data-load="header.html">
+<body class="metro" ng-app="mainApp" ng-controller="mainController" ng-init="init()">
+    <header class="bg-blue">
         <nav class="navigation-bar">
             <div class="navigation-bar-content">
                 <a href="#" class="element"><span class="icon-grid-view"></span> Password Primate <sup>1.0</sup></a>
@@ -20,8 +21,8 @@
                         </a>
                         <ul class="dropdown-menu place-right" data-role="dropdown">
                             <li><a href="#" ng-click="TriggerSlider()">Settings</a></li>
-                            <li><a href="#" ng-click="TriggerDialog('Export')">Import</a></li>
-                            <li><a href="#">Export</a></li>
+                            <li><a href="#" ng-click="TriggerImportDialog('Import')">Import</a></li>
+                            <li><a href="#" ng-click="TriggerExportDialog('Export')">Export</a></li>
                             <li><a href="#">Log Out</a></li>
                         </ul>
                     </div>
@@ -46,7 +47,7 @@
             </div>
             <nav class="sidebar light">
                 <ul>
-                    <li class="stick bg-yellow">
+                    <li class="stick">
                         <a class="dropdown-toggle" href="#"><i class="icon-tree-view"></i>Database Name</a>
                         <ul data-role="dropdown" style="display: block;">
                             <li ng-repeat="node in tree.groups" ng-click="SelectRoot(node)"><a ng-bind="AssessName(node.groupName)"></a></li>
@@ -57,7 +58,7 @@
         </section>
         <section class="side-content">
             <section class="side-mid" ng-keydown="Back($event)" tabindex="0">
-                <div>
+                <div id="bcrumb">
                     <div class="fl">
                         <ul class="breadcrumb">
                             <!--ng-class="CheckIfLastBreadcrumb(breadcrumb)"-->
@@ -65,8 +66,8 @@
                             <!--<li class="unavailable"><a href="#">Data</a></li>-->
                         </ul>
                     </div>
-                    <div class="refresh-icon">
-                        <a href="#"><span class="icon-spin"></span></a>
+                    <div class="refresh-icon icon-style">
+                        <a href="main.html#/group-create-template"><span class="icon-plus"></span></a>
                     </div>
                     <div class="clearfix"></div>
                 </div>
@@ -74,15 +75,15 @@
                     <div class="list-group">
                         <a href="" class="group-title">Malesuada neque</a>
                         <div class="group-content" style="display: block;">
-                            <a class="list" href="#" ng-repeat="group in groups" ng-click="NavIn(group)">
+                            <a href="javascript:;" class="list file-group" ng-repeat="group in groups" ng-click="NavIn(group)">
                                 <div class="list-content">
                                     <span class="list-title">{{group.groupName}}</span>
                                     <span class="list-subtitle">MetroUI: News on 26/10/2013</span>
                                     <span class="list-remark">Hello friend! Newest for Metro UI CSS</span>
                                 </div>
                             </a>
-
-                            <a class="list file-child" ng-repeat="child in children" ng-class="{'active': childIndex == $index}" ng-click="SetActive($index)">
+                            <!--ng-class="{'active': childIndex == $index}"-->
+                            <a href="javascript:;" class="list file-child" ng-repeat="child in children" ng-click="SetActive($index,$event);">
                                 <div class=" list-content">
                                     <span class="list-title"><span class="place-right icon-flag-2 fg-red smaller"></span>{{child.title}}</span>
                                     <span class="list-subtitle">Last Modified: {{child.last_mod}} 26/10/2013</span>
@@ -94,7 +95,8 @@
                 </div>
             </section>
             <section class="side-right">
-                <iframe id="content-detail" src="Test-form.html" frameborder="0" noresize="noresize"></iframe>
+                <div id="content-detail" ng-view></div>
+                <!--<iframe id="content-detail" src="group-edit-template.html" frameborder="0" noresize="noresize"></iframe>-->
             </section>
         </section>
         <div class="clearfix"></div>
@@ -108,13 +110,13 @@
                     <h4 class="ng-binding">Password Primate Setting</h4>
                 </div>
                 <div class="aside-body">
-                    <form id="settingForm" action="#" method="POST">
+                    <form id="settingForm" action="#" method="Post">
                         <h5 class="margin-top0">General</h5>
                         <p>
                             <div class="policy-font">Time out:</div>
                             <div class="input-control fr">
                                 <div class="input-append spinner" data-trigger="spinner">
-                                    <input type="text" value="1" data-rule="quantity" data-max="60" name="sessionTimeOut">
+                                    <input type="text" data-rule="quantity" data-max="60" name="sessionTimeOut" id="sessionTimeOut">
                                     <div class="add-on">
                                         <a href="javascript:;" class="spin-up" data-spin="up">
                                             <i class="icon-arrow-up-4"></i>
@@ -133,7 +135,7 @@
                             <div class="policy-font">Password min length:</div>
                             <div class="input-control fr">
                                 <div class="input-append spinner" data-trigger="spinner">
-                                    <input type="text" value="1" data-rule="quantity" data-max="24" name="passwrdMinLenth">
+                                    <input type="text" data-rule="quantity" data-max="24" name="passwrdMinLenth" id="passwrdMinLenth" />
                                     <div class="add-on">
                                         <a href="javascript:;" class="spin-up" data-spin="up">
                                             <i class="icon-arrow-up-4"></i>
@@ -151,7 +153,7 @@
                             <div class="policy-font">Use lowercase letters</div>
                             <div class="input-control checkbox fr">
                                 <label>
-                                    <input type="checkbox" name="isLowercase">
+                                    <input type="checkbox" name="isLowercase" id="isLowercase" />
                                     <span class="check"></span>
                                 </label>
                             </div>
@@ -161,7 +163,7 @@
                             <div class="policy-font">Use UPPERCASE letters</div>
                             <div class="input-control checkbox fr">
                                 <label>
-                                    <input type="checkbox" name="isUppercase">
+                                    <input type="checkbox" name="isUppercase" id="isUppercase" />
                                     <span class="check"></span>
                                 </label>
                             </div>
@@ -171,7 +173,7 @@
                             <div class="policy-font">Use digits</div>
                             <div class="input-control checkbox fr">
                                 <label>
-                                    <input type="checkbox" name="isDigit">
+                                    <input type="checkbox" name="isDigit" id="isDigit" />
                                     <span class="check"></span>
                                 </label>
                             </div>
@@ -181,7 +183,7 @@
                             <div class="policy-font">User symbols (%,$,@,#,etc.)</div>
                             <div class="input-control checkbox fr">
                                 <label>
-                                    <input type="checkbox" name="isSymbol">
+                                    <input type="checkbox" name="isSymbol" id="isSymbol" />
                                     <span class="check"></span>
                                 </label>
                             </div>
@@ -210,10 +212,12 @@
 </html>
 <script src="js/jquery.min.js"></script>
 <script src="js/angular.min.js"></script>
+<script src="js/angular-route.min.js"></script>
 <script src="js/jquery.widget.min.js"></script>
 <script src="js/metro.min.js"></script>
-<script src="js/jquery.splitter-0.14.0.js"></script>
+<script src="js/jquery.splitter.js"></script>
 <script src="js/jquery.contextMenu.js"></script>
 <script src="js/jquery.spinner.min.js"></script>
+<script src="js/select2.min.js"></script>
 <script src="js/primate.js"></script>
-<script src="js/Angular/main-ctrl.js"></script>
+<script src="js/angular/controllers/mainController.js"></script>

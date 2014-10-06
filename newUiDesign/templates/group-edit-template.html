@@ -1,0 +1,47 @@
+﻿<div id="loader">
+    <img src="img/metro-loader.gif" />
+</div>
+<div class="example" style="margin-left: 25%; opacity: 0;" ng-init="InitGroupEdit()">
+    <form id="editGroupForm" name="editGroupForm" novalidate ng-submit="EditGroupSubmit()">
+        <fieldset>
+            <legend>
+                <h3 class="frame-title">Edit Group</h3>
+                <div class="clip-group">
+                    <div class="btn-group">
+                        <a class="btn btn-white nlm" href="#">
+                            <i class="icon-redo"></i>
+                            <span>Open URL</span>
+                        </a>
+                        <a class="btn btn-white" href="#">
+                            <i class="icon-user"></i>
+                            <span>Copy Username</span>
+                        </a>
+                        <a class="btn btn-white " href="#">
+                            <i class="icon-key"></i>
+                            <span>Copy Password</span>
+                        </a>
+                        <a class="btn btn-white" href="#">
+                            <i class="icon-IE"></i>
+                            <span>Copy URL</span>
+                        </a>
+                    </div>
+                </div>
+            </legend>
+            <label for="groupParent">Group Directory</label>
+            <div class="input-control text" data-role="input-control" ng-class="{'error-state': editGroupForm.groupParent.$invalid}">
+                <input class="select-search" id="groupParent" name="groupParent" ng-model="group.groupParent" required />
+                <span class="validation" ng-show="editGroupForm.groupParent.$error.required">This field is required</span>
+                <span></span>
+            </div>
+            <label for="groupName">Group Name</label>
+            <div class="input-control text" data-role="input-control" ng-class="{'error-state': editGroupForm.groupName.$invalid}">
+                <input type="text" placeholder="Group Name" id="groupName" name="groupName" ng-model="group.groupName" required>
+                <button class="btn-clear" tabindex="-1" type="button"></button>
+                <span class="validation" ng-show="editGroupForm.groupName.$error.required">This field is required</span>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-lead full" ng-disabled="!editGroupForm.$valid">Save Changes</button>
+            </div>
+        </fieldset>
+    </form>
+</div>
