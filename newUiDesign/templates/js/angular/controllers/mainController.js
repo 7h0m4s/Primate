@@ -224,8 +224,7 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
         var groupArr = getAllGroup(global_tree);
         calFrameHeight();
         initSelect2(groupArr);
-        setTimeout(function () { $('.example').animate({ margin: "0", opacity: '1', }, 500); $("#loader").hide(); }, 350);
-
+        setTimeout(function () { $('.example').animate({ margin: "0", opacity: '1', }, 500); $("#loader").hide(); }, 250);
     };
 
     $scope.EditGroupSubmit = function () {
@@ -237,9 +236,6 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
             //redirectToError500();
         });
     };
-
-
-
 
 
     var addParentToEachChild = function (obj) {

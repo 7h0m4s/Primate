@@ -263,50 +263,60 @@ li.context-menu-separator {
 
 /*error page*/
 body#error-page {
-    font-size: 1.5rem;
-    font-family: "Open Sans",Arial,sans-serif;
-    padding: 0;
-    background: #F6F6F6 url('../img/paper.png') repeat right top;
+    font-family: Lato,Helvetica,Arial,sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    position: relative;
 }
 
-#error-main {
-    width: 600px;
-    height: 400px;
+#error-page .http-error {
+    font-size: 24px;
+    width: 515px;
+    height: 458px;
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: auto;
+    left: 50%;
+    top: 45%;
+    margin-left: -257.5px;
+    margin-top: -238px;
 }
 
-#error-content {
-    padding: 5px 10px;
+    #error-page .http-error .http-error-number {
+        font-family: Helvetica,Arial,sans-serif;
+        font-size: 150px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+#error-page .color-lead {
+    color: #3498db;
 }
 
-    #error-content h1 {
-        font-size: 60px;
-        font-family: arial;
-        font-weight: bold;
-    }
+#error-page p {
+    margin: 0 0 10px;
+}
 
-    #error-content h2 {
-        font-size: 36px;
-        font-weight: normal;
-        margin: 40px 0 -15px 0;
-    }
+#error-page .text-center {
+    text-align: center;
+}
 
-    #error-content h3 {
-        font-size: 26px;
-        font-weight: bold;
-    }
+#error-page .http-error .icon-image {
+    font-size: 150px;
+}
 
-    #error-content a {
-        display: inline-block;
-        border-bottom: 1px dotted #000;
-        color: #000;
-        text-decoration: none;
-    }
+#error-page .color-lead {
+    color: #3498db;
+}
+
+#error-page .fa {
+    display: inline-block;
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    color: #3498db;
+    font-size: 120px;
+}
 /*end of error page*/
 
 /*slide left*/
@@ -455,16 +465,16 @@ button.close {
 }
 
 .metro button.btn-lead:disabled {
-    border: 1px #258cd1 solid!important;
-    background-color: #3498db!important;
-    color: #fff!important;
+    border: 1px #258cd1 solid !important;
+    background-color: #3498db !important;
+    color: #fff !important;
 }
 
-    .metro .btn-lead:hover {
-        background-color: #217dbb;
-        color: #fff;
-        border: 1px #1d6fa5 solid;
-    }
+.metro .btn-lead:hover {
+    background-color: #217dbb;
+    color: #fff;
+    border: 1px #1d6fa5 solid;
+}
 
 .metro .btn:active {
     outline: 0;
@@ -846,5 +856,4 @@ button.full, a.full {
 /*end of Manage group*/
 .icon-style {
     font-size: 24px;
-
 }

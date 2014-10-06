@@ -159,10 +159,7 @@ var contextFileGroupMenu = function () {
             callback: function (key, options) {
                 // $(this); here refers to the object that is being clicked --> <div class="context-menu-one" id="t1" name="name1">
                 ///main.html#/group-edit-template
-                if (key == "CreateGroup") {
-                    window.location.href = "main.html#/group-create-template";
-                }
-                else if (key == "ViewGroup") {
+                if (key == "ViewGroup") {
                     window.location.href = "main.html#/group-view-template";
                 }
                 else if (key == "EditGroup") {
@@ -173,10 +170,6 @@ var contextFileGroupMenu = function () {
                 }
             },
             items: {
-                "CreateGroup": {
-                    name: "Add Group",
-                },
-                "sep1": "---------",
                 "ViewGroup": {
                     name: "Group Detail",
                 },
