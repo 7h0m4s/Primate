@@ -542,44 +542,37 @@ def importFileDirect():
             return "Incorrect file format.", 500
         
         importedFile = open(file_path,'r')
-        reader = csv.reader(importedFile)
-        i = 0
-        for lineList in reader:
-            
-            #Example of first line:['uuid', 'group', 'title', 'url', 'user', 'password', 'notes']
-            if i == 0 and str(lineList)!=str(['uuid', 'group', 'title', 'url', 'user', 'password', 'notes']):
-                return "Incorrect data format on line " + str(i)+" :"+ str(lineList), 500
-            if i == 0:
-                i += 1
-                continue
-            if len(lineList)>7:
-                return "Incorrect data format on line " + str(i) +" :"+ str(lineList), 500
-            if len(lineList)<7:
-                return "Incorrect data format on line " + str(i) +" :"+ str(lineList), 500
-            if len(lineList[0])!=36:
+        reader = csv.DictReader(importedFile)
+        i = 1
+        for lineDict in reader:
+
+            if not (lineDict.has_key('uuid') and lineDict.has_key('group') and lineDict.has_key('title') and lineDict.has_key('url') and lineDict.has_key('user')):
+                return "Incorrect data format",500
+            if len(lineDict)> 7:
+                return "Incorrect data format. Too many items on line " + str(i),500
+            if len(lineDict.get('uuid',''))!=36:
                 return "Incorrect UUID on line " + str(i),500
 
+
             entry = Vault.Record.create()
-            if doesUuidExit(lineList[0])==False:
-                entry._set_uuid(uuid.UUID(lineList[0]))
+            #if doesUuidExit(lineDict.get('uuid',default=''))==False:
+            #   entry._set_uuid(uuid.UUID(lineDict.get('uuid',default='')))
                 
-            if lineList[1] not in getGroups():#Add new groups to the session group list 
-                session['groups'].append(lineList[1])
-            entry._set_group(lineList[1])
-            entry._set_title(lineList[2])
-            entry._set_url(lineList[3])
-            entry._set_user(lineList[4])
-            entry._set_passwd(lineList[5])
-            entry._set_notes(lineList[6])
-            if doesUuidExit(lineList[0])==False:
-                sessionVault.getVault().records.append(entry)
+            if lineDict.get('group','') not in getGroups():#Add new groups to the session group list 
+                session['groups'].append(lineDict.get('group',''))
+            entry._set_group(lineDict.get('group',''))
+            entry._set_title(lineDict.get('title',''))
+            entry._set_url(lineDict.get('url',''))
+            entry._set_user(lineDict.get('user',''))
+            entry._set_passwd(lineDict.get('password',''))
+            entry._set_notes(lineDict.get('notes',''))
+            sessionVault.getVault().records.append(entry)
             i += 1
             
         if i <=1:
             return "No accounts found in file", 500
         saveDB()
         importedFile.close()
-        
             
         return "Sucessfuly imported."
 
