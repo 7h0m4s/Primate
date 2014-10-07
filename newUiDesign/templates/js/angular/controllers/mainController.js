@@ -8,18 +8,19 @@ var _EDIT_SUCCESS_MSG = "Edit successfully";
 var _backspace_keycode = 8;
 var _defaultCheckboxValue = "on";
 var _urlErrorPage404 = "error-page.html";
-var _urlErrorPage500 = "error-page.html?code=500";
+var _urlErrorPage505 = "error-page.html?code=505";
 var _urlExportDialogTemplate = "dialog-export-template.html";
 var _urlImportDialogTemplate = "dialog-import-template.html";
 var _urlSaveUserSetting = "/config-set";
 var _urlGetUserSetting = "json/config-get.txt";
 var _urlGetTree = "json/tree-data.txt";
 var _urlGetTree2 = "json/tree-data2.txt";
-
 var _urlBrowse = "json/url-browse.txt";
 //var _urlBrowse = "/import-browse";
 var _urlImportSubmit = "/import-direct";
+var _urlCreateGroupSubmit = "/create-group";
 var _urlEditGroupSubmit = "/edit-group";
+
 var global_tree = null;
 
 var mainApp = angular.module("mainApp", ['ngRoute'])
@@ -33,7 +34,7 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
             templateUrl: 'group-create-template.html',
             controller: 'mainController'
         })
-        .when('/group-edit-template/:groupId', {
+        .when('/group-edit-template', {
             templateUrl: '/group-edit-template.html',
             controller: 'mainController'
         })
@@ -72,13 +73,15 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
     }
     return myService;
 })
-.controller('mainController', function ($scope, $http, $q, $compile, $window, $location, requestFactory) {
+
+.controller('mainController', function ($scope, $http, $q, $compile, $window, $location, requestFactory, $routeParams) {
     $scope.childIndex = -1;
     $scope.breadcrumbs = [];
     $scope.templates = { cacheExportDialogTemplate: "", cacheImportDialogTemplate: "" }
     $scope.importFile = {};
     $scope.userSetting = null;
     $scope.tree = null;
+    $scope.group = {};
 
     $scope.init = function () {
         initTree($scope);
@@ -115,7 +118,8 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
         $scope.breadcrumbs.push(obj);
     };
 
-    $scope.NavIn = function (obj, e) {
+    $scope.NavIn = function (obj) {
+        console.log($scope.groups);
         addParentToEachChild(obj);
         resetChildIndex();
         setGroupandChildren($scope, obj);
@@ -158,6 +162,7 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
             closeSilder();
         });
     };
+
     $scope.TriggerSlider = function () {
         $(".slide-right").show();
         $(".slide-right-wrapper").animate({ 'opacity': 0.3, 'filter': 'alpha(opacity=30)' });
@@ -179,7 +184,7 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
                 triggerDialog($title, $compileContent);
             })
             .error(function ($content, status) {
-                redirectToError500();
+                redirectToError505();
             });
         }
     };
@@ -194,7 +199,7 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
                 triggerDialog($title, $compileContent);
             })
             .error(function ($content, status) {
-                redirectToError500();
+                redirectToError505();
             });
         }
     };
@@ -214,34 +219,81 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
         $.Dialog.close();
     };
 
-    $scope.SetIframeUrl = function () {
-        //$location.path("group-edit-template").replace();
-       // $location.reload();
-        //$scope.$apply();
-    }
-
-    $scope.InitGroupEdit = function () {
+    $scope.InitGroupManagment = function () {
+        resetScopeGroup();
         var groupArr = getAllGroup(global_tree);
         calFrameHeight();
         initSelect2(groupArr);
         setTimeout(function () { $('.example').animate({ margin: "0", opacity: '1', }, 500); $("#loader").hide(); }, 250);
+        initGroupId();
+        //initGroupName();
     };
 
     $scope.EditGroupSubmit = function () {
-        console.log($("#editGroupForm").serialize());
         ajaxPost($("#editGroupForm"), true, _urlEditGroupSubmit, function (msg) {
             notifiSuccess(_NOTIFI_SETTING_CAPTION, _EDIT_SUCCESS_MSG);
-            $location.path("/group-view-template");
         }, function () {
-            //redirectToError500();
+            redirectToError505();
         });
     };
 
-
-    var addParentToEachChild = function (obj) {
-        for (var a = 0; a < obj.children.length; a++) {
-            obj.children[a].parent = obj;
+    $scope.GetGroupId = function () {
+        var stringConcat = "";
+        for (var a = 0; a < $scope.breadcrumbs.length; a++) {
+            if (a == 0) {
+                stringConcat = $scope.breadcrumbs[a].groupName;
+            } else {
+                stringConcat += "." + $scope.breadcrumbs[a].groupName;
+            }
         }
+        return stringConcat;
+    };
+
+    $scope.SubmitCreateGroupForm = function (isValid) {
+        if (isValid) {
+            submitAnimatel();
+            ajaxPost($("#createGroupForm"), true, _urlCreateGroupSubmit, function () {
+                initTree();
+            },
+            function () {
+                redirectToError505();
+            });
+        } else {
+            redirectToError505();
+        }
+    };
+
+    $scope.SubmitEditGroupForm = function (isValid) {
+        if (isValid) {
+            submitAnimatel();
+            ajaxPost($("#editGroupForm"), true, _urlEditGroupSubmit, function () {
+                initTree();
+            },
+            function () {
+                redirectToError505();
+            });
+        } else {
+            redirectToError505();
+        }
+    }
+
+    $scope.RedirectGroupCreate = function () {
+        var currentGroupIdObj = { groupParent: $(".breadcrumb").attr("data-breadcrumb-arr") }
+        var serializedCurrentGroupId = $.param(currentGroupIdObj);
+        $window.location.href = "main.html#/group-create-template?" + serializedCurrentGroupId;
+    };
+
+    var initGroupId = function () {
+        //var currentGroup = $(".breadcrumb").attr("data-breadcrumb-arr");
+        $("#groupParent").select2("val", $routeParams.groupParent);
+        $scope.group.groupName = $routeParams.groupName;
+    }
+
+    //todo test whether it is needed
+    var addParentToEachChild = function (obj) {
+        //for (var a = 0; a < obj.children.length; a++) {
+        //    obj.children[a].parent = obj;
+        //}
     };
 
     var setGroupandChildren = function (scope, obj) {
@@ -285,8 +337,8 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
         $.Notify({ style: { background: 'red', color: 'white' }, caption: _caption, content: msg });
     };
 
-    var redirectToError500 = function () {
-        $window.location.href = _urlErrorPage500;
+    var redirectToError505 = function () {
+        $window.location.href = _urlErrorPage505;
     };
 
     var initSetting = function (scope) {
@@ -309,41 +361,50 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
     };
 
     // group model
-    var GroupModel = function (id) {
+    var GroupModel = function (id, text) {
         this.id = id;
-        this.text = id;
+        this.text = text;
     };
 
     var getAllGroup = function (tree) {
         var groupArr = [];
+        var emptyGroup = new GroupModel("", "");
+        groupArr.push(emptyGroup);
         var rootGroupObj = tree;
-        var recursiveGroup = function (nameChain, tree) {
+        var recursiveGroup = function (idChain, textChain, tree) {
             for (var a = 0; a < tree.groups.length; a++) {
                 if (rootGroupObj == tree) {
-                    nameChain = "";
+                    idChain = "";
+                    textChain = "";
                 }
                 if (tree.groups[a] != null) {
                     var groupName = tree.groups[a].groupName;
-                    if (nameChain.length > 0) {
-                        nameChain = nameChain + " / " + groupName;
+                    if (idChain.length > 0) {
+                        textChain = textChain + " / " + groupName;
+                        idChain = idChain + "." + groupName;
                     } else {
-                        nameChain = groupName;
+                        idChain = groupName;
+                        textChain = groupName;
                     }
-                    var group = new GroupModel(nameChain);
+                    var group = new GroupModel(idChain, textChain);
                     groupArr.push(group);
-                    recursiveGroup(nameChain, tree.groups[a]);
+                    recursiveGroup(idChain, textChain, tree.groups[a]);
                 }
             }
         };
-        recursiveGroup("", tree);
+        recursiveGroup("", "", tree);
         return groupArr;
     };
 
-    var replaceDot = function (str) {
-        var dotSymbol = ".";
-        if (str.indexOf(dotSymbol)) {
-            str = str.replace(dotSymbol, "\.");
-        }
-        return str;
+    var resetScopeGroup = function () {
+        $scope.group = {};
     };
+
+    var treeGroupModel = function (groupName, children, groups) {
+        this.groupName = groupName;
+        this.children = [];
+        this.children = children;
+        this.groups = [];
+        this.groups = groups;
+    }
 });

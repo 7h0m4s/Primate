@@ -1,7 +1,7 @@
 ﻿var _errorPage_name = "Error-page.html";
 var _undefined = "undefined";
 var _backspace_keycode = 8;
-
+var DEFAULT_STATUS_CODE = 404;
 var calFrameHeight = function () {
     var headerDimensions = $('header.bg-blue').height();
     var bordertopbottom = 4;
@@ -102,6 +102,8 @@ var evaluateStatusCode = function () {
         var statusCode = urlObj.parameters.code;
         if (typeof statusCode != _undefined) {
             $("#statusCode").html(statusCode);
+        } else {
+            $("#statusCode").html(DEFAULT_STATUS_CODE);
         }
     }
 }
@@ -163,7 +165,9 @@ var contextFileGroupMenu = function () {
                     window.location.href = "main.html#/group-view-template";
                 }
                 else if (key == "EditGroup") {
-                    window.location.href = "main.html#/group-edit-template";
+                    var currentGroupObj = { groupParent: $(".breadcrumb").attr("data-breadcrumb-arr"), groupName: $($(this).context).find(".list-title").html() }
+                    var serializedCurrentGroup = $.param(currentGroupObj);
+                    window.location.href = "main.html#/group-edit-template?" + serializedCurrentGroup;
                 }
                 else if (key == "DeleteGroup") {
                     window.location.href = "main.html#/group-delete-template";
@@ -343,4 +347,29 @@ var initSelect2 = function (data) {
         data: data
     });
 };
+
+//submit animation
+var submitAnimatel = function () {
+    $(".submit-animate").html("Process").attr("disabled", "");
+
+    if ($(".submit-animate").length) {
+        var defaultVal = $(".submit-animate").html();
+        console.log(defaultVal);
+        var count = 0;
+        var submitAnimateInterval = setInterval(function () {
+            var appendVal = $(".submit-animate").html() + ".";
+            if (count == 4) {
+                $(".submit-animate").html(defaultVal);
+                count = 0;
+            }
+            else {
+                $(".submit-animate").html(appendVal);
+            }
+            if (!$(".submit-animate").length) {
+                clearInterval(submitAnimateInterval);
+            }
+            count++;
+        }, 500);
+    }
+}
 

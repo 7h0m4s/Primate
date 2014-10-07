@@ -323,6 +323,7 @@ html[dir="rtl"] .select2-results {
 }
 
 .select2-results li {
+    min-height: 27px;
     list-style: none;
     display: list-item;
     background-image: none;

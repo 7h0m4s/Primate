@@ -42,6 +42,11 @@
     min-width: 960px;
 }
 
+label.required:before {
+    content: "*";
+    color: #ff0000;
+}
+
 .side-left {
     /*max-width: 20%;*/
     float: left;
@@ -856,4 +861,8 @@ button.full, a.full {
 /*end of Manage group*/
 .icon-style {
     font-size: 24px;
+}
+
+.metro #group-management:before {
+    content: "Group";
 }

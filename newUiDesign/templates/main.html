@@ -60,14 +60,14 @@
             <section class="side-mid" ng-keydown="Back($event)" tabindex="0">
                 <div id="bcrumb">
                     <div class="fl">
-                        <ul class="breadcrumb">
+                        <ul class="breadcrumb" data-breadcrumb-arr="{{GetGroupId();}}">
                             <!--ng-class="CheckIfLastBreadcrumb(breadcrumb)"-->
                             <li ng-repeat="breadcrumb in breadcrumbs"><a ng-click="BreadcrumbRedirect(breadcrumb)" ng-bind="breadcrumb.groupName"></a></li>
                             <!--<li class="unavailable"><a href="#">Data</a></li>-->
                         </ul>
                     </div>
                     <div class="refresh-icon icon-style">
-                        <a href="main.html#/group-create-template"><span class="icon-plus"></span></a>
+                        <a href="javascript:;" ng-click="RedirectGroupCreate();"><span class="icon-plus"></span></a>
                     </div>
                     <div class="clearfix"></div>
                 </div>
