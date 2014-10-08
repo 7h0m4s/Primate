@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title>Password Primate - Login</title>
+    <title>Login</title>
     <link href="css/metro-bootstrap.css" rel="stylesheet">
     <link href="css/iconFont.css" rel="stylesheet" />
     <link href="css/jquery.splitter.css" rel="stylesheet" />
@@ -10,37 +10,43 @@
 </head>
 <body class="metro overflow-h" ng-app="loginApp" ng-controller="loginController">
     <section class="loginform cf">
-        <p class="error-msg login-error">Please enter a correct password and database.</p>
-        <p class="error-msg login-validate">Password is required. </p>
         <p class="error-msg login-validate">Database is required. </p>
-        <form class="login" name="loginForm" id="loginForm" target="/login" ng-submit="SubmitLoginForm(loginForm.$valid);" novalidate>
+        <p class="error-msg login-validate">Password is required. </p>
+        <p class="error-msg login-validate">Confirm password is not match. </p>
+        <form class="login" name="newDBForm" id="newDBForm" method="post" target="/newDB" novalidate ng-submit="SubmitNewDbForm(newDBForm.$valid)">
             <div class="logo">
                 <img src="img/logo.png" alt="logo" />
             </div>
             <table>
                 <tr>
-                    <td><p>Password: </p></td>
-                    <td class="input-control text">
-                        <input type="password" name="Password" ng-model="login.password" placeholder="Enter Password" required />
+                    <td><p class="required">Database: </p></td>
+                    <td class="input-control file text">
+                        <input type="text" name="DatabaseFile" ng-model="newDB.databaseFile" readonly required>
+                        <button class="btn-file browse-btn" type="button"></button>
                     </td>
                 </tr>
                 <tr>
-                    <td><p>Database: </p></td>
-                    <td class="input-control file text">
-                        <input type="text" name="DatabaseFile" ng-model="login.databaseFile" required>
-                        <button class="btn-file browse-btn" type="button"></button>
+                    <td><p class="required">Password: </p></td>
+                    <td class="input-control text">
+                        <input type="password" name="Password" placeholder="Enter Password" ng-model="newDB.password" required />
+                    </td>
+                </tr>
+                <tr>
+                    <td><p class="required">Confirm: </p></td>
+                    <td class="input-control text">
+                        <input type="password" name="ConfirmPassword" placeholder="Confirm Password" ng-model="newDB.cfmPassword" password-match="newDB.password" required />
                     </td>
                 </tr>
                 <tr>
                     <td></td>
                     <td class="td-btn">
-                        <button type="submit" class="btn btn-lead" id="btn-group-submit">Login</button>
+                        <button type="submit" class="btn btn-lead" id="btn-group-submit">Submit</button>
                     </td>
                 </tr>
             </table>
         </form>
         <p class="db-line">
-            <a href="new-database.html">New Database</a>
+            <a href="index.html">Login</a>
         </p>
     </section>
 </body>

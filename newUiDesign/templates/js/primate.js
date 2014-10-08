@@ -279,7 +279,6 @@ var ajaxPost = function ($formObj, isAsync, requestUrl, successFunc, failureFunc
         url = requestUrl;
     }
     var postData = $formObj.serialize();
-    console.log(postData);
     $.ajax({
         type: method,
         url: url,
@@ -350,9 +349,8 @@ var initSelect2 = function (data) {
 
 //submit animation
 var submitAnimatel = function () {
-    $(".submit-animate").html("Process").attr("disabled", "");
-
     if ($(".submit-animate").length) {
+        $(".submit-animate").html("Process").attr("disabled", "");
         var defaultVal = $(".submit-animate").html();
         console.log(defaultVal);
         var count = 0;
@@ -371,5 +369,9 @@ var submitAnimatel = function () {
             count++;
         }, 500);
     }
+}
+
+var redirectToErroPage = function () {
+    window.location.href = _errorPage_name;
 }
 
