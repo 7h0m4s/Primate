@@ -1,0 +1,47 @@
+﻿$scope.$watch('userSetting', function (newValue, oldvalue) {
+        if (newValue != oldvalue) {
+            $("#passwrdMinLenth").val($scope.userSetting.passwrdMinLenth);
+            $("#sessionTimeOut").val($scope.userSetting.sessionTimeOut);
+            var isCheck;
+            isCheck = $scope.userSetting.isLowercase == _defaultCheckboxValue;
+            $("#isLowercase").prop('checked', isCheck);
+            isCheck = $scope.userSetting.isUppercase == _defaultCheckboxValue;
+            $("#isUppercase").prop('checked', isCheck);
+            isCheck = $scope.userSetting.isDigit == _defaultCheckboxValue;
+            $("#isDigit").prop('checked', isCheck);
+            isCheck = $scope.userSetting.isSymbol == _defaultCheckboxValue;
+            $("#isSymbol").prop('checked', isCheck);
+        }
+    });
+
+	//.config(function ($routeProvider, $q, $http, $locationProvider) {
+//    $routeProvider.when('/', {
+//        templateUrl: 'main.html',
+//        controller: "mainController",
+//        resolve: {
+//            prepTree: function () {
+//                var defer = $q.defer();
+//                $http.get(_urlGetTree).success(function (result) {
+//                    defer.resolve(result.data);
+//                });
+//                return defer.promise;
+//            }
+//        }
+//    });
+//    $locationProvider.html5Mode(true);
+//})
+//.service('ajaxRequest', function ($http, $q) {
+//    var promise = $http.get(_urlGetTree).success(function (result) {
+//        return result.data;
+//    });
+//    return promise;
+//})
+
+    //$scope.CheckIfLastBreadcrumb = function (breadcrumb) {
+    //    console.log("I was called");
+    //    var inactiveClass = "unavailable";
+    //    if (breadcrumb.groups.length == 0) {
+    //        return inactiveClass;
+    //    }
+    //    return null;
+    //};

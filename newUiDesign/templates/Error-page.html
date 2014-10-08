@@ -5,30 +5,30 @@
     <link href="css/metro-bootstrap.css" rel="stylesheet">
     <link href="css/iconFont.css" rel="stylesheet" />
     <link href="css/jquery.splitter.css" rel="stylesheet" />
+    <link href="css/select2.css" rel="stylesheet" />
     <link href="css/primate.css" rel="stylesheet" />
 </head>
 <body id="error-page">
-    <div id="error-main">
-        <div id="error-content">
-            <div class="span12">
-                <h2>
-                    Not sure if
-                </h2>
-                <h1>
-                    <span id="statusCode">404</span> Page
-                </h1>
-                <h3>Oopss... this is embarassing,</h3>
-            </div>
-            <p><a href="main.html">click here</a> to go back home</p>
-        </div>
+    <div class="http-error">
+        <p class="text-center http-error-number color-lead" id="statusCode">
+        </p>
+        <p class="text-center">
+            That's embarrassing, it seems you've reached the dead end.
+        </p>
+        <p class="text-center">
+            <span class="fa">: (</span>
+        </p>
     </div>
 </body>
 </html>
 <script src="js/jquery.min.js"></script>
 <script src="js/angular.min.js"></script>
+<script src="js/angular-route.min.js"></script>
 <script src="js/jquery.widget.min.js"></script>
 <script src="js/metro.min.js"></script>
-<script src="js/jquery.splitter-0.14.0.js"></script>
+<script src="js/jquery.splitter.js"></script>
 <script src="js/jquery.contextMenu.js"></script>
-<script src="js/Angular/main-ctrl.js"></script>
+<script src="js/jquery.spinner.min.js"></script>
+<script src="js/select2.min.js"></script>
 <script src="js/primate.js"></script>
+<script src="js/angular/controllers/mainController.js"></script>

@@ -1,12 +1,22 @@
 ﻿var _errorPage_name = "Error-page.html";
 var _undefined = "undefined";
 var _backspace_keycode = 8;
-
+var DEFAULT_STATUS_CODE = 404;
 var calFrameHeight = function () {
     var headerDimensions = $('header.bg-blue').height();
     var bordertopbottom = 4;
     $('#content-detail').height($(window).height() - headerDimensions - bordertopbottom);
+
+
 }
+
+//todo test
+//var calAddButtonPortionHeight = setInterval(function () {
+//    var sideMidHeight = $('.side-mid').height();
+//    var bcrumbHeight = $('#bcrumb').height();
+//    var listviewOutlookHeight = $('.listview-outlook').height();
+//    $(".add-group-portion").height(sideMidHeight - bcrumbHeight - listviewOutlookHeight - 14);
+//}, 100);
 
 var urlObject = function (options) {
     "use strict";
@@ -92,6 +102,8 @@ var evaluateStatusCode = function () {
         var statusCode = urlObj.parameters.code;
         if (typeof statusCode != _undefined) {
             $("#statusCode").html(statusCode);
+        } else {
+            $("#statusCode").html(DEFAULT_STATUS_CODE);
         }
     }
 }
@@ -105,12 +117,14 @@ var responsiveFrame = function () {
 }
 
 var contextMenu = function () {
-    var fileChild = $(".file-child");
-    if (fileChild.length > 0) {
+    var obj = $(".file-child");
+    if (obj.length > 0) {
         $.contextMenu({
             selector: '.file-child',
             callback: function (key, options) {
                 // $(this); here refers to the object that is being clicked --> <div class="context-menu-one" id="t1" name="name1">
+                ///main.html#/group-edit-template
+                console.log($(this));
                 var m = "clicked: " + key;
                 window.console && console.log(m) || alert(m);
             },
@@ -138,7 +152,60 @@ var contextMenu = function () {
             }
         });
     }
-}
+};
+var contextFileGroupMenu = function () {
+    var obj = $(".file-group");
+    if (obj.length > 0) {
+        $.contextMenu({
+            selector: '.file-group',
+            callback: function (key, options) {
+                // $(this); here refers to the object that is being clicked --> <div class="context-menu-one" id="t1" name="name1">
+                ///main.html#/group-edit-template
+                if (key == "ViewGroup") {
+                    window.location.href = "main.html#/group-view-template";
+                }
+                else if (key == "EditGroup") {
+                    var currentGroupObj = { groupParent: $(".breadcrumb").attr("data-breadcrumb-arr"), groupName: $($(this).context).find(".list-title").html() }
+                    var serializedCurrentGroup = $.param(currentGroupObj);
+                    window.location.href = "main.html#/group-edit-template?" + serializedCurrentGroup;
+                }
+                else if (key == "DeleteGroup") {
+                    window.location.href = "main.html#/group-delete-template";
+                }
+            },
+            items: {
+                "ViewGroup": {
+                    name: "Group Detail",
+                },
+                "EditGroup": {
+                    name: "Edit Group",
+                },
+                "DeleteGroup": {
+                    name: "Delete Group",
+                }
+            }
+        });
+    }
+};
+
+var addGroupMenu = function () {
+    var obj = $(".side-mid");
+    if (obj.length > 0) {
+        $.contextMenu({
+            selector: '.side-mid',
+            callback: function (key, options) {
+                if (key == "CreateGroup") {
+                    window.location.href = "main.html#/group-create-template";
+                }
+            },
+            items: {
+                "CreateGroup": {
+                    name: "Add Group",
+                }
+            }
+        });
+    }
+};
 
 //due to jquery version, it throws an error. try catch can patch it properly
 var initSplitter = function () {
@@ -181,6 +248,7 @@ var unbindBackspace = function () {
 
 var self_invoke_func = (function () {
     contextMenu();
+    contextFileGroupMenu();
     responsiveFrame();
     unbindBackspace();
 })();
@@ -194,7 +262,7 @@ var init = function () {
 
 $(function () {
     init();
-    setTimeout(function () { $('.example').animate({ margin: "0", opacity: '1', }, 500); $("#loader").hide(); }, 350);
+    //setTimeout(function () { $('.example').animate({ margin: "0", opacity: '1', }, 500); $("#loader").hide(); }, 350);
 });
 
 
@@ -202,19 +270,39 @@ var loadingWrapper = function () {
     $('#loader-wrapper').delay(350).fadeOut('fast');
 };
 
-var ajaxPost = function ($formObj, isAsync, successFun) {
-    var method = "POST";
-    var url = $formObj.attr("target");
+var ajaxPost = function ($formObj, isAsync, requestUrl, successFunc, failureFunc) {
+    var method = "Post";
+    var url = "";
+    if (!requestUrl) {
+        url = $formObj.attr("target");
+    } else {
+        url = requestUrl;
+    }
     var postData = $formObj.serialize();
+    console.log(postData);
     $.ajax({
         type: method,
         url: url,
         data: postData,
         async: isAsync
     }).done(function (msg) {
-        successFun();
+        successFunc(msg);
     }).fail(function (msg) {
-        successFun();
+        failureFunc(msg);
+    });
+};
+
+var ajaxGet = function (isAsync, requestUrl, successFunc, failureFunc) {
+    var method = "Get";
+    var url = requestUrl;
+    $.ajax({
+        type: method,
+        url: url,
+        async: isAsync
+    }).done(function (msg) {
+        return msg;
+    }).fail(function (msg) {
+        return msg;
     });
 };
 
@@ -232,3 +320,56 @@ var triggerDialog = function ($title, $content) {
         }
     });
 };
+
+
+
+//Test portion
+
+var jsonData = {
+    more: false,
+    results: [
+        {
+            text: "Western", children: [
+              { id: "CA", text: "California" },
+              { id: "AZ", text: "Arizona" }
+            ]
+        },
+        {
+            text: "Eastern", children: [
+              { id: "FL", text: "Florida" }
+            ]
+        }
+    ]
+};
+
+var initSelect2 = function (data) {
+    $(".select-search").select2({
+        data: data
+    });
+};
+
+//submit animation
+var submitAnimatel = function () {
+    $(".submit-animate").html("Process").attr("disabled", "");
+
+    if ($(".submit-animate").length) {
+        var defaultVal = $(".submit-animate").html();
+        console.log(defaultVal);
+        var count = 0;
+        var submitAnimateInterval = setInterval(function () {
+            var appendVal = $(".submit-animate").html() + ".";
+            if (count == 4) {
+                $(".submit-animate").html(defaultVal);
+                count = 0;
+            }
+            else {
+                $(".submit-animate").html(appendVal);
+            }
+            if (!$(".submit-animate").length) {
+                clearInterval(submitAnimateInterval);
+            }
+            count++;
+        }, 500);
+    }
+}
+
