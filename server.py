@@ -13,7 +13,6 @@ from flask import flash
 from flask import make_response
 from werkzeug import secure_filename
 from vault import *
-from primateClasses import *
 from datetime import timedelta
 import os
 import os.path
@@ -36,6 +35,35 @@ ALLOWED_EXTENSIONS = set(['csv'])
 
 app = Flask(__name__)
 
+
+"""
+Class holds session values that are not compatiable with the Flask session variable.
+Data being stored includes:
+-The encrypted password database for the user. Known as a Vault.
+"""
+class SessionVault:
+    
+    
+    def __init__(self):
+        self.vaults = {}
+        return
+
+    def addVault(self,vault):
+        if session['id'] in self.vaults:#TODO check if vault is already loaded
+            raise KeyError
+        self.vaults[session['id']]=vault
+        return
+
+    def getVault(self):
+        return self.vaults.get(session['id'])
+
+    def getRecords(self):
+        return self.vaults.get(session['id']).records
+
+    def removeVault(self):
+        del self.vaults[session['id']]
+        
+        return
 
 """
 Function return the home page which acts as the login page.
