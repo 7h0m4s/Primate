@@ -299,9 +299,10 @@ var ajaxGet = function (isAsync, requestUrl, successFunc, failureFunc) {
         url: url,
         async: isAsync
     }).done(function (msg) {
-        return msg;
+		successFunc(msg);
+
     }).fail(function (msg) {
-        return msg;
+        failureFunc(msg);
     });
 };
 
