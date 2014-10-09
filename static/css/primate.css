@@ -149,7 +149,9 @@
         text-align: right;
         padding-top: 5px;
     }
-
+    .metro .input-control.text input#databaseFile {
+        padding-right: 26px;
+    }
 .metro .error-msg {
     margin-bottom: 5px;
     color: #f36e65;

@@ -1,6 +1,6 @@
-﻿var _urlLoginRedirect = "dashboard";
-var _urlLogin = "login.html";
+﻿var _urlLogin = "login.html";
 var _urlGetFilePath = "/get-filepath";
+
 var loginApp = angular.module("loginApp", []);
 
 loginApp.directive('passwordMatch', [function () {
@@ -29,18 +29,17 @@ loginApp.directive('passwordMatch', [function () {
 loginApp.controller('loginController', function ($scope) {
     $scope.SubmitLoginForm = function (isValid) {
         if (isValid) {
-            submitAnimatel();
             ajaxPost($("#loginForm"), true, null, function (msg) {
                 console.log(msg);
                 if (msg) {
                     $(".login-error").html(msg);
                     $(".login-error").slideDown("fast");
                 } else {
-                    window.location.href = _urlLoginRedirect;
+                    redirectToMainPage();
                 }
             },
                 function () {
-                    window.location.href = _urlErrorPage505;
+                    redirectToErroPage505();
                 });
         } else {
             if ($scope.loginForm.Password.$error.required) {
@@ -51,12 +50,14 @@ loginApp.controller('loginController', function ($scope) {
             }
         }
     };
+
     $scope.OpenFileDialog = function () {
         ajaxGet(true, _urlGetFilePath, function (content) {
-            //todo patch validation here
+            setDatabaseInputModified();
+            setDatabaseInputNotRequired();
             $("#databaseFile").val(content);
-        }, function() {
-            redirectToErroPage();
+        }, function () {
+            redirectToErroPage505();
         });
     };
 
@@ -70,6 +71,7 @@ loginApp.controller('loginController', function ($scope) {
             }
         }
     });
+
     $scope.$watch('loginForm.DatabaseFile.$error.required', function (newValue, oldvalue) {
         if (newValue != oldvalue) {
             if (newValue && $scope.loginForm.DatabaseFile.$dirty) {
@@ -80,14 +82,15 @@ loginApp.controller('loginController', function ($scope) {
             }
         }
     });
+
     $scope.SubmitNewDbForm = function (isValid) {
         if (isValid) {
             submitAnimatel();
             ajaxPost($("#newDBForm"), true, null, function () {
-                window.location.href = _urlLogin;
+                redirect(_urlLogin);
             },
             function () {
-                redirectToErroPage();
+                redirectToErroPage505();
             });
         } else {
             if ($scope.newDBForm.DatabaseFile.$error.required) {
@@ -121,5 +124,11 @@ loginApp.controller('loginController', function ($scope) {
         }
     });
 
+    var setDatabaseInputModified = function () {
+        $scope.loginForm.DatabaseFile.$dirty = true;
+    }
 
+    var setDatabaseInputNotRequired = function () {
+        $scope.loginForm.DatabaseFile.$setValidity('required', true);
+    }
 });
