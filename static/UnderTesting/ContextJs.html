@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link href="../css/metro-bootstrap.css" rel="stylesheet" />
+    <!--<link href="jquery.contextMenu.css" rel="stylesheet" />-->
+    <style>
+        ul.context-menu-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            min-width: 180px;
+            position: absolute;
+            display: none;
+            z-index: 1000;
+            background: #fff;
+            border: 1px solid #dcddde;
+        }
+
+        li.context-menu-item {
+            border: 1px transparent solid;
+            background: #fff;
+            border: 0;
+            display: block;
+            padding: 0;
+            vertical-align: baseline;
+            position: relative;
+        }
+
+            li.context-menu-item.hover {
+                cursor: pointer;
+                background-color: #39F;
+            }
+
+            li.context-menu-item>span:hover {
+                color:#fff;
+            }
+
+
+            li.context-menu-item > span {
+                padding: 9px 32px !important;
+                display: block;
+                text-decoration: none;
+                font-family: 'Segoe UI Light_', 'Open Sans Light', Verdana, Arial, Helvetica, sans-serif;
+                font-weight: 300;
+                letter-spacing: 0.00em;
+            }
+
+        li.context-menu-separator {
+            height: 1px;
+            margin: 4px 10px;
+            overflow: hidden;
+            background-color: #e5e5e5;
+        }
+    </style>
+</head>
+<body>
+    <div class="context-menu-one" id="t1" name="name1">
+        <strong>1 title</strong>
+    </div>
+    
+    <div class="context-menu-one" id="t2" name="name2">
+        <strong>2 title</strong>
+    </div>
+</body>
+</html>
+<script src="../js/jquery.min.js"></script>
+<script src="jquery.contextMenu.js"></script>
+<script>
+    $(function () {
+        $.contextMenu({
+            selector: '.context-menu-one',
+            callback: function (key, options) {
+                // $(this); here refers to the object that is being clicked --> <div class="context-menu-one" id="t1" name="name1">
+                var m = "clicked: " + key;
+                window.console && console.log(m) || alert(m);
+            },
+            items: {
+                "RedirectUrl": {
+                    name: "Redirect to website",
+                },
+                "sep1": "---------",
+                "viewAcc": {
+                    name: "View account",
+                },
+                "editAcc": {
+                    name: "Edit account",
+                },
+                "delAcc": {
+                    name: "Delete account",
+                },
+                "sep2": "---------",
+                "copyCuser": {
+                    name: "Copy username",
+                },
+                "copyPasswrd": {
+                    name: "Copy password",
+                },
+            }
+        });
+    });
+</script>
