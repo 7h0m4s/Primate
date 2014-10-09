@@ -1,5 +1,6 @@
 ﻿var _urlLoginRedirect = "dashboard";
 var _urlLogin = "login.html";
+var _urlGetFilePath = "/get-filepath";
 var loginApp = angular.module("loginApp", []);
 
 loginApp.directive('passwordMatch', [function () {
@@ -50,6 +51,15 @@ loginApp.controller('loginController', function ($scope) {
             }
         }
     };
+    $scope.OpenFileDialog = function () {
+        ajaxGet(true, _urlGetFilePath, function (content) {
+            //todo patch validation here
+            $("#databaseFile").val(content);
+        }, function() {
+            redirectToErroPage();
+        });
+    };
+
     $scope.$watch('loginForm.Password.$error.required', function (newValue, oldvalue) {
         if (newValue != oldvalue) {
             if (newValue && $scope.loginForm.Password.$dirty) {
@@ -110,4 +120,6 @@ loginApp.controller('loginController', function ($scope) {
             }
         }
     });
+
+
 });
