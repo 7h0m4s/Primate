@@ -1,0 +1,224 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Password Primate - Main</title>
+    <link href="static/css/metro-bootstrap.css" rel="stylesheet">
+    <link href="static/css/iconFont.css" rel="stylesheet" />
+    <link href="static/css/jquery.splitter.css" rel="stylesheet" />
+    <link href="static/css/select2.css" rel="stylesheet" />
+    <link href="static/css/primate.css" rel="stylesheet" />
+</head>
+<body class="metro" ng-app="mainApp" ng-controller="mainController" ng-init="init()">
+    <header class="bg-blue">
+        <nav class="navigation-bar">
+            <div class="navigation-bar-content">
+                <a href="#" class="element"><span class="icon-grid-view"></span> Password Primate <sup>1.0</sup></a>
+                <span class="element-divider"></span>
+                <div class="no-tablet-portrait">
+                    <div class="element place-right">
+                        <a class="dropdown-toggle dis-block" href="#">
+                            <span class="icon-cog"></span>
+                        </a>
+                        <ul class="dropdown-menu place-right" data-role="dropdown">
+                            <li><a href="#" ng-click="TriggerSlider()">Settings</a></li>
+                            <li><a href="#" ng-click="TriggerImportDialog('Import')">Import</a></li>
+                            <li><a href="#" ng-click="TriggerExportDialog('Export')">Export</a></li>
+                            <li><a href="logout">Log Out</a></li>
+                        </ul>
+                    </div>
+                    <span class="element-divider place-right"></span>
+                    <button class="element image-button image-left place-right">
+                        Allen She
+                        <img src="static/img/bluemanm.png" />
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div id="main">
+        <section class="side-left">
+            <div class="nav-search">
+                <form>
+                    <div class="input-control text">
+                        <input type="text" placeholder="Search..." ng-model="query">
+                        <button class="btn-search"></button>
+                    </div>
+                </form>
+            </div>
+            <nav class="sidebar light">
+                <ul>
+                    <li class="stick">
+                        <a class="dropdown-toggle" href="#"><i class="icon-tree-view"></i>Database Name</a>
+                        <ul data-role="dropdown" style="display: block;">
+                            <li ng-repeat="node in tree.groups" ng-click="SelectRoot(node)"><a ng-bind="AssessName(node.groupName)"></a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </section>
+        <section class="side-content">
+            <section class="side-mid" ng-keydown="Back($event)" tabindex="0">
+                <div id="bcrumb">
+                    <div class="fl">
+                        <ul class="breadcrumb" data-breadcrumb-arr="{{GetGroupId();}}">
+                            <!--ng-class="CheckIfLastBreadcrumb(breadcrumb)"-->
+                            <li ng-repeat="breadcrumb in breadcrumbs"><a ng-click="BreadcrumbRedirect(breadcrumb)" ng-bind="breadcrumb.groupName"></a></li>
+                            <!--<li class="unavailable"><a href="#">Data</a></li>-->
+                        </ul>
+                    </div>
+                    <div class="refresh-icon icon-style">
+                        <a href="javascript:;" ng-click="RedirectGroupCreate();"><span class="icon-plus"></span></a>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="listview-outlook" data-role="listview">
+                    <div class="list-group">
+                        <a href="" class="group-title">Malesuada neque</a>
+                        <div class="group-content" style="display: block;">
+                            <a href="javascript:;" class="list file-group" ng-repeat="group in groups" ng-click="NavIn(group)">
+                                <div class="list-content">
+                                    <span class="list-title">{{group.groupName}}</span>
+                                    <span class="list-subtitle">MetroUI: News on 26/10/2013</span>
+                                    <span class="list-remark">Hello friend! Newest for Metro UI CSS</span>
+                                </div>
+                            </a>
+                            <!--ng-class="{'active': childIndex == $index}"-->
+                            <a href="javascript:;" class="list file-child" ng-repeat="child in children" ng-click="SetActive($index,$event);">
+                                <div class=" list-content">
+                                    <span class="list-title"><span class="place-right icon-flag-2 fg-red smaller"></span>{{child.title}}</span>
+                                    <span class="list-subtitle">Last Modified: {{child.last_mod}} 26/10/2013</span>
+                                    <span class="list-remark">{{child.notes}}</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="side-right">
+                <div id="content-detail" ng-view></div>
+                <!--<iframe id="content-detail" src="group-edit-template.html" frameborder="0" noresize="noresize"></iframe>-->
+            </section>
+        </section>
+        <div class="clearfix"></div>
+    </div>
+    <div class="slide-right" style="display: none;">
+        <div class="slide-right-wrapper" style="opacity:0; filter: alpha(opacity=0);" ng-click="CloseSlider()"></div>
+        <div class="slide-right-panel aside" style="margin-right: -320px; opacity: -0.5; filter: alpha(opacity=0);">
+            <div class="aside-dialog">
+                <div class="aside-header">
+                    <button type="button" class="close" ng-click="CloseSlider()">×</button>
+                    <h4 class="ng-binding">Password Primate Setting</h4>
+                </div>
+                <div class="aside-body">
+                    <form id="settingForm" action="#" method="Post">
+                        <h5 class="margin-top0">General</h5>
+                        <p>
+                            <div class="policy-font">Time out:</div>
+                            <div class="input-control fr">
+                                <div class="input-append spinner" data-trigger="spinner">
+                                    <input type="text" data-rule="quantity" data-max="60" name="sessionTimeOut" id="sessionTimeOut">
+                                    <div class="add-on">
+                                        <a href="javascript:;" class="spin-up" data-spin="up">
+                                            <i class="icon-arrow-up-4"></i>
+                                        </a>
+                                        <a href="javascript:;" class="spin-down" data-spin="down">
+                                            <i class="icon-arrow-down-4"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                        </p>
+                        <br />
+                        <h5>Password Policy</h5>
+                        <p>
+                            <div class="policy-font">Password min length:</div>
+                            <div class="input-control fr">
+                                <div class="input-append spinner" data-trigger="spinner">
+                                    <input type="text" data-rule="quantity" data-max="24" name="passwrdMinLenth" id="passwrdMinLenth" />
+                                    <div class="add-on">
+                                        <a href="javascript:;" class="spin-up" data-spin="up">
+                                            <i class="icon-arrow-up-4"></i>
+                                        </a>
+                                        <a href="javascript:;" class="spin-down" data-spin="down">
+                                            <i class="icon-arrow-down-4"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                        </p>
+
+                        <p>
+                            <div class="policy-font">Use lowercase letters</div>
+                            <div class="input-control checkbox fr">
+                                <label>
+                                    <input type="checkbox" name="isLowercase" id="isLowercase" />
+                                    <span class="check"></span>
+                                </label>
+                            </div>
+                            <div class="clearfix"></div>
+                        </p>
+                        <p>
+                            <div class="policy-font">Use UPPERCASE letters</div>
+                            <div class="input-control checkbox fr">
+                                <label>
+                                    <input type="checkbox" name="isUppercase" id="isUppercase" />
+                                    <span class="check"></span>
+                                </label>
+                            </div>
+                            <div class="clearfix"></div>
+                        </p>
+                        <p>
+                            <div class="policy-font">Use digits</div>
+                            <div class="input-control checkbox fr">
+                                <label>
+                                    <input type="checkbox" name="isDigit" id="isDigit" />
+                                    <span class="check"></span>
+                                </label>
+                            </div>
+                            <div class="clearfix"></div>
+                        </p>
+                        <p>
+                            <div class="policy-font">User symbols (%,$,@,#,etc.)</div>
+                            <div class="input-control checkbox fr">
+                                <label>
+                                    <input type="checkbox" name="isSymbol" id="isSymbol" />
+                                    <span class="check"></span>
+                                </label>
+                            </div>
+                            <div class="clearfix"></div>
+                        </p>
+                    </form>
+                </div><div class="aside-footer">
+                    <button type="button" class="btn btn-lead" ng-click="SubmitSettingForm()">Save Changes</button>
+                    <button type="button" class="btn btn-default" ng-click="CloseSlider()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="loader-wrapper">
+        <div class="loader">
+            <h1>Asterix Solutions</h1>
+            <div class="load-icon">
+                <img src="static/img/loader24.gif" />
+            </div>
+            <div class="load-status">
+                <span>Loading...</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script src="static/js/jquery.min.js"></script>
+<script src="static/js/angular.min.js"></script>
+<script src="static/js/angular-route.min.js"></script>
+<script src="static/js/jquery.widget.min.js"></script>
+<script src="static/js/metro.min.js"></script>
+<script src="static/js/jquery.splitter.js"></script>
+<script src="static/js/jquery.contextMenu.js"></script>
+<script src="static/js/jquery.spinner.min.js"></script>
+<script src="static/js/select2.min.js"></script>
+<script src="static/js/primate.js"></script>
+<script src="static/js/angular/controllers/loginController.js"></script>
+<script src="static/js/angular/controllers/mainController.js"></script>

@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <link href="css/metro-bootstrap.css" rel="stylesheet">
+    <link href="css/iconFont.css" rel="stylesheet" />
+    <link href="css/jquery.splitter.css" rel="stylesheet" />
+    <link href="css/select2.css" rel="stylesheet" />
+    <link href="css/primate.css" rel="stylesheet" />
+</head>
+<body class="metro overflow-h" ng-app="loginApp" ng-controller="loginController">
+    <section class="loginform cf">
+        <p class="error-msg login-validate">Database is required. </p>
+        <p class="error-msg login-validate">Password is required. </p>
+        <p class="error-msg login-validate">Confirm password is not match. </p>
+        <form class="login" name="newDBForm" id="newDBForm" method="post" target="/newDB" novalidate ng-submit="SubmitNewDbForm(newDBForm.$valid)">
+            <div class="logo">
+                <img src="img/logo.png" alt="logo" />
+            </div>
+            <table>
+                <tr>
+                    <td><p class="required">Database: </p></td>
+                    <td class="input-control file text">
+                        <input type="text" name="DatabaseFile" ng-model="newDB.databaseFile" readonly required>
+                        <button class="btn-file browse-btn" type="button"></button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><p class="required">Password: </p></td>
+                    <td class="input-control text">
+                        <input type="password" name="Password" placeholder="Enter Password" ng-model="newDB.password" required />
+                    </td>
+                </tr>
+                <tr>
+                    <td><p class="required">Confirm: </p></td>
+                    <td class="input-control text">
+                        <input type="password" name="ConfirmPassword" placeholder="Confirm Password" ng-model="newDB.cfmPassword" password-match="newDB.password" required />
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td class="td-btn">
+                        <button type="submit" class="btn btn-lead" id="btn-group-submit">Submit</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <p class="db-line">
+            <a href="index.html">Login</a>
+        </p>
+    </section>
+</body>
+</html>
+<script src="js/jquery.min.js"></script>
+<script src="js/angular.min.js"></script>
+<script src="js/angular-route.min.js"></script>
+<script src="js/jquery.widget.min.js"></script>
+<script src="js/metro.min.js"></script>
+<script src="js/jquery.splitter.js"></script>
+<script src="js/jquery.contextMenu.js"></script>
+<script src="js/jquery.spinner.min.js"></script>
+<script src="js/select2.min.js"></script>
+<script src="js/primate.js"></script>
+<script src="js/angular/controllers/loginController.js"></script>
+<script src="js/angular/controllers/mainController.js"></script>

@@ -1,0 +1,25 @@
+﻿<div id="loader">
+    <img src="img/metro-loader.gif" />
+</div>
+<div class="example" id="group-management" style="margin-left: 25%; opacity: 0;" ng-init="InitGroupManagment()">
+    <form id="editGroupForm" name="editGroupForm" novalidate ng-submit="SubmitEditGroupForm(editGroupForm.$valid);">
+        <fieldset>
+            <legend>
+                <h3 class="frame-title">Edit Group</h3>
+            </legend>
+            <label for="groupParent">Group Directory</label>
+            <div class="input-control text" data-role="input-control">
+                <input class="select-search" id="groupParent" name="groupParent" ng-model="group.groupParent" />
+            </div>
+            <label class="required" for="groupName">Group Name</label>
+            <div class="input-control text" data-role="input-control" ng-class="{'error-state': editGroupForm.groupName.$invalid && editGroupForm.groupName.$dirty}" ng-required="true">
+                <input type="text" placeholder="Group Name" id="groupName" name="groupName" ng-model="group.groupName" required />
+                <button class="btn-clear" tabindex="-1" type="button"></button>
+                <span class="validation" ng-show="editGroupForm.groupName.$error.required&& editGroupForm.groupName.$dirty">This field is required</span>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-lead full submit-animate" id="btn-group-submit" ng-disabled="editGroupForm.$invalid">Save Changes</button>
+            </div>
+        </fieldset>
+    </form>
+</div>

@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Password Primate - Login</title>
+    <link href="css/metro-bootstrap.css" rel="stylesheet">
+    <link href="css/iconFont.css" rel="stylesheet" />
+    <link href="css/jquery.splitter.css" rel="stylesheet" />
+    <link href="css/select2.css" rel="stylesheet" />
+    <link href="css/primate.css" rel="stylesheet" />
+</head>
+<body class="metro overflow-h" ng-app="loginApp" ng-controller="loginController">
+    <section class="loginform cf">
+        <p class="error-msg login-error">Please enter a correct password and database.</p>
+        <p class="error-msg login-validate">Password is required. </p>
+        <p class="error-msg login-validate">Database is required. </p>
+        <form class="login" name="loginForm" id="loginForm" target="/login" ng-submit="SubmitLoginForm(loginForm.$valid);" novalidate>
+            <div class="logo">
+                <img src="img/logo.png" alt="logo" />
+            </div>
+            <table>
+                <tr>
+                    <td><p>Password: </p></td>
+                    <td class="input-control text">
+                        <input type="password" name="Password" ng-model="login.password" placeholder="Enter Password" required />
+                    </td>
+                </tr>
+                <tr>
+                    <td><p>Database: </p></td>
+                    <td class="input-control file text">
+                        <input type="text" name="DatabaseFile" ng-model="login.databaseFile" required>
+                        <button class="btn-file browse-btn" type="button"></button>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td class="td-btn">
+                        <button type="submit" class="btn btn-lead" id="btn-group-submit">Login</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <p class="db-line">
+            <a href="new-database.html">New Database</a>
+        </p>
+    </section>
+</body>
+</html>
+<script src="js/jquery.min.js"></script>
+<script src="js/angular.min.js"></script>
+<script src="js/angular-route.min.js"></script>
+<script src="js/jquery.widget.min.js"></script>
+<script src="js/metro.min.js"></script>
+<script src="js/jquery.splitter.js"></script>
+<script src="js/jquery.contextMenu.js"></script>
+<script src="js/jquery.spinner.min.js"></script>
+<script src="js/select2.min.js"></script>
+<script src="js/primate.js"></script>
+<script src="js/angular/controllers/loginController.js"></script>
+<script src="js/angular/controllers/mainController.js"></script>

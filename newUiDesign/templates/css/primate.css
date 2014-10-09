@@ -31,6 +31,136 @@
     overflow: hidden;
 }
 
+/*Login*/
+.logo p {
+    color: #1ba1e2;
+    margin: 0;
+    /*margin-bottom: 5px;*/
+    margin-top: 15px;
+}
+
+.metro .loginform p.db-line {
+    text-align: right;
+    width: 343px;
+}
+
+.cf:before,
+.cf:after {
+    content: "";
+    display: table;
+}
+
+.cf:after {
+    clear: both;
+}
+
+.cf {
+    *zoom: 1;
+}
+
+:focus {
+    outline: 0;
+}
+
+.logo {
+    position: absolute;
+    max-width: 300px;
+    margin-left: -300px;
+    margin-top: -100px;
+}
+
+.loginform {
+    width: 343px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -50px;
+    margin-top: -160px;
+}
+
+    .loginform .login {
+        padding-top: 25px;
+        padding-bottom: 25px;
+        margin-bottom: 5px;
+        border-top: solid 1px #EBEBEB;
+        border-bottom: solid 1px #EBEBEB;
+    }
+
+    .loginform ul {
+        padding: 0;
+        margin: 0;
+    }
+
+    .loginform li {
+        display: inline;
+        float: left;
+    }
+
+    .loginform input:not([type=submit]) {
+        padding: 5px;
+        margin-bottom: 10px;
+        margin-left: 10px;
+        border: 1px solid rgba(0, 0, 0, 0.3);
+        box-shadow: inset 0px 1px 3px 0px rgba(0, 0, 0, 0.1), 0px 1px 0px 0px rgba(250, 250, 250, 0.5);
+    }
+
+    /*.loginform .inputbox {
+        width: 250px;
+        height: 23px;
+    }*/
+
+    .loginform button,
+    .loginform input,
+    .loginform select,
+    .loginform textarea {
+        font-size: 100%; /* 1 */
+        margin: 0; /* 2 */
+        vertical-align: baseline; /* 3 */
+        *vertical-align: middle; /* 3 */
+    }
+
+        .loginform button,
+        .loginform html input[type="button"], /* 1 */
+        .loginform input[type="reset"],
+        .loginform input[type="submit"] {
+            -webkit-appearance: button; /* 2 */
+            cursor: pointer; /* 3 */
+            *overflow: visible; /* 4 */
+        }
+
+            .loginform button[disabled],
+            .loginform input[disabled] {
+                cursor: default;
+            }
+
+.metro .login {
+    display: inline-block;
+}
+
+    .metro .login .input-control.file {
+        overflow: visible;
+    }
+
+    .metro .login td.input-control input {
+        width: 260px;
+    }
+
+    .metro .login .td-btn {
+        text-align: right;
+        padding-top: 5px;
+    }
+
+.metro .error-msg {
+    margin-bottom: 5px;
+    color: #f36e65;
+    font-size: 14px;
+}
+
+.metro .login-error, .metro .login-validate {
+    display: none;
+}
+
+/*end of login*/
 #main {
     overflow-y: auto;
     overflow-x: visible;
@@ -42,7 +172,7 @@
     min-width: 960px;
 }
 
-label.required:before {
+.required:before {
     content: "*";
     color: #ff0000;
 }

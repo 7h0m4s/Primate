@@ -1,0 +1,7 @@
+﻿{
+  "sessionTimeOut": 11,
+  "passwrdMinLenth": 10,
+  "isLowercase": "on",
+  "isUppercase": "on",
+  "isSymbol": "on"
+}

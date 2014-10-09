@@ -1,500 +1,378 @@
+﻿var _errorPage_name = "Error-page.html";
+var _undefined = "undefined";
+var _backspace_keycode = 8;
+var DEFAULT_STATUS_CODE = 404;
+var calFrameHeight = function () {
+    var headerDimensions = $('header.bg-blue').height();
+    var bordertopbottom = 4;
+    $('#content-detail').height($(window).height() - headerDimensions - bordertopbottom);
 
-/*  Password Primate Main Js
-    The Primate js ensures all the front-end features are fully functional.
-    Copyright (c) 2014, Asterix Solutions 
-*/
 
-var fadeTime = 1500;
-var exception_msg = "Unexpected error";
-var del_user_url = "get-user";
-var edit_user_url = "get-user";
-var notifi_fade_time = 500;
-var post = "POST";
-var save_DB_url = "save";
-
-//use for testing only
-var saveDB = function () {
-    $.post(save_DB_url, {}, function (result) {
-        $('#alertChangesSaved').fadeIn("slow").delay(notifi_fade_time).fadeOut("slow");
-    });
 }
 
-/**
-* This function is called if one of the buttons in the account's dropdown menu is clicked
-* It handles copy of user password, url
-* It allows to edit/delete user
-*
-* @return void
-* @private
-*/
-var loginDropDown = function (id, command) {
-    if (command == "opnUrl") {
-    } else if (command == "cpyUsr") {
-        posting(post, '/copy', {uuid:id,attribute:'username'}, function () {
+//todo test
+//var calAddButtonPortionHeight = setInterval(function () {
+//    var sideMidHeight = $('.side-mid').height();
+//    var bcrumbHeight = $('#bcrumb').height();
+//    var listviewOutlookHeight = $('.listview-outlook').height();
+//    $(".add-group-portion").height(sideMidHeight - bcrumbHeight - listviewOutlookHeight - 14);
+//}, 100);
 
-        });
-	
-    } else if (command == "cpyPswd") {
-	    posting(post, '/copy', {uuid:id,attribute:'password'}, function () {
+var urlObject = function (options) {
+    "use strict";
+    /*global window, document*/
+    var url_search_arr,
+        option_key,
+        i,
+        urlObj,
+        get_param,
+        key,
+        val,
+        url_query,
+        url_get_params = {},
+        a = document.createElement('a'),
+        default_options = {
+            'url': window.location.href,
+            'unescape': true,
+            'convert_num': true
+        };
 
-        });
-	
-    } else if (command == "cpyUrl") {
-	    posting(post, '/copy', {uuid:id,attribute:'url'}, function () {
-
-        });
-	
-    } else if (command == "view") {
-    } else if (command == "edit") {
-        if ($('.del-user-chkbox').is(':checked')) {
-            $('.del-user-chkbox').click();
-        }
-        $.post(edit_user_url, { uuid: id }, function (result) {
-            var userObj = jQuery.parseJSON(result);
-            $("#form-edit-user input[name='uuid']").val(userObj.uuid);
-            $("#form-edit-user input[name='usr']").val(userObj.usr);
-            $("#form-edit-user input[name='userTitle']").val(userObj.userTitle);
-            $("#form-edit-user input[name='userUrl']").val(userObj.userUrl);
-            $("#form-edit-user input[name='notes']").val(userObj.notes);
-            $('#editUserModal').modal('show');
-        });
-    } else if (command == "move") {
-    } else if (command == "delete") {
-        ResetCheckbox();
-        var method = post;
-        var url = del_user_url;
-        var postData = { uuid: id };
-        req_posting(method, url, postData, function (result) {
-            var userObj = jQuery.parseJSON(result);
-            $("#form-del-user input[name='uuid']").val(userObj.uuid);
-            $("#form-del-user input[name='usr']").val(userObj.usr);
-            $("#form-del-user input[name='userTitle']").val(userObj.userTitle);
-            $("#form-del-user input[name='userUrl']").val(userObj.userUrl);
-            $("#form-del-user input[name='notes']").val(userObj.notes);
-            $('#delUserModal').modal('show');
-        });
+    if (typeof options !== "object") {
+        options = default_options;
     } else {
-        alert(exception_msg);
+        for (option_key in default_options) {
+            if (default_options.hasOwnProperty(option_key)) {
+                if (options[option_key] === undefined) {
+                    options[option_key] = default_options[option_key];
+                }
+            }
+        }
+    }
+
+    a.href = options.url;
+    url_query = a.search.substring(1);
+    url_search_arr = url_query.split('&');
+
+    if (url_search_arr[0].length > 1) {
+        for (i = 0; i < url_search_arr.length; i += 1) {
+            get_param = url_search_arr[i].split("=");
+
+            if (options.unescape) {
+                key = decodeURI(get_param[0]);
+                val = decodeURI(get_param[1]);
+            } else {
+                key = get_param[0];
+                val = get_param[1];
+            }
+
+            if (options.convert_num) {
+                if (val.match(/^\d+$/)) {
+                    val = parseInt(val, 10);
+                } else if (val.match(/^\d+\.\d+$/)) {
+                    val = parseFloat(val);
+                }
+            }
+
+            if (url_get_params[key] === undefined) {
+                url_get_params[key] = val;
+            } else if (typeof url_get_params[key] === "string") {
+                url_get_params[key] = [url_get_params[key], val];
+            } else {
+                url_get_params[key].push(val);
+            }
+            get_param = [];
+        }
+    }
+    urlObj = {
+        protocol: a.protocol,
+        hostname: a.hostname,
+        host: a.host,
+        port: a.port,
+        hash: a.hash.substr(1),
+        pathname: a.pathname,
+        search: a.search,
+        parameters: url_get_params
+    };
+    return urlObj;
+}
+
+var evaluateStatusCode = function () {
+    var urlObj = urlObject();
+    if (urlObj.pathname.indexOf(_errorPage_name)) {
+        var statusCode = urlObj.parameters.code;
+        if (typeof statusCode != _undefined) {
+            $("#statusCode").html(statusCode);
+        } else {
+            $("#statusCode").html(DEFAULT_STATUS_CODE);
+        }
     }
 }
 
+var responsiveFrame = function () {
+    $(window).resize(function () {
+        calFrameHeight();
+    }).load(function () {
+        calFrameHeight();
+    });
+}
 
-/**
-* This is a helper function that is used to be called by other functions.
-* It is an ajax request used to post data to target url.
-*
-* @return void
-* @private
-*/
-var posting = function (method, url, postData, successFun) {
+var contextMenu = function () {
+    var obj = $(".file-child");
+    if (obj.length > 0) {
+        $.contextMenu({
+            selector: '.file-child',
+            callback: function (key, options) {
+                // $(this); here refers to the object that is being clicked --> <div class="context-menu-one" id="t1" name="name1">
+                ///main.html#/group-edit-template
+                console.log($(this));
+                var m = "clicked: " + key;
+                window.console && console.log(m) || alert(m);
+            },
+            items: {
+                "RedirectUrl": {
+                    name: "Redirect to website",
+                },
+                "sep1": "---------",
+                "viewAcc": {
+                    name: "View account",
+                },
+                "editAcc": {
+                    name: "Edit account",
+                },
+                "delAcc": {
+                    name: "Delete account",
+                },
+                "sep2": "---------",
+                "copyCuser": {
+                    name: "Copy username",
+                },
+                "copyPasswrd": {
+                    name: "Copy password",
+                },
+            }
+        });
+    }
+};
+var contextFileGroupMenu = function () {
+    var obj = $(".file-group");
+    if (obj.length > 0) {
+        $.contextMenu({
+            selector: '.file-group',
+            callback: function (key, options) {
+                // $(this); here refers to the object that is being clicked --> <div class="context-menu-one" id="t1" name="name1">
+                ///main.html#/group-edit-template
+                if (key == "ViewGroup") {
+                    window.location.href = "main.html#/group-view-template";
+                }
+                else if (key == "EditGroup") {
+                    var currentGroupObj = { groupParent: $(".breadcrumb").attr("data-breadcrumb-arr"), groupName: $($(this).context).find(".list-title").html() }
+                    var serializedCurrentGroup = $.param(currentGroupObj);
+                    window.location.href = "main.html#/group-edit-template?" + serializedCurrentGroup;
+                }
+                else if (key == "DeleteGroup") {
+                    window.location.href = "main.html#/group-delete-template";
+                }
+            },
+            items: {
+                "ViewGroup": {
+                    name: "Group Detail",
+                },
+                "EditGroup": {
+                    name: "Edit Group",
+                },
+                "DeleteGroup": {
+                    name: "Delete Group",
+                }
+            }
+        });
+    }
+};
+
+var addGroupMenu = function () {
+    var obj = $(".side-mid");
+    if (obj.length > 0) {
+        $.contextMenu({
+            selector: '.side-mid',
+            callback: function (key, options) {
+                if (key == "CreateGroup") {
+                    window.location.href = "main.html#/group-create-template";
+                }
+            },
+            items: {
+                "CreateGroup": {
+                    name: "Add Group",
+                }
+            }
+        });
+    }
+};
+
+//due to jquery version, it throws an error. try catch can patch it properly
+var initSplitter = function () {
+    try {
+        $('#main').split({ orientation: 'vertical', limit: 220, position: '20%' });
+        $('.side-content').split({ orientation: 'vertical', limit: 220, position: '40%' });
+    } catch (ex) {
+        //console.log(ex.message);
+    }
+};
+
+var unbindBackspace = function () {
+    //prevent backspance button navigate back in all browser
+    $(document).unbind('keydown').bind('keydown', function (event) {
+        var doPrevent = false;
+        if (event.keyCode === _backspace_keycode) {
+            var d = event.srcElement || event.target;
+            if ((d.tagName.toUpperCase() === 'INPUT' &&
+                 (
+                     d.type.toUpperCase() === 'TEXT' ||
+                     d.type.toUpperCase() === 'PASSWORD' ||
+                     d.type.toUpperCase() === 'FILE' ||
+                     d.type.toUpperCase() === 'EMAIL' ||
+                     d.type.toUpperCase() === 'SEARCH' ||
+                     d.type.toUpperCase() === 'DATE')
+                 ) ||
+                 d.tagName.toUpperCase() === 'TEXTAREA') {
+                doPrevent = d.readOnly || d.disabled;
+            }
+            else {
+                doPrevent = true;
+            }
+        }
+        if (doPrevent) {
+            event.preventDefault();
+        }
+    });
+
+};
+
+var self_invoke_func = (function () {
+    contextMenu();
+    contextFileGroupMenu();
+    responsiveFrame();
+    unbindBackspace();
+})();
+
+var init = function () {
+    calFrameHeight();
+    evaluateStatusCode();
+    initSplitter();
+    loadingWrapper();
+};
+
+$(function () {
+    init();
+    //setTimeout(function () { $('.example').animate({ margin: "0", opacity: '1', }, 500); $("#loader").hide(); }, 350);
+});
+
+
+var loadingWrapper = function () {
+    $('#loader-wrapper').delay(350).fadeOut('fast');
+};
+
+var ajaxPost = function ($formObj, isAsync, requestUrl, successFunc, failureFunc) {
+    var method = "Post";
+    var url = "";
+    if (!requestUrl) {
+        url = $formObj.attr("target");
+    } else {
+        url = requestUrl;
+    }
+    var postData = $formObj.serialize();
     $.ajax({
         type: method,
         url: url,
-        data: postData
+        data: postData,
+        async: isAsync
     }).done(function (msg) {
-        successFun();
-        $("#alertChangesSaved").hide();
-        $("#alertChangesSaved").html(msg).fadeIn(notifi_fade_time).delay(fadeTime).fadeOut(notifi_fade_time);
-    })
-      .fail(function (msg) {
-          $('*').modal('hide');
-          $("#alertMsg").hide();
-          if (msg.length) {
-              $("#alertMsg").html(msg).fadeIn(notifi_fade_time).delay(fadeTime).fadeOut(notifi_fade_time);
-          } else {
-              $("#alertMsg").html(exception_msg).fadeIn(notifi_fade_time).delay(fadeTime).fadeOut(notifi_fade_time);
-          }
-      });
+        successFunc(msg);
+    }).fail(function (msg) {
+        failureFunc(msg);
+    });
 };
-/**
-* This is a helper function that is used to be called by other functions.
-* It is an ajax request used to post data to target url.
-*
-* @return void
-* @private
-*/
-var req_posting = function (method, url, postData, successFun) {
+
+var ajaxGet = function (isAsync, requestUrl, successFunc, failureFunc) {
+    var method = "Get";
+    var url = requestUrl;
     $.ajax({
         type: method,
         url: url,
-        data: postData
+        async: isAsync
     }).done(function (msg) {
-        successFun(msg);
-    })
-      .fail(function (msg) {
-          $('*').modal('hide');
-          $("#alertMsg").hide();
-          $("#alertMsg").html("Unexpected error").fadeIn(notifi_fade_time).delay(fadeTime).fadeOut(notifi_fade_time);
-      });
+		successFunc(msg);
+
+    }).fail(function (msg) {
+        failureFunc(msg);
+    });
 };
 
-/**
-* This is a helper function that is used to refresh pages with fade out jquery animation.
-*
-* @return void
-* @private
-*/
-var refresh = function () {
-    $("body").fadeOut(fadeTime, function () {
-        window.location.reload();
-    });
-}
 
-/**
-* This is a helper function that is used to reset check box in modal
-*
-* @return void
-* @private
-*/
-var ResetCheckbox = function () {
-    $('.del-user-chkbox').prop("checked", false);
-    var saveChangesBtn = $('.del-user-chkbox').closest("#delUserModal").find("button.saveChanges");
-    $(saveChangesBtn).attr("disabled", "");
+var triggerDialog = function ($title, $content) {
+    $.Dialog({
+        overlay: true,
+        shadow: true,
+        flat: true,
+        title: $title,
+        content: $content,
+        padding: 10,
+        onShow: function () {
+            $.Metro.initInputs();
+        }
+    });
 };
 
-/**
-* This is a helper function that is used to generate random password
-*
-* @return the random generated password
-* @return type String
-* @private
-*/
-var generatePassword = function (length, lower, upper, digits, hex, symbols, space, easy) {
-    var text = "";
-    var possible = "";
 
-    if (lower == true) {
-        possible += "abcdefghijklmnopqrstuvwxyz";
-    }
 
-    if (upper == true) {
-        possible += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    }
+//Test portion
 
-    if (digits == true) {
-        possible += "0123456789";
-    }
-
-    if (hex == true) {
-        if (lower == false) {
-            possible += 'abcdef';
+var jsonData = {
+    more: false,
+    results: [
+        {
+            text: "Western", children: [
+              { id: "CA", text: "California" },
+              { id: "AZ", text: "Arizona" }
+            ]
+        },
+        {
+            text: "Eastern", children: [
+              { id: "FL", text: "Florida" }
+            ]
         }
-        if (digits == false) {
-            possible += '0123456789';
-        }
-    }
+    ]
+};
 
-    if (symbols == true) {
-        possible += "!\"#$%&'()*+,-./\\:;<=>?@[]^_`{}~";
-    }
+var initSelect2 = function (data) {
+    $(".select-search").select2({
+        data: data
+    });
+};
 
-    if (space == true) {
-        possible += " ";
+//submit animation
+var submitAnimatel = function () {
+    if ($(".submit-animate").length) {
+        $(".submit-animate").html("Process").attr("disabled", "");
+        var defaultVal = $(".submit-animate").html();
+        console.log(defaultVal);
+        var count = 0;
+        var submitAnimateInterval = setInterval(function () {
+            var appendVal = $(".submit-animate").html() + ".";
+            if (count == 4) {
+                $(".submit-animate").html(defaultVal);
+                count = 0;
+            }
+            else {
+                $(".submit-animate").html(appendVal);
+            }
+            if (!$(".submit-animate").length) {
+                clearInterval(submitAnimateInterval);
+            }
+            count++;
+        }, 500);
     }
-
-    if (easy == true) {
-        possible = possible.replace("0", "");
-        possible = possible.replace("o", "");
-        possible = possible.replace("O", "");
-
-        possible = possible.replace("1", "");
-        possible = possible.replace("i", "");
-        possible = possible.replace("I", "");
-        possible = possible.replace("l", "");
-        possible = possible.replace("|", "");
-    }
-
-    for (var i = 0; i < length; i++) {
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-    return text;
 }
 
-$(function () {
-    /**
-    * Fade in animation
-    */
-    $("body").fadeIn(fadeTime);
-
-    // Post request when a create group button clicks
-    $("#form-create-group .saveChanges").click(function () {
-        var method = post;
-        var $createGroupForm = $("#form-create-group");
-        var url = $createGroupForm.attr("target");
-        var postData = $createGroupForm.serialize();
-        posting(method, url, postData, function () {
-            refresh();
-            $('#createGroupModal').modal('hide');
-        });
-    });
-
-    $(".addUserButton").click(function () {
-        var group = $(this).attr("group");
-        $("#form-create-user input[name='group']").val(group);
-    });
-
-    $(".reeditGroup").click(function () {
-        var group = $(this).attr("group");
-        $("#form-edit-group input[name='group']").val(group);
-        var split = group.split(".", 1);
-        if (split.length > 1) {
-            $("#form-edit-group input[name='groupParent']").val(split[0]);
-            $("#form-edit-group input[name='groupName']").val(split[1]);
-        } else {
-            $("#form-edit-group input[name='groupName']").val(split[0]);
-        }
-    });
-
-    $("#form-create-user .saveChanges").click(function () {
-        var method = post;
-        var $createUserForm = $("#form-create-user");
-        var url = $createUserForm.attr("target");
-        var postData = $createUserForm.serialize();
-        posting(method, url, postData, function () {
-            refresh();
-            $('#createUserModal').modal('hide');
-        });
-    });
-
-    $('.passwordLink').click(function () {
-        var id = $(this).attr('id');
-        var method = post;
-        var url = edit_user_url;
-        var postData = { uuid: id };
-        req_posting(method, url, postData, function (result) {
-            var userObj = jQuery.parseJSON(result);
-            $("#form-edit-user input[name='uuid']").val(userObj.uuid);
-            $("#form-edit-user input[name='usr']").val(userObj.usr);
-            $("#form-edit-user input[name='userTitle']").val(userObj.userTitle);
-            $("#form-edit-user input[name='userUrl']").val(userObj.userUrl);
-            $("#form-edit-user input[name='notes']").val(userObj.notes);
-            $('#editUserModal').modal('show');
-        });
-    });
-
-    $("#form-edit-user .saveChanges").click(function () {
-        var editUser = $("#form-edit-user");
-        var method = post;
-        var url = $(editUser).attr("target");
-        var postData = $(editUser).serialize();
-        posting(method, url, postData, function () {
-            refresh();
-            $("#editUserModal").modal('hide');
-        });
-    });
-
-    $('.del-user-chkbox').click(function () {
-        var isCheck = $(this).is(':checked');
-        var saveChangesBtn = $(this).closest("#delUserModal").find("button.saveChanges");
-        if (isCheck) {
-            $(saveChangesBtn).removeAttr("disabled");
-        } else {
-            $(saveChangesBtn).attr("disabled", "");
-        }
-    });
-
-    $('.del-group-chkbox').click(function () {
-        var isCheck = $(this).is(':checked');
-        var deleteGroupButton = $("#deleteGroupButton");
-        if (isCheck) {
-            $(deleteGroupButton).removeAttr("disabled");
-        } else {
-            $(deleteGroupButton).attr("disabled", "");
-        }
-    });
-
-    $("#deleteGroupButton").on("click", function () {
-        var editGroup = $("#form-edit-group");
-        //temp using this to indicate the request is del or edit shouldnt be hard coding -->  seek for better solutions
-        $(editGroup).find(".req").val("del");
-        var method = post;
-        //var url = $(editGroup).attr("target"); //delete and edit targets are different
-        var url = "/delete-group";
-        var postData = $(editGroup).serialize();
-        posting(method, url, postData, function () {
-            $('#redditModal').modal('hide');
-            refresh();
-        });
-    });
-
-    $("#form-edit-group .saveChanges").click(function () {
-        var editGroup = $("#form-edit-group");
-        $(editGroup).find(".req").val("edit");
-        var method = post;
-        var url = $(editGroup).attr("target");
-        var postData = $(editGroup).serialize();
-        posting(method, url, postData, function () {
-            refresh();
-            $("#redditModal").modal('hide');
-        });
-    });
-
-    $("#form-del-user .saveChanges").click(function () {
-        var delUser = $("#form-del-user");
-        var method = post;
-        var url = $(delUser).attr("target");
-        var postData = $(delUser).serialize();
-        posting(method, url, postData, function () {
-            $("#delUserModal").modal('hide');
-            refresh();
-        });
-    });
-
-     $(".import-btn").click(function (e) {
-        e.preventDefault();
-        $.get( "/get-filepath", function( data ) {
-		  $("#import").val( data );
-		  
-		});
-    });
-	
-	$("#form-import .browse").click(function () {
-		$.get( "/import-browse", function( data ) {
-		  $("#form-import .filepath").val( data );
-		  
-		});
-    });
-	
-	 $("#form-import .saveChanges").click(function () {
-		var importForm = $("#form-import");
-        var method = 'post';
-        var url = $(importForm).attr("target");
-        var postData = $(importForm).serialize();
-        posting(method, url, postData, function () {
-            $("#importModal").modal('hide');
-			refresh();
-            
-        });
-    });
-});
-
-//Initialise popovers
-$('span').popover();
-$('a').tooltip();
-
-$('#listGridToggleButton').click(function () {
-    if ($(this).children('span').hasClass('glyphicon-align-left') == true) {
-        $(this).children('span').removeClass('glyphicon-align-left').addClass('glyphicon-th-large');
-        $('div.writeMain > div').removeClass('col-md-4').addClass('col-md-12');
-    }
-    else {
-        $(this).children('span').removeClass('glyphicon-th-large').addClass('glyphicon-align-left');
-        $('div.writeMain > div').removeClass('col-md-4').addClass('col-md-4');
-    }
-});
-
-$(function () {
-    $("#writeMain, #writeOther, #readMain, #readOther, #unassignedMain, #unassignedOther").sortable({
-        connectWith: ".connectedUserPermissions"
-    }).disableSelection();
-
-    $(".writeMain").sortable({
-        connectWith: ".writeMain",
-        placeholder: 'col-xs-4',
-        helper: 'clone',
-        appendTo: 'body',
-        forcePlaceholderSize: true,
-        start: function (event, ui) {
-            $('.row > div.col-md-4:visible:first').addClass('real-first-child');
-        },
-        stop: function (event, ui) {
-            $('.row > div.real-first-child').removeClass('real-first-child');
-        },
-        change: function (event, ui) {
-            $('.row > div.real-first-child').removeClass('real-first-child');
-            $('.row > div.col-md-4:visible:first').addClass('real-first-child');
-        },
-    });
-});
-
-//It is a function used to make toggle effect to the panels
-//$.fn.bootstrapSwitch.defaults.size = 'small';
-//$("[name='autoLogoutCheckbox']").bootstrapSwitch();
-//$("[name='autoLogoutCheckbox']").on('switchChange.bootstrapSwitch', function () {
-//    $('#autoLogoutForm').toggle();
-//});
-//$("[name='clearClipboardCheckbox']").bootstrapSwitch();
-//$("[name='clearClipboardCheckbox']").on('switchChange.bootstrapSwitch', function () {
-//    $('#clearClipboardForm').toggle();
-//});
-//$("[name='remindersCheckbox']").bootstrapSwitch();
-//$("[name='remindersCheckbox']").on('switchChange.bootstrapSwitch', function () {
-//    $('#remindersForm').toggle();
-//});
-$('#addUser').hide();
-
-$('#editGroup').hide();
-$('#editGroupButton').on("click", function () {
-    $('#editGroup').toggle();
-});
-
-$('#editUser').hide();
-$('#editUserButton').on("click", function () {
-    $('#editUser').toggle();
-});
-
-$(".hideClass").hide();
-
-$('.generatorSettings').hide();
-$('.generatorSettingsButton').on("click", function () {
-    $('.generatorSettings').toggle();
-});
-
-$('.togglePassword').on("click", function () {
-    if ($($(this).parent().parent().children()[1]).attr('type') == 'text') {
-        $($(this).children()[0]).removeClass("glyphicon-eye-close").addClass("glyphicon-eye-open");
-        $($(this).parent().parent().children()[1]).removeAttr('type');
-        $($(this).parent().parent().children()[1]).prop('type', 'password');
-    }
-    else {
-        $($(this).children()[0]).removeClass("glyphicon-eye-open").addClass("glyphicon-eye-close");
-        $($(this).parent().parent().children()[1]).removeAttr('type');
-        $($(this).parent().parent().children()[1]).prop('type', 'text');
-    }
-});
-
-$('.toggleCopy').on("click", function () {
-    if ($(this).hasClass("glyphicon-user")) {
-        $(this).removeClass("glyphicon-user").addClass("glyphicon-qrcode");
-    }
-    else {
-        $(this).removeClass("glyphicon-qrcode").addClass("glyphicon-user");
-    }
-});
-
-$('.generatePasswordButton').on("click", function () {
-    $($(this).parent().parent().children()[1]).val(generatePassword(16, true, true, true, true, true, true, false));
-});
-
-$('#lightThemeButton').on("click", function () {
-    $('#darkThemeButton').removeClass('active');
-    $(this).addClass('active');
-    $('link[href="css/bootstrap.dark.min.css"]').attr('href', 'css/bootstrap.min.css');
-});
-$('#darkThemeButton').on("click", function () {
-    $('#lightThemeButton').removeClass('active');
-    $(this).addClass('active');
-    $('link[href="css/bootstrap.min.css"]').attr('href', 'css/bootstrap.dark.min.css');
-});
-
-$(function () {
-    bindKeyDown();
-});
-
-
-function bindKeyDown() {
-    $("#sortable").sortable({
-        update: function (e, ui) {
-            var sequence = foo.sortable("toArray").join();
-            $.cookie("sortableOrder", sequence);
-        }
-    });
-    var foo = $("#sortable");
-    var sequence = $.cookie("sortableOrder");
-    if (sequence) {
-        $(order.split(',')).each(function (i, id) {
-            $("#" + id).appendTo(foo);
-        });
-    }
-    foo.sortable('options');
+var redirectToErroPage = function () {
+    window.location.href = _errorPage_name;
 }
+

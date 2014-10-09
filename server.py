@@ -13,7 +13,6 @@ from flask import flash
 from flask import make_response
 from werkzeug import secure_filename
 from vault import *
-from primateClasses import *
 from datetime import timedelta
 import os
 import os.path
@@ -23,11 +22,10 @@ import json
 import csv
 import StringIO
 import cStringIO
-#import Tkinter
-#import tkFileDialog
+import Tkinter
+import tkFileDialog
 import pyperclip
 import time
-import easygui
 from ConfigParser import SafeConfigParser
 
 #Configuration to handle HTML file uploads if implemented later.
@@ -36,6 +34,35 @@ ALLOWED_EXTENSIONS = set(['csv'])
 
 app = Flask(__name__)
 
+
+"""
+Class holds session values that are not compatiable with the Flask session variable.
+Data being stored includes:
+-The encrypted password database for the user. Known as a Vault.
+"""
+class SessionVault:
+    
+    
+    def __init__(self):
+        self.vaults = {}
+        return
+
+    def addVault(self,vault):
+        if session['id'] in self.vaults:#TODO check if vault is already loaded
+            raise KeyError
+        self.vaults[session['id']]=vault
+        return
+
+    def getVault(self):
+        return self.vaults.get(session['id'])
+
+    def getRecords(self):
+        return self.vaults.get(session['id']).records
+
+    def removeVault(self):
+        del self.vaults[session['id']]
+        
+        return
 
 """
 Function return the home page which acts as the login page.
@@ -62,9 +89,9 @@ def index():
         
     except KeyError:
         #Key error assumes false
-        return render_template('index.html')
+        return app.send_static_file('index.html')
     #if session is not logged in \/
-    return render_template('index.html')
+    return app.send_static_file('index.html')
 
 
 """
@@ -85,7 +112,8 @@ def dashboard():
     
     #If session IS logged in \/
     getGroups() #important, it populates the group list
-    return render_template('dashboard.html', records=sessionVault.getVault().records)
+    return app.send_static_file('main.html')
+
 
 
 """
@@ -116,22 +144,22 @@ def login():
         return redirect(url_for('dashboard'))
     
     session['id']=uuid.uuid4()
-    session['username']=request.form['Username']
-    session['password']=request.form['Password'].encode('ascii','ignore')
-    session['dbFile']=request.form['DatabaseFile']
+    session['username']="sponge bob square pants"
+    session['password']=request.values['Password'].encode('ascii','ignore')
+    session['dbFile']=request.values['DatabaseFile']
     if (os.path.isfile(session['dbFile'])==False):
-        return render_template('index.html', error="Database file does not exist.")
+        return "Incorrect database file",200
     
     try:
         sessionVault.addVault(Vault(session['password'],session['dbFile']))
     except 'BadPasswordError':
-        return render_template('index.html', error="Incorrect Password.")
+        return "Incorrect password",200
     except Exception,e:
-        return render_template('index.html', error=str(e))
+        return str(e)
 
     session['loggedIn']=True
     getGroups() #Important, it populates the group list
-    return redirect(url_for('dashboard'))
+    return "",304
 
 
 """
@@ -141,7 +169,7 @@ Function redirects user to the New Database template page.
 def newDatabase():
     if isLoggedIn():#redirects if already logged in
         return redirect(url_for('dashboard'))
-    return render_template('newDB.html')
+    return app.send_static_file('new-database.html')
 
 """
 Function that handles the creation of a new DB file and logging the user in.
@@ -153,7 +181,7 @@ def newDB():
     if isLoggedIn():#Redirects if already logged in
         return redirect(url_for('dashboard'))
     if (request.form['Password'].encode('ascii','ignore') != request.form['ConfirmPassword'].encode('ascii','ignore')):
-        return render_template('newDB.html', error="Passwords do not match.")
+        return app.send_static_file('new-database.html')
     session['id']=uuid.uuid4()
     session['username']=request.form['Username']
     session['password']=request.form['Password'].encode('ascii','ignore')
@@ -164,7 +192,7 @@ def newDB():
         sessionVault.addVault(Vault(session['password'].encode('ascii','ignore')))
         sessionVault.getVault().write_to_file(session['password'].encode('ascii','ignore'),session['dbFile'])
     except 'BadPasswordError':
-        return render_template('newDB.html', error="Incorrect Password.")
+        return app.send_static_file('new-database.html')
 
     session['loggedIn']=True
     getGroups() #Important, it populates the group list
@@ -179,7 +207,7 @@ def logoff():
     if isLoggedIn():#redirects if already logged in
         sessionVault.removeVault()
         session.clear()
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('index'))
     return redirect(url_for('index'))
 
 
@@ -484,8 +512,20 @@ Returns selected filepath as a string.
 """
 @app.route("/get-filepath")
 def getFilepath():
-    in_path = easygui.fileopenbox(default=os.getenv("HOME"))
-    
+    root = Tkinter.Tk()
+    root.withdraw()
+    root.overrideredirect(True)
+    root.geometry('0x0+0+0')#make tkinter window invisible
+    #Tkinter.Tk().withdraw() # Close the root window
+
+    # Show window again and lift it to top so it can get focus,
+    # otherwise dialogs will end up behind the terminal.
+    root.deiconify()
+    root.lift()
+    root.focus_force()
+    in_path = ''
+    in_path = tkFileDialog.askopenfilename(initialdir=(os.path.expanduser('~/')),parent=root)
+    root.destroy()
     return in_path
 
 
@@ -495,7 +535,20 @@ Returns the selected filepath as a string.
 """
 @app.route("/import-browse")
 def importBrowser():
-    file_path = easygui.fileopenbox(default=os.getenv("HOME"))
+    root = Tkinter.Tk()
+    root.withdraw()# Close the root window
+    root.overrideredirect(True)
+    root.geometry('0x0+0+0')#make tkinter window invisible
+
+    # Show window again and lift it to top so it can get focus,
+    # otherwise dialogs will end up behind the terminal.
+    root.deiconify()
+    root.lift()
+    root.focus_force()
+    
+    file_path=''
+    file_path = tkFileDialog.askopenfilename(initialdir=(os.path.expanduser('~/')),parent=root)
+    root.destroy()
     return file_path
 
 """
@@ -746,7 +799,7 @@ def getConfig():
         data={}
 
         
-        data["sessionTimeOut"]=confParser.getint("general",'sessionTimeOut')
+        data["sessionTimeOut"]=int(int(confParser.getint("general",'sessionTimeOut'))/60)
         data["passwrdMinLenth"]=confParser.getint("passwords",'passwrdMinLenth')
         getConfCheckboxes(data,"passwords","isLowercase")
         getConfCheckboxes(data,"passwords","isUppercase")
@@ -771,11 +824,11 @@ def getConfCheckboxes(dataDict, cfgSection, cfgOption):
 def setConfig():
     try:#request.form.get('test1', default=False, type=bool)
         if (request.form.get('sessionTimeOut', False) != False) and int(request.form.get('sessionTimeOut'))>0:
-            confParser.set("general",'time_to_timeout',request.values.get('sessionTimeOut'))
+            confParser.set("general",'time_to_timeout',str(int(request.values.get('sessionTimeOut'))*60))
         else:
             return "No sessionTimeOut set",500
         if request.form.get('passwrdMinLenth', False) and int(request.form.get('passwrdMinLenth'))>=0:
-            confParser.set("passwords",'password_length',request.values.get('passwrdMinLenth'))
+            confParser.set("passwords",'password_length',str(request.values.get('passwrdMinLenth')))
         else:
             return "No password_length set",500
         setCheckBoxConfig(request,'isLowercase',"passwords")
@@ -784,7 +837,7 @@ def setConfig():
         setCheckBoxConfig(request,'isSymbol',"passwords")
 
         saveConfig()
-        return
+        return ""
     except Exception,e:
             return str(e),500
 
@@ -795,9 +848,9 @@ Function tests if a checkbox value exists or not and sets the approperiate value
 """
 def setCheckBoxConfig(request,cfgOption,cfgSection):
     if request.values.get(cfgOption,False):
-        confParser.set(cfgSection,cfgOption,1)
+        confParser.set(cfgSection,cfgOption,str(1))
     else:
-        confParser.set(cfgSection,cfgOption,0)
+        confParser.set(cfgSection,cfgOption,str(0))
     
     return
 
