@@ -124,9 +124,24 @@ var contextMenu = function () {
             callback: function (key, options) {
                 // $(this); here refers to the object that is being clicked --> <div class="context-menu-one" id="t1" name="name1">
                 ///main.html#/group-edit-template
-                console.log($(this));
-                var m = "clicked: " + key;
-                window.console && console.log(m) || alert(m);
+                // console.log($(this));
+                // var m = "clicked: " + key;
+                // window.console && console.log(m) || alert(m);
+
+                if (key == "viewAcc") {
+                    var currentGroupObj = { accountName: $($(this).context).find(".list-title").html() }
+                    var serializedCurrentGroup = $.param(currentGroupObj);
+                    window.location.href = "main.html#/user-view-template?" + serializedCurrentGroup;
+                }
+                else if (key == "editAcc") {
+                    var currentGroupObj = { accountName: $($(this).context).find(".list-title").html() }
+                    var serializedCurrentGroup = $.param(currentGroupObj);
+                    window.location.href = "main.html#/user-edit-template?" + serializedCurrentGroup;
+                }
+                else if (key == "delAcc") {
+                    window.location.href = "main.html#";
+                    // ng-click="TriggerDeleteAccountDialog('Delete Account')"
+                }
             },
             items: {
                 "RedirectUrl": {

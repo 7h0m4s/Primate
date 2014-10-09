@@ -11,6 +11,7 @@ var _urlErrorPage404 = "error-page.html";
 var _urlErrorPage505 = "error-page.html?code=505";
 var _urlExportDialogTemplate = "dialog-export-template.html";
 var _urlImportDialogTemplate = "dialog-import-template.html";
+var _urlDeleteAccountTemplate = "dialog-delete-account-template.html";
 var _urlSaveUserSetting = "/config-set";
 var _urlGetUserSetting = "json/config-get.txt";
 var _urlGetTree = "json/tree-data.txt";
@@ -20,6 +21,7 @@ var _urlBrowse = "json/url-browse.txt";
 var _urlImportSubmit = "/import-direct";
 var _urlCreateGroupSubmit = "/create-group";
 var _urlEditGroupSubmit = "/edit-group";
+var _urlCreateUserSubmit = "/create-user";
 
 var global_tree = null;
 
@@ -40,6 +42,19 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
         })
         .when('/group-view-template', {
             templateUrl: 'group-view-template.html',
+            controller: 'mainController'
+        })
+
+        .when('/user-view-template', {
+            templateUrl: 'user-view-template.html',
+            controller: 'mainController'
+        })
+        .when('/user-edit-template', {
+            templateUrl: 'user-edit-template.html',
+            controller: 'mainController'
+        })
+         .when('/user-create-template', {
+            templateUrl: 'user-create-template.html',
             controller: 'mainController'
         })
         .when('/test-form-template', {
@@ -77,7 +92,7 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
 .controller('mainController', function ($scope, $http, $q, $compile, $window, $location, requestFactory, $routeParams) {
     $scope.childIndex = -1;
     $scope.breadcrumbs = [];
-    $scope.templates = { cacheExportDialogTemplate: "", cacheImportDialogTemplate: "" }
+    $scope.templates = { cacheExportDialogTemplate: "", cacheImportDialogTemplate: "", cacheDeleteAccountTemplate: ""  }
     $scope.importFile = {};
     $scope.userSetting = null;
     $scope.tree = null;
@@ -203,6 +218,20 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
             });
         }
     };
+    $scope.TriggerDeleteAccountDialog = function ($title) {
+        if ($scope.templates.cacheDeleteAccountTemplate) {
+            triggerDialog($title, getCompileContent($scope.templates.cacheDeleteAccountTemplate));
+        } else {
+            $http.get(_urlDeleteAccountTemplate).success(function ($content) {
+                $scope.templates.cacheDeleteAccountTemplate = $content;
+                var $compileContent = getCompileContent($content);
+                triggerDialog($title, $compileContent);
+            })
+            .error(function ($content, status) {
+                redirectToError505();
+            });
+        }
+    };
 
     $scope.Browse = function () {
         $.get(_urlBrowse, function (data) {
@@ -277,10 +306,30 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
         }
     }
 
+     $scope.SubmitCreateUserForm = function (isValid) {
+        if (isValid) {
+            submitAnimatel();
+            ajaxPost($("#createUserForm"), true, _urlCreateUserSubmit, function () {
+                initTree();
+            },
+            function () {
+                redirectToError505();
+            });
+        } else {
+            redirectToError505();
+        }
+    }
     $scope.RedirectGroupCreate = function () {
         var currentGroupIdObj = { groupParent: $(".breadcrumb").attr("data-breadcrumb-arr") }
         var serializedCurrentGroupId = $.param(currentGroupIdObj);
         $window.location.href = "main.html#/group-create-template?" + serializedCurrentGroupId;
+    };
+
+    $scope.RedirectUserCreate = function () {
+        $window.location.href = "main.html#/user-create-template";
+    };
+    $scope.RedirectUserEdit = function () {
+        $window.location.href = "main.html#/user-edit-template";
     };
 
     var initGroupId = function () {

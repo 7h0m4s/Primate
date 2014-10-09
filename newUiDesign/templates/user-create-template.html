@@ -1,0 +1,49 @@
+<!-- <div id="loader">
+    <img src="img/metro-loader.gif" />
+</div> -->
+<div class="example" id="User-management">
+    <form id="createUserForm" name="createUserForm" >
+        <fieldset>
+            <legend>
+                <h3 class="frame-title">Create Account</h3>
+            </legend>
+            <label for="groupParent">Group Directory</label>
+            <div class="input-control text" data-role="input-control">
+                <input class="select-search" id="groupParent" name="groupParent" ng-model="group.groupParent" />
+            </div>
+            <label class="required">Username</label>
+            <div class="input-control text" data-role="input-control">
+                <input class="select-search" placeholder="Username" required/>
+                <button class="btn-clear" tabindex="-1" type="button"></button>
+            </div>
+            <label class="required">Password</label>
+            <div class="input-control text" data-role="input-control">
+                <input type="text" placeholder="Password" name="password"  required />
+                <button class="btn-clear" tabindex="-1" type="button"></button>
+                <span class="validation" ng-show="createGroupForm.groupName.$error.required&& createGroupForm.groupName.$dirty">This field is required</span>
+            </div>
+           
+
+            <label>Title</label>
+            <div class="input-control text" data-role="input-control">
+                <input class="select-search" placeholder="Title"/>
+                <button class="btn-clear" tabindex="-1" type="button"></button>
+            </div>
+              <label>URL</label>
+            <div class="input-control text" data-role="input-control">
+                <input class="select-search" placeholder="URL"/>
+                <button class="btn-clear" tabindex="-1" type="button"></button>
+            </div>
+              <label>Notes</label>
+            <div class="input-control text" data-role="input-control">
+                <input class="select-search" placeholder="Notes"/>
+                <button class="btn-clear" tabindex="-1" type="button"></button>
+            </div>
+
+
+            <div>
+                <button type="submit" class="btn btn-lead full submit-animate" id="btn-user-submit" ng-disabled="createuserForm.$invalid">Create</button>
+            </div>
+        </fieldset>
+    </form>
+</div>
