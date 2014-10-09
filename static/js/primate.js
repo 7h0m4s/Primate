@@ -276,6 +276,7 @@ var ajaxGet = function (isAsync, requestUrl, successFunc, failureFunc) {
         async: isAsync
     }).done(function (msg) {
         successFunc(msg);
+
     }).fail(function (msg) {
         failureFunc(msg);
     });

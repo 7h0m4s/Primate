@@ -14,9 +14,8 @@ var _urlImportDialogTemplate = "static/dialog-import-template.html";
 var _urlSaveUserSetting = "/config-set";
 var _urlGetUserSetting = "config-get";
 var _urlGetTree = "get-db-json";
-var _urlGetTree2 = "json/tree-data2.txt";
-var _urlBrowse = "json/url-browse.txt";
-//var _urlBrowse = "/import-browse";
+// var _urlBrowse = "json/url-browse.txt";
+var _urlBrowse = "/import-browse";
 var _urlImportSubmit = "/import-direct";
 var _urlCreateGroupSubmit = "/create-group";
 var _urlEditGroupSubmit = "/edit-group";
@@ -203,8 +202,9 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
     };
 
     $scope.ImportSubmit = function () {
-        ajaxPost(null, true, _urlImportSubmit, function () { }, function () { });
-        initTree2($scope);
+		
+        
+		ajaxPost($("#importFileInput"),true,_urlImportSubmit,function(){},function(){});
         initTree($scope);
         $.Dialog.close();
     };
@@ -335,12 +335,6 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
         });
     };
 
-    //todo test only to be removed
-    var initTree2 = function (scope) {
-        requestFactory.get(_urlGetTree2).then(function (data) {
-            scope.tree = data;
-        });
-    };
 
     // group model
     var GroupModel = function (id, text) {
