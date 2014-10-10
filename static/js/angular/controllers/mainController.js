@@ -7,8 +7,8 @@ var _DEFAULT_FAILURE_MSG = "Save failed";
 var _EDIT_SUCCESS_MSG = "Edit successfully";
 var _backspace_keycode = 8;
 var _defaultCheckboxValue = "on";
-var _urlErrorPage404 = "error-page.html";
-var _urlErrorPage505 = "error-page.html?code=505";
+var _urlErrorPage404 = "static/error-page.html";
+var _urlErrorPage505 = "static/error-page.html?code=505";
 var _urlExportDialogTemplate = "static/dialog-export-template.html";
 var _urlImportDialogTemplate = "static/dialog-import-template.html";
 var _urlSaveUserSetting = "/config-set";
@@ -30,27 +30,20 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
         //    controller: 'mainController'
         //})
         .when('/group-create-template', {
-            templateUrl: 'group-create-template.html',
+            templateUrl: 'static/group-create-template.html',
             controller: 'mainController'
         })
         .when('/group-edit-template', {
-            templateUrl: '/group-edit-template.html',
+            templateUrl: 'static/group-edit-template.html',
             controller: 'mainController'
         })
         .when('/group-view-template', {
-            templateUrl: 'group-view-template.html',
-            controller: 'mainController'
-        })
-        .when('/test-form-template', {
-            templateUrl: 'test-form-template.html',
+            templateUrl: 'static/group-view-template.html',
             controller: 'mainController'
         });
     //.otherwise({
     //    redirectTo: '/'
     //});
-    ////$locationProvider.html5Mode(true);
-    //$locationProvider.html5Mode(false);
-    //$locationProvider.hashPrefix("");
 })
 
 .factory('requestFactory', function ($q, $http) {
@@ -118,7 +111,6 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
     };
 
     $scope.NavIn = function (obj) {
-        console.log($scope.groups);
         addParentToEachChild(obj);
         resetChildIndex();
         setGroupandChildren($scope, obj);
@@ -152,7 +144,7 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
     };
 
     $scope.SubmitSettingForm = function () {
-        ajaxPost($("#settingForm"), false, _urlSaveUserSetting, function (msg) {
+        ajaxPost($("#settingForm"), true, _urlSaveUserSetting, function (msg) {
             notifiSuccess(_NOTIFI_SETTING_CAPTION);
             closeSilder();
         },
@@ -210,8 +202,8 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
     };
 
     $scope.ImportSubmit = function () {
-        //_urlImportSubmit Post request
 		
+        
 		ajaxPost($("#importFileInput"),true,_urlImportSubmit,function(){},function(){});
         initTree($scope);
         $.Dialog.close();
@@ -222,9 +214,8 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
         var groupArr = getAllGroup(global_tree);
         calFrameHeight();
         initSelect2(groupArr);
-        setTimeout(function () { $('.example').animate({ margin: "0", opacity: '1', }, 500); $("#loader").hide(); }, 250);
+        hideLoader();
         initGroupId();
-        //initGroupName();
     };
 
     $scope.EditGroupSubmit = function () {
@@ -278,11 +269,10 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
     $scope.RedirectGroupCreate = function () {
         var currentGroupIdObj = { groupParent: $(".breadcrumb").attr("data-breadcrumb-arr") }
         var serializedCurrentGroupId = $.param(currentGroupIdObj);
-        $window.location.href = "main.html#/group-create-template?" + serializedCurrentGroupId;
+        $window.location.href = "dashboard#/group-create-template?" + serializedCurrentGroupId;
     };
 
     var initGroupId = function () {
-        //var currentGroup = $(".breadcrumb").attr("data-breadcrumb-arr");
         $("#groupParent").select2("val", $routeParams.groupParent);
         $scope.group.groupName = $routeParams.groupName;
     }
@@ -303,14 +293,8 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
         $scope.childIndex = -1;
     };
 
-    var closeSilder = function () {
-        $(".slide-right-wrapper").animate({ 'opacity': 0 });
-        $(".slide-right-panel").animate({ 'margin-right': '-320px', 'opacity': -0.5, 'filter': 'alpha(opacity=-150)' }, function () {
-            $(".slide-right").hide();
-        });
-    };
     var getImportFileInfo = function () {
-        //ajax get file info
+        //todo ajax get file info
         $scope.importFile = { date: "2014/09/29 04:10PM", size: "10.45 KB" };
     };
 
@@ -398,5 +382,33 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
         this.children = children;
         this.groups = [];
         this.groups = groups;
+    }
+
+    $(".context-menu-item").on("click", function () {
+        var itemName = $(this).context.innerText.trim();
+
+        if (contextGroupRedirectManagement(itemName)) {
+            return;
+        }
+        else if (true) {
+            return;
+        }
+    });
+
+    var contextGroupRedirectManagement = function (itemName) {
+        if (itemName == GROUP_CONTEXT_NAME_OBJ.NAME_GROUP_DETAIL) {
+            redirect(_urlViewGroup);
+            return true;
+        }
+        else if (itemName == GROUP_CONTEXT_NAME_OBJ.NAME_EDIT_GROUP) {
+            var currentGroupObj = { groupParent: $(".breadcrumb").attr("data-breadcrumb-arr"), groupName: $($(".active")).find(".list-title").html() }
+            var serializedCurrentGroup = $.param(currentGroupObj);
+            redirect(_urlEditGroup + "?" + serializedCurrentGroup);
+            return true;
+        }
+        else if (itemName == GROUP_CONTEXT_NAME_OBJ.NAME_DELETE_GROUP) {
+            return true;
+        }
+        return false;
     }
 });

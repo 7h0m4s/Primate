@@ -1,13 +1,20 @@
-﻿var _errorPage_name = "Error-page.html";
+﻿var _errorPage_name = "static/Error-page.html";
+var _urlLoginRedirect = "dashboard";
 var _undefined = "undefined";
+var GROUP_CONTEXT_NAME_OBJ = {
+    NAME_GROUP_DETAIL: "Group Detail",
+    NAME_EDIT_GROUP: "Edit Group",
+    NAME_DELETE_GROUP: "Delete Group"
+};
+var _urlViewGroup = "#/group-view-template";
+var _urlEditGroup = "#/group-edit-template";
+var _urlDelGroup = "#/group-delete-template";
 var _backspace_keycode = 8;
 var DEFAULT_STATUS_CODE = 404;
 var calFrameHeight = function () {
     var headerDimensions = $('header.bg-blue').height();
     var bordertopbottom = 4;
     $('#content-detail').height($(window).height() - headerDimensions - bordertopbottom);
-
-
 }
 
 //todo test
@@ -153,54 +160,23 @@ var contextMenu = function () {
         });
     }
 };
+
 var contextFileGroupMenu = function () {
     var obj = $(".file-group");
     if (obj.length > 0) {
         $.contextMenu({
             selector: '.file-group',
             callback: function (key, options) {
-                // $(this); here refers to the object that is being clicked --> <div class="context-menu-one" id="t1" name="name1">
-                ///main.html#/group-edit-template
-                if (key == "ViewGroup") {
-                    window.location.href = "main.html#/group-view-template";
-                }
-                else if (key == "EditGroup") {
-                    var currentGroupObj = { groupParent: $(".breadcrumb").attr("data-breadcrumb-arr"), groupName: $($(this).context).find(".list-title").html() }
-                    var serializedCurrentGroup = $.param(currentGroupObj);
-                    window.location.href = "main.html#/group-edit-template?" + serializedCurrentGroup;
-                }
-                else if (key == "DeleteGroup") {
-                    window.location.href = "main.html#/group-delete-template";
-                }
             },
             items: {
                 "ViewGroup": {
-                    name: "Group Detail",
+                    name: GROUP_CONTEXT_NAME_OBJ.NAME_GROUP_DETAIL,
                 },
                 "EditGroup": {
-                    name: "Edit Group",
+                    name: GROUP_CONTEXT_NAME_OBJ.NAME_EDIT_GROUP,
                 },
                 "DeleteGroup": {
-                    name: "Delete Group",
-                }
-            }
-        });
-    }
-};
-
-var addGroupMenu = function () {
-    var obj = $(".side-mid");
-    if (obj.length > 0) {
-        $.contextMenu({
-            selector: '.side-mid',
-            callback: function (key, options) {
-                if (key == "CreateGroup") {
-                    window.location.href = "main.html#/group-create-template";
-                }
-            },
-            items: {
-                "CreateGroup": {
-                    name: "Add Group",
+                    name: GROUP_CONTEXT_NAME_OBJ.NAME_DELETE_GROUP,
                 }
             }
         });
@@ -299,7 +275,7 @@ var ajaxGet = function (isAsync, requestUrl, successFunc, failureFunc) {
         url: url,
         async: isAsync
     }).done(function (msg) {
-		successFunc(msg);
+        successFunc(msg);
 
     }).fail(function (msg) {
         failureFunc(msg);
@@ -321,26 +297,6 @@ var triggerDialog = function ($title, $content) {
     });
 };
 
-
-
-//Test portion
-
-var jsonData = {
-    more: false,
-    results: [
-        {
-            text: "Western", children: [
-              { id: "CA", text: "California" },
-              { id: "AZ", text: "Arizona" }
-            ]
-        },
-        {
-            text: "Eastern", children: [
-              { id: "FL", text: "Florida" }
-            ]
-        }
-    ]
-};
 
 var initSelect2 = function (data) {
     $(".select-search").select2({
@@ -372,7 +328,33 @@ var submitAnimatel = function () {
     }
 }
 
-var redirectToErroPage = function () {
-    window.location.href = _errorPage_name;
-}
+var closeSilder = function () {
+    $(".slide-right-wrapper").animate({ 'opacity': 0 });
+    $(".slide-right-panel").animate({ 'margin-right': '-320px', 'opacity': -0.5, 'filter': 'alpha(opacity=-150)' }, function () {
+        $(".slide-right").hide();
+    });
+};
 
+var hideLoader = function () {
+    setTimeout(function () {
+        $('.example').animate({ margin: "0", opacity: '1', }, 500);
+        $("#loader").hide();
+    }, 250);
+};
+
+
+var redirect = function (url) {
+    window.location.href = url;
+};
+
+var redirectToErroPage = function () {
+    window.location.href = _urlErrorPage404;
+};
+
+var redirectToErroPage505 = function () {
+    window.location.href = _urlErrorPage505;
+};
+
+var redirectToMainPage = function () {
+    window.location.href = _urlLoginRedirect;
+};
