@@ -35,8 +35,10 @@ ALLOWED_EXTENSIONS = set(['csv'])
 app = Flask(__name__)
 global loginFunction
 global dashboardFunction
+global newdbFunction
 loginFunction = 'index'
 dashboardFunction = 'dashboard'
+newdbFunction='newDatabase'
 
 """
 Class holds session values that are not compatiable with the Flask session variable.
@@ -186,7 +188,7 @@ def newDB():
         return redirect(url_for(dashboardFunction))
     try:
         if (request.form['Password'].encode('ascii','ignore') != request.form['ConfirmPassword'].encode('ascii','ignore')):
-            return app.send_static_file('new-database.html')
+            return redirect(url_for(newdbFunction))
         session['id']=uuid.uuid4()
         session['username']=request.form['Username']
         session['password']=request.form['Password'].encode('ascii','ignore')
@@ -197,7 +199,7 @@ def newDB():
             sessionVault.addVault(Vault(session['password'].encode('ascii','ignore')))
             sessionVault.getVault().write_to_file(session['password'].encode('ascii','ignore'),session['dbFile'])
         except 'BadPasswordError':
-            return app.send_static_file('new-database.html')
+            return redirect(url_for(newdbFunction))
 
         session['loggedIn']=True
         getGroups() #Important, it populates the group list
