@@ -853,13 +853,13 @@ def getConfCheckboxes(dataDict, cfgSection, cfgOption):
 def setConfig():
     try:#request.form.get('test1', default=False, type=bool)
         if (request.form.get('sessionTimeOut', False) != False) and int(request.form.get('sessionTimeOut'))>0:
-            confParser.set("general",'time_to_timeout',str(int(request.values.get('sessionTimeOut'))*60))
+            confParser.set("general",'sessiontimeout',str(int(request.values.get('sessionTimeOut'))*60))
         else:
             return "No sessionTimeOut set",500
         if request.form.get('passwrdMinLenth', False) and int(request.form.get('passwrdMinLenth'))>=0:
-            confParser.set("passwords",'password_length',str(request.values.get('passwrdMinLenth')))
+            confParser.set("passwords",'passwrdminlenth',str(request.values.get('passwrdMinLenth')))
         else:
-            return "No password_length set",500
+            return "No passwrdminlenth set",500
         setCheckBoxConfig(request,'isLowercase',"passwords")
         setCheckBoxConfig(request,'isUppercase',"passwords")
         setCheckBoxConfig(request,'isDigit',"passwords")
