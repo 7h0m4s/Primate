@@ -4,5 +4,6 @@
 rm -rf build dist
 rm -rf dist
 python appSetup.py py2app
-cp -r static/ dist/server.app/Contents/Resources/
-cp -r templates/ dist/server.app/Contents/Resources/
+mv dist/server.app dist/PasswordPrimate.app
+cp -r static/ dist/PasswordPrimate.app/Contents/Resources/
+cp -r templates/ dist/PasswordPrimate.app/Contents/Resources/
