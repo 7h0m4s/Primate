@@ -33,7 +33,10 @@ UPLOAD_FOLDER = 'uploads/'
 ALLOWED_EXTENSIONS = set(['csv'])
 
 app = Flask(__name__)
-
+global loginFunction
+global dashboardFunction
+loginFunction = 'index'
+dashboardFunction = 'dashboard'
 
 """
 Class holds session values that are not compatiable with the Flask session variable.
@@ -85,7 +88,7 @@ def index():
     #Test if the session is logged in.
     try:
         if session['loggedIn']==True:
-            return redirect(url_for('dashboard'))
+            return redirect(url_for(dashboardFunction))
         
     except KeyError:
         #Key error assumes false
@@ -104,11 +107,11 @@ def dashboard():
     #Test if the session is NOT logged in.
     try:
         if session['loggedIn']==False:
-            return redirect(url_for('index'))
+            return redirect(url_for(loginFunction))
         
     except KeyError:
         #Key error assumes false
-        return redirect(url_for('index'))
+        return redirect(url_for(loginFunction))
     
     #If session IS logged in \/
     getGroups() #important, it populates the group list
@@ -141,26 +144,27 @@ If fail redirect to login page with error message.
 @app.route("/login", methods=['POST', 'GET'])
 def login():
     if isLoggedIn():#Redirects if already logged in
-        return redirect(url_for('dashboard'))
-    
-    session['id']=uuid.uuid4()
-    session['username']="sponge bob square pants"
-    session['password']=request.values['Password'].encode('ascii','ignore')
-    session['dbFile']=request.values['DatabaseFile']
-    if (os.path.isfile(session['dbFile'])==False):
-        return "Incorrect database file",200
-    
+        return redirect(url_for(dashboardFunction))
     try:
-        sessionVault.addVault(Vault(session['password'],session['dbFile']))
-    except 'BadPasswordError':
-        return "Incorrect password",200
+        session['id']=uuid.uuid4()
+        session['username']="sponge bob square pants"
+        session['password']=request.values['Password'].encode('ascii','ignore')
+        session['dbFile']=request.values['DatabaseFile']
+        if (os.path.isfile(session['dbFile'])==False):
+            return "Incorrect database file",200
+        
+        try:
+            sessionVault.addVault(Vault(session['password'],session['dbFile']))
+        except 'BadPasswordError':
+            return "Incorrect password",200
+        except Exception,e:
+            return str(e),500
+
+        session['loggedIn']=True
+        getGroups() #Important, it populates the group list
+        return "",304
     except Exception,e:
-        return str(e)
-
-    session['loggedIn']=True
-    getGroups() #Important, it populates the group list
-    return "",304
-
+        return str(e),500
 
 """
 Function redirects user to the New Database template page.
@@ -168,7 +172,7 @@ Function redirects user to the New Database template page.
 @app.route("/NewDatabase")
 def newDatabase():
     if isLoggedIn():#redirects if already logged in
-        return redirect(url_for('dashboard'))
+        return redirect(url_for(dashboardFunction))
     return app.send_static_file('new-database.html')
 
 """
@@ -179,36 +183,41 @@ If fail redirect to newDB page with error message.
 @app.route("/newDB", methods=['POST', 'GET'])
 def newDB():
     if isLoggedIn():#Redirects if already logged in
-        return redirect(url_for('dashboard'))
-    if (request.form['Password'].encode('ascii','ignore') != request.form['ConfirmPassword'].encode('ascii','ignore')):
-        return app.send_static_file('new-database.html')
-    session['id']=uuid.uuid4()
-    session['username']=request.form['Username']
-    session['password']=request.form['Password'].encode('ascii','ignore')
-    assert type(session['password']) != unicode
-    session['dbFile']=request.form['DatabaseFile']
-    
+        return redirect(url_for(dashboardFunction))
     try:
-        sessionVault.addVault(Vault(session['password'].encode('ascii','ignore')))
-        sessionVault.getVault().write_to_file(session['password'].encode('ascii','ignore'),session['dbFile'])
-    except 'BadPasswordError':
-        return app.send_static_file('new-database.html')
+        if (request.form['Password'].encode('ascii','ignore') != request.form['ConfirmPassword'].encode('ascii','ignore')):
+            return app.send_static_file('new-database.html')
+        session['id']=uuid.uuid4()
+        session['username']=request.form['Username']
+        session['password']=request.form['Password'].encode('ascii','ignore')
+        assert type(session['password']) != unicode
+        session['dbFile']=request.form['DatabaseFile']
+        
+        try:
+            sessionVault.addVault(Vault(session['password'].encode('ascii','ignore')))
+            sessionVault.getVault().write_to_file(session['password'].encode('ascii','ignore'),session['dbFile'])
+        except 'BadPasswordError':
+            return app.send_static_file('new-database.html')
 
-    session['loggedIn']=True
-    getGroups() #Important, it populates the group list
-    return redirect(url_for('dashboard'))
-
+        session['loggedIn']=True
+        getGroups() #Important, it populates the group list
+        return redirect(url_for(dashboardFunction))
+    except Exception,e:
+        return str(e),500
 
 """
 Function closes the user session and logs them out
 """
 @app.route("/logout")
 def logoff():
-    if isLoggedIn():#redirects if already logged in
-        sessionVault.removeVault()
-        session.clear()
-        return redirect(url_for('index'))
-    return redirect(url_for('index'))
+    try:
+        if isLoggedIn():#redirects if already logged in
+            sessionVault.removeVault()
+            session.clear()
+            return redirect(url_for(loginFunction))
+        return redirect(url_for(loginFunction))
+    except Exception,e:
+            return str(e),500
 
 
 """
@@ -217,19 +226,22 @@ Form Parameter: -String uuid
 """
 @app.route("/get-user", methods=['POST'])
 def getUser():
-    uuid=request.form['uuid']
-    for record in sessionVault.getRecords():
-        if str(record._get_uuid()) == uuid:
-            data={}
-            data["uuid"]=str(record._get_uuid())
-            data["usr"]=str(record._get_user())
-            data["userTitle"]=str(record._get_title())
-            data["userUrl"]=str(record._get_url())
-            data["notes"]=str(record._get_notes())
+    try:
+        uuid=request.form['uuid']
+        for record in sessionVault.getRecords():
+            if str(record._get_uuid()) == uuid:
+                data={}
+                data["uuid"]=str(record._get_uuid())
+                data["usr"]=str(record._get_user())
+                data["userTitle"]=str(record._get_title())
+                data["userUrl"]=str(record._get_url())
+                data["notes"]=str(record._get_notes())
 
-            return json.dumps(data)
-        
-    return "No Record Found", 500
+                return json.dumps(data)
+            
+        return "No Record Found", 500
+    except Exception,e:
+        return str(e),500
 
 """
 Returns data to populate the Group-Edit menu on the dashboard
@@ -249,7 +261,7 @@ Function returns the dashboard page
 @app.route("/refresh")
 def refresh():
 
-    return redirect(url_for('dashboard'))
+    return redirect(url_for(dashboardFunction))
 
 
 """
@@ -261,16 +273,19 @@ unless there is a user under that group.
 """
 @app.route("/create-group", methods=['POST', 'GET'])
 def createGroup():
-    groupParent=request.form['groupParent']
-    groupName=request.form['groupName']
-    if len(groupParent) == 0:
-        addGroup(groupName)
-    else:
-        if groupParent not in getGroups():
-            return "Group Parent Not Found", 500
-        session['groups'].append(groupParent +"."+ groupName)#
+    try:
+        groupParent=request.form['groupParent']
+        groupName=request.form['groupName']
+        if len(groupParent) == 0:
+            addGroup(groupName)
+        else:
+            if groupParent not in getGroups():
+                return "Group Parent Not Found", 500
+            session['groups'].append(groupParent +"."+ groupName)#
 
-    return "Group Added Successfully", 304
+        return "Group Added Successfully", 304
+    except Exception,e:
+        return str(e),500
 
 
 """
@@ -472,11 +487,14 @@ Function saves changes to the database to the database file.
 """
 @app.route("/save", methods=['POST'])
 def saveDB():
-    if isLoggedIn()==False:
-        return "user not logged in.",500
-    sessionVault.getVault().write_to_file(session['dbFile'], session['password'])
-    
-    return "Database was saved to "+session['dbFile']
+    try:
+        if isLoggedIn()==False:
+            return "user not logged in.",500
+        sessionVault.getVault().write_to_file(session['dbFile'], session['password'])
+        
+        return "Database was saved to "+session['dbFile']
+    except Exception,e:
+        return str(e),500
 
 
 """
@@ -512,21 +530,24 @@ Returns selected filepath as a string.
 """
 @app.route("/get-filepath")
 def getFilepath():
-    root = Tkinter.Tk()
-    root.withdraw()
-    root.overrideredirect(True)
-    root.geometry('0x0+0+0')#make tkinter window invisible
-    #Tkinter.Tk().withdraw() # Close the root window
+    try:
+        root = Tkinter.Tk()
+        root.withdraw()
+        root.overrideredirect(True)
+        root.geometry('0x0+0+0')#make tkinter window invisible
+        #Tkinter.Tk().withdraw() # Close the root window
 
-    # Show window again and lift it to top so it can get focus,
-    # otherwise dialogs will end up behind the terminal.
-    root.deiconify()
-    root.lift()
-    root.focus_force()
-    in_path = ''
-    in_path = tkFileDialog.askopenfilename(initialdir=(os.path.expanduser('~/')),parent=root)
-    root.destroy()
-    return in_path
+        # Show window again and lift it to top so it can get focus,
+        # otherwise dialogs will end up behind the terminal.
+        root.deiconify()
+        root.lift()
+        root.focus_force()
+        in_path = ''
+        in_path = tkFileDialog.askopenfilename(initialdir=(os.path.expanduser('~/')),parent=root)
+        root.destroy()
+        return in_path
+    except Exception,e:
+        return str(e),500
 
 
 """
@@ -535,21 +556,24 @@ Returns the selected filepath as a string.
 """
 @app.route("/import-browse")
 def importBrowser():
-    root = Tkinter.Tk()
-    root.withdraw()# Close the root window
-    root.overrideredirect(True)
-    root.geometry('0x0+0+0')#make tkinter window invisible
+    try:
+        root = Tkinter.Tk()
+        root.withdraw()# Close the root window
+        root.overrideredirect(True)
+        root.geometry('0x0+0+0')#make tkinter window invisible
 
-    # Show window again and lift it to top so it can get focus,
-    # otherwise dialogs will end up behind the terminal.
-    root.deiconify()
-    root.lift()
-    root.focus_force()
-    
-    file_path=''
-    file_path = tkFileDialog.askopenfilename(initialdir=(os.path.expanduser('~/')),parent=root)
-    root.destroy()
-    return file_path
+        # Show window again and lift it to top so it can get focus,
+        # otherwise dialogs will end up behind the terminal.
+        root.deiconify()
+        root.lift()
+        root.focus_force()
+        
+        file_path=''
+        file_path = tkFileDialog.askopenfilename(initialdir=(os.path.expanduser('~/')),parent=root)
+        root.destroy()
+        return file_path
+    except Exception,e:
+            return str(e),500
 
 """
 Function takes filepath to a csv file on disk and adds it to the DB.
@@ -559,7 +583,7 @@ TODO: Check if file exists.
 def importFileDirect():
     try:
         if isLoggedIn() == False:
-            return redirect(url_for('index'))
+            return redirect(url_for(loginFunction))
 
         file_path = request.form['file']
 
@@ -637,10 +661,10 @@ def getByUuid(uuid):
 """
 @app.route("/export")
 def exportFile():
-    #Error checking disabled for debuging (counterintuative right? It just means we are using the Flask Debug system instead.)
-    #try:
+    
+    try:
         if isLoggedIn() == False:
-            return redirect(url_for('index'))
+            return redirect(url_for(loginFunction))
         
         data = [["uuid","group","title","url","user","password","notes"]]
         for record in sessionVault.getVault().records:
@@ -654,8 +678,8 @@ def exportFile():
         response = make_response(output.getvalue())
         response.headers["Content-Disposition"] = "attachment; filename=books.csv"
         return response
-    #except Exception,e:
-        #return str(e),500
+    except Exception,e:
+        return str(e),500
     
 """
 Function tests if the file is on an allowed extension type. i.e. '.csv'
@@ -706,32 +730,35 @@ attribute: the attribute that is to be copied.
 """
 @app.route("/copy",methods=['POST'])
 def copy():
-    if isLoggedIn()==False:
-            return "user not logged in.",500
-    out = ""
-    uuid = request.form['uuid']
-    attribute = request.form['attribute']
-    account = None
+    try:
+        if isLoggedIn()==False:
+                return "user not logged in.",500
+        out = ""
+        uuid = request.form['uuid']
+        attribute = request.form['attribute']
+        account = None
 
-    for record in sessionVault.getVault().records:
-            if str(record._get_uuid())== str(uuid):
-                account = record
-                break
-    
-    if account is None:
-        return "No Account Found With That UUID.", 500
+        for record in sessionVault.getVault().records:
+                if str(record._get_uuid())== str(uuid):
+                    account = record
+                    break
+        
+        if account is None:
+            return "No Account Found With That UUID.", 500
 
-    if attribute=="username":
-        out = str(account._get_user())
-    elif attribute=="password":
-        out = str(account._get_passwd())
-    elif attribute=="url":
-        out = str(account._get_url())
-    else:
-        return "Invalid attribute.", 500
-    
-    pyperclip.copy(out)
-    return "Copied to clipboard!"
+        if attribute=="username":
+            out = str(account._get_user())
+        elif attribute=="password":
+            out = str(account._get_passwd())
+        elif attribute=="url":
+            out = str(account._get_url())
+        else:
+            return "Invalid attribute.", 500
+        
+        pyperclip.copy(out)
+        return "Copied to clipboard!"
+    except Exception,e:
+        return str(e),500
 
 """
 Function initiates configuration file.
@@ -862,12 +889,15 @@ e.g.: {groupName:"",children:[{uuid:"79873249827346",title:"hello",user:"usernam
 def getDbJson():
     if isLoggedIn()==False:
             return "user not logged in.",500
-    dbDict={}
-    #dbDict= {"groupName":"","children":[],"groups":[]}
-    dbDict = getChildren("")
+    try:
+        dbDict={}
+        #dbDict= {"groupName":"","children":[],"groups":[]}
+        dbDict = getChildren("")
 
 
-    return json.dumps(dbDict)
+        return json.dumps(dbDict)
+    except Exception,e:
+        return str(e),500
 
 """
 Helper function for getDbJson(). Uses recursion to find an collect passwords and groups recursively.
@@ -938,13 +968,16 @@ Function safely closes the backend server.
 """
 @app.route('/shutdown')
 def shutdown():
-    if isLoggedIn():#redirects if already logged in
-        sessionVault.removeVault()
-        session.clear()
-    shutdown_server()    
+    try:
+        if isLoggedIn():#redirects if already logged in
+            sessionVault.removeVault()
+            session.clear()
+        shutdown_server()    
 
 
-    return "Shutting down server."
+        return "Shutting down server."
+    except Exception,e:
+        return str(e),500
 
 def shutdown_server():
     func = request.environ.get('werkzeug.server.shutdown')
