@@ -153,14 +153,14 @@ def login():
         session['password']=request.values['Password'].encode('ascii','ignore')
         session['dbFile']=request.values['DatabaseFile']
         if (os.path.isfile(session['dbFile'])==False):
-            return "Incorrect database file",200
+            return "Incorrect Database File",200
         
         try:
             sessionVault.addVault(Vault(session['password'],session['dbFile']))
         except 'BadPasswordError':
-            return "Incorrect password",200
+            return "Incorrect Password",200
         except Exception,e:
-            return str(e),500
+            return str(e),200
 
         session['loggedIn']=True
         getGroups() #Important, it populates the group list
@@ -241,7 +241,7 @@ def getUser():
 
                 return json.dumps(data)
             
-        return "No Record Found", 500
+        return "No Account Record Found", 500
     except Exception,e:
         return str(e),500
 
@@ -255,7 +255,7 @@ def getGroup():
     for record in sessionVault.getVault().records:
         outString= "uuid: "+ str(record._get_uuid()) + "\n"
         
-    return "No Record Found"
+    return "No Group Record Found"
 
 """
 Function returns the dashboard page
@@ -325,7 +325,7 @@ def editGroup():
                 record._set_group(groupName)
 
         saveDB()
-        return "Group edited Successfully, list=" + str(session['groups'])+"  group="+ str(group), 304
+        return "Group edited Successfully", 304
     except Exception,e:
         return str(e),500
 
@@ -384,7 +384,7 @@ def createUser():
         userUrl=request.form['userUrl']
         notes=request.form['notes']
         if len(group)<= 0:
-            return "Cannot create user. No group name given.", 500
+            return "Cannot Create User. No Group Name Given.", 200
         entry = Vault.Record.create()
         entry._set_group(group)
         entry._set_user(usr)
@@ -420,7 +420,7 @@ def editUser():
         notes=request.form['notes']
 
         if len(userTitle)<= 0:
-            return "Account must have a title.", 500
+            return "Account Must Have A Title.", 200
         for record in sessionVault.getVault().records:
             if str(record._get_uuid()) == uuid:
                 record._set_user(usr)
@@ -450,7 +450,7 @@ def deleteUser():
                 sessionVault.getVault().records.remove(record)
                 saveDB()
                 return "Account Deleted Successfully", 304
-        return "Cannot find account tobe deleted.", 500
+        return "Cannot Find Account To Be Deleted.", 200
     except Exception,e:
         return str(e),500
     return
@@ -491,7 +491,7 @@ Function saves changes to the database to the database file.
 def saveDB():
     try:
         if isLoggedIn()==False:
-            return "user not logged in.",500
+            return "User Not Logged In.",200
         sessionVault.getVault().write_to_file(session['dbFile'], session['password'])
         
         return "Database was saved to "+session['dbFile']
@@ -508,15 +508,15 @@ Parameter: newPassword= string of new password
 def newMasterPasword():
     try:
         if isLoggedIn()==False:
-            return "user not logged in.",500
+            return "User not logged in.",200
         newPass = request.values.get('newPassword', default="")
         oldPass = request.values.get('oldPassword', default="")
         if newPass == "":
-            return "No new password recived",500
+            return "No New Password Recived",200
         if oldPass != session['password']:
-            return "Old password does not match backend records.",500
+            return "Old Password Does Not Match Backend Records.",200
         if oldPass == newPass:
-            return "Must choose a new password.",500
+            return "New Password Cannot Match Old Password.",200
         session['password'] = newPass
         saveDB()
         return "Master Password changed."
@@ -590,7 +590,7 @@ def importFileDirect():
         file_path = request.form['file']
 
         if str(os.path.splitext(file_path)[1])!=".csv":
-            return "Incorrect file format.", 500
+            return "Incorrect File Format.", 200
         
         importedFile = open(file_path,'r')
         reader = csv.DictReader(importedFile)
@@ -598,11 +598,11 @@ def importFileDirect():
         for lineDict in reader:
 
             if not (lineDict.has_key('uuid') and lineDict.has_key('group') and lineDict.has_key('title') and lineDict.has_key('url') and lineDict.has_key('user')):
-                return "Incorrect data format",500
+                return "Incorrect Data Format",200
             if len(lineDict)> 7:
-                return "Incorrect data format. Too many items on line " + str(i),500
+                return "Incorrect Data Format. Too Many Items On Line " + str(i),200
             if len(lineDict.get('uuid',''))!=36:
-                return "Incorrect UUID on line " + str(i),500
+                return "Incorrect UUID On Line " + str(i),200
 
 
             entry = Vault.Record.create()
@@ -621,14 +621,14 @@ def importFileDirect():
             i += 1
             
         if i <=1:
-            return "No accounts found in file", 500
+            return "File Is Empty", 200
         saveDB()
         importedFile.close()
             
         return "Sucessfuly imported."
 
 
-        return "An Error Occured.", 500
+        
     except Exception,e:
         return str(e),500
 
@@ -734,7 +734,7 @@ attribute: the attribute that is to be copied.
 def copy():
     try:
         if isLoggedIn()==False:
-                return "user not logged in.",500
+                return "User Not Logged In.",200
         out = ""
         uuid = request.form['uuid']
         attribute = request.form['attribute']
@@ -746,7 +746,7 @@ def copy():
                     break
         
         if account is None:
-            return "No Account Found With That UUID.", 500
+            return "No Account Found With That UUID.", 200
 
         if attribute=="username":
             out = str(account._get_user())
@@ -755,7 +755,7 @@ def copy():
         elif attribute=="url":
             out = str(account._get_url())
         else:
-            return "Invalid attribute.", 500
+            return "Invalid attribute.", 200
         
         pyperclip.copy(out)
         return "Copied to clipboard!"
@@ -855,11 +855,11 @@ def setConfig():
         if (request.form.get('sessionTimeOut', False) != False) and int(request.form.get('sessionTimeOut'))>0:
             confParser.set("general",'sessiontimeout',str(int(request.values.get('sessionTimeOut'))*60))
         else:
-            return "No sessionTimeOut set",500
+            return "No sessionTimeOut set",200
         if request.form.get('passwrdMinLenth', False) and int(request.form.get('passwrdMinLenth'))>=0:
             confParser.set("passwords",'passwrdminlenth',str(request.values.get('passwrdMinLenth')))
         else:
-            return "No passwrdminlenth set",500
+            return "No passwrdminlenth set",200
         setCheckBoxConfig(request,'isLowercase',"passwords")
         setCheckBoxConfig(request,'isUppercase',"passwords")
         setCheckBoxConfig(request,'isDigit',"passwords")
@@ -890,7 +890,7 @@ e.g.: {groupName:"",children:[{uuid:"79873249827346",title:"hello",user:"usernam
 @app.route("/get-db-json")
 def getDbJson():
     if isLoggedIn()==False:
-            return "user not logged in.",500
+            return "User Not Logged In.",200
     try:
         dbDict={}
         #dbDict= {"groupName":"","children":[],"groups":[]}
