@@ -464,18 +464,39 @@ NOTE: this inclues groups that are created but have no accounts in them so are n
 def getGroups():
     try:
         if session['groups'] == []:
-            for record in sessionVault.getVault().records:
-                if str(record._get_group()) not in session['groups']:
-                    session['groups'].append(str(record._get_group()))
+            getGroupsHelper()
     except KeyError:#yes I know this is repeated code. I was lazy tonight :P
             session['groups'] = []
-            for record in sessionVault.getVault().records:
-                if str(record._get_group()) not in session['groups']:
-                    session['groups'].append(str(record._get_group()))
+            getGroupsHelper()
                     
     return session['groups']
 
+"""
+Function is a helper for get groups.
+Made to reduce repeditive code.
+Yes im sorry, the name is terrible.
+"""
+def getGroupsHelper():
+    for record in sessionVault.getVault().records:
+                if str(record._get_group()) not in session['groups']:
+                    session['groups'].append(str(record._get_group()))
+##        for name in groupNameSplitter(str(record._get_group())):
+##            if name not in session['groups']:
+##                session['groups'].append(name)
+    return
 
+
+"""
+Function gets a string of a group name and returns a list of the group and all its parents names as a list of strings.
+"""
+def groupNameSplitter(groupName):
+    outList=[]
+    groupNameSplit= csv.reader(cStringIO.StringIO(groupName), delimiter='.', escapechar='\\').next()
+    count=1
+    while count <= len(groupNameSplit):
+        outList.append(".".join(groupNameSplit[:count]))
+         
+    return outList
 
 def addGroup(group):
     if group not in session['groups']:
@@ -917,13 +938,13 @@ def getChildren(groupName):
             returnDict["children"].append(getChild(record))
 
 
-    for record in sessionVault.getVault().records:
+    for record in getGroups():
         if groupName=="":
-            if splitGroups(record._get_group())[0] not in groupList:
-                groupList.append(splitGroups(record._get_group())[0])
-        elif splitGroups(record._get_group())[:-1] == splitGroups(groupName):
-            if '.'.join(splitGroups(record._get_group())[:len(splitGroups(groupName))+1]) not in groupList:
-                groupList.append('.'.join(splitGroups(record._get_group())[:len(splitGroups(groupName))+1]))
+            if splitGroups(record)[0] not in groupList:
+                groupList.append(splitGroups(record)[0])
+        elif splitGroups(record)[:-1] == splitGroups(groupName):
+            if '.'.join(splitGroups(record)[:len(splitGroups(groupName))+1]) not in groupList:
+                groupList.append('.'.join(splitGroups(record)[:len(splitGroups(groupName))+1]))
 
                 
     for group in groupList:        
