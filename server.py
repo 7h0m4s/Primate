@@ -478,11 +478,11 @@ Yes im sorry, the name is terrible.
 """
 def getGroupsHelper():
     for record in sessionVault.getVault().records:
-                if str(record._get_group()) not in session['groups']:
-                    session['groups'].append(str(record._get_group()))
-##        for name in groupNameSplitter(str(record._get_group())):
-##            if name not in session['groups']:
-##                session['groups'].append(name)
+##                if str(record._get_group()) not in session['groups']:
+##                    session['groups'].append(str(record._get_group()))
+        for name in groupNameSplitter(str(record._get_group())):
+            if name not in session['groups']:
+                session['groups'].append(name)
     return
 
 
@@ -495,7 +495,7 @@ def groupNameSplitter(groupName):
     count=1
     while count <= len(groupNameSplit):
         outList.append(".".join(groupNameSplit[:count]))
-         
+        count += 1
     return outList
 
 def addGroup(group):
