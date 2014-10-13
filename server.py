@@ -573,7 +573,7 @@ def getFilepath():
         in_path=''
         app = wx.App(False)
         wildcard = "All files (*.*)|*.*"
-        dialog = wx.FileDialog(None, "Choose a file", os.getcwd(), "", wildcard, wx.OPEN)
+        dialog = wx.FileDialog(None, "Choose a file", os.path.expanduser('~'), "", wildcard, wx.OPEN)
         if dialog.ShowModal() == wx.ID_OK:
             in_path = dialog.GetPath() 
 
@@ -607,7 +607,7 @@ def importBrowser():
         file_path=''
         app = wx.App(False)
         wildcard = "All files (*.*)|*.*"
-        dialog = wx.FileDialog(None, "Choose a file", os.getcwd(), "", wildcard, wx.OPEN)
+        dialog = wx.FileDialog(None, "Choose a file", os.path.expanduser('~'), "", wildcard, wx.OPEN)
         if dialog.ShowModal() == wx.ID_OK:
             file_path = dialog.GetPath() 
 
