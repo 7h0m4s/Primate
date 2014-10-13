@@ -27,7 +27,12 @@ import tkFileDialog
 import pyperclip
 import time
 from ConfigParser import SafeConfigParser
-import wx
+if os.name=='posix':
+    import pygtk
+    #pygtk.require('2.0')
+    import gtk
+else:
+    import wx
 
 #Configuration to handle HTML file uploads if implemented later.
 UPLOAD_FOLDER = 'uploads/'
@@ -570,15 +575,15 @@ def getFilepath():
 ##        in_path = tkFileDialog.askopenfilename(initialdir=(os.path.expanduser('~/')),parent=root)
 ##        root.destroy()
 
-        in_path=''
-        app = wx.App(False)
-        wildcard = "All files (*.*)|*.*"
-        dialog = wx.FileDialog(None, "Choose a file", os.path.expanduser('~'), "", wildcard, wx.OPEN)
-        if dialog.ShowModal() == wx.ID_OK:
-            in_path = dialog.GetPath() 
-
-        dialog.Destroy()
-        return in_path
+##        in_path=''
+##        app = wx.App(False)
+##        wildcard = "All files (*.*)|*.*"
+##        dialog = wx.FileDialog(None, "Choose a file", os.path.expanduser('~'), "", wildcard, wx.OPEN)
+##        if dialog.ShowModal() == wx.ID_OK:
+##            in_path = dialog.GetPath() 
+##
+##        dialog.Destroy()
+        return fileBrowse()
     except Exception,e:
         return str(e),500
 
@@ -604,18 +609,51 @@ def importBrowser():
 ##        file_path=''
 ##        file_path = tkFileDialog.askopenfilename(initialdir=(os.path.expanduser('~/')),parent=root)
 ##        root.destroy()
-        file_path=''
+
+
+##        file_path=''
+##        app = wx.App(False)
+##        wildcard = "All files (*.*)|*.*"
+##        dialog = wx.FileDialog(None, "Choose a file", os.path.expanduser('~'), "", wildcard, wx.OPEN)
+##        if dialog.ShowModal() == wx.ID_OK:
+##            file_path = dialog.GetPath() 
+##
+##        dialog.Destroy()
+
+        return fileBrowse()
+    except Exception,e:
+            return str(e),500
+
+"""
+Function acts as the file browser for importbrowse and getfilepath
+"""
+def fileBrowse():
+    file_path=''
+    if os.name=='posix':
+        dialog = gtk.FileChooserDialog("Open..",None,
+                                       gtk.FILE_CHOOSER_ACTION_OPEN,
+                                       (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                                        gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+        dialog.set_default_response(gtk.RESPONSE_OK)
+        response = dialog.run()
+        if response == gtk.RESPONSE_OK:
+            file_path = dialog.get_filename(), 'selected'
+        elif response == gtk.RESPONSE_CANCEL:
+            file_path = ""
+        else:
+            file_path = ""
+        dialog.destroy()
+
+
+    else:
         app = wx.App(False)
         wildcard = "All files (*.*)|*.*"
         dialog = wx.FileDialog(None, "Choose a file", os.path.expanduser('~'), "", wildcard, wx.OPEN)
         if dialog.ShowModal() == wx.ID_OK:
             file_path = dialog.GetPath() 
-
         dialog.Destroy()
+    return file_path
 
-        return file_path
-    except Exception,e:
-            return str(e),500
 
 """
 Function takes filepath to a csv file on disk and adds it to the DB.
