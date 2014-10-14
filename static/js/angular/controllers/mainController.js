@@ -22,7 +22,7 @@ var _urlEditGroupSubmit = "/edit-group";
 
 var global_tree = null;
 
-var mainApp = angular.module("mainApp", ['ngRoute'])
+var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
 .config(function ($routeProvider, $locationProvider) {
     $routeProvider
         //.when('/', {
@@ -39,6 +39,22 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
         })
         .when('/group-view-template', {
             templateUrl: 'static/group-view-template.html',
+            controller: 'mainController'
+        })
+        .when('/user-view-template', {
+            templateUrl: 'static/user-view-template.html',
+            controller: 'mainController'
+        })
+        .when('/user-edit-template', {
+            templateUrl: 'static/user-edit-template.html',
+            controller: 'mainController'
+        })
+         .when('/user-create-template', {
+             templateUrl: 'static/user-create-template.html',
+             controller: 'mainController'
+         })
+        .when('/test-form-template', {
+            templateUrl: 'test-form-template.html',
             controller: 'mainController'
         });
     //.otherwise({
@@ -66,18 +82,21 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
     return myService;
 })
 
-.controller('mainController', function ($scope, $http, $q, $compile, $window, $location, requestFactory, $routeParams) {
+.controller('mainController', function ($scope, $http, $q, $compile, $window, $location, requestFactory, $routeParams, $localStorage) {
     $scope.childIndex = -1;
-    $scope.breadcrumbs = [];
+    //$scope.breadcrumbs = [];
     $scope.templates = { cacheExportDialogTemplate: "", cacheImportDialogTemplate: "" }
-    $scope.importFile = {};
     $scope.userSetting = null;
     $scope.tree = null;
     $scope.group = {};
+    //$scope.groups = {};
+    //$scope.children = {};
 
     $scope.init = function () {
         initTree($scope);
         initSetting($scope);
+        //console.log($scope.groups);
+        readFromLocalStorage();
     };
 
     $scope.$watch('userSetting', function (newValue, oldvalue) {
@@ -95,6 +114,34 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
             $("#isSymbol").prop('checked', isCheck);
         }
     });
+
+    $scope.$watch('groups', function (newValue, oldvalue) {
+        if (newValue != oldvalue) {
+            $localStorage.groups = $scope.groups;
+        }
+    });
+
+    $scope.$watch('children', function (newValue, oldvalue) {
+        if (newValue != oldvalue) {
+            $localStorage.children = $scope.children;
+        }
+    });
+
+    $scope.$watch('breadcrumbs', function (newValue, oldvalue) {
+        if (newValue != oldvalue) {
+            $localStorage.breadcrumbs = $scope.breadcrumbs;
+        }
+    });
+
+    var readFromLocalStorage = function () {
+        $scope.groups = $localStorage.groups;
+        $scope.children = $localStorage.children;
+        if (!$localStorage.breadcrumbs) {
+            $scope.breadcrumbs = [];
+        } else {
+            $scope.breadcrumbs = $localStorage.breadcrumbs;
+        }
+    };
 
     $scope.AssessName = function (str) {
         if (str.length == 0) {
@@ -165,7 +212,6 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
     };
 
     $scope.TriggerExportDialog = function ($title) {
-        getImportFileInfo();
         if ($scope.templates.cacheExportDialogTemplate) {
             triggerDialog($title, getCompileContent($scope.templates.cacheExportDialogTemplate));
         } else {
@@ -202,9 +248,7 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
     };
 
     $scope.ImportSubmit = function () {
-		
-        
-		ajaxPost($("#importFileInput"),true,_urlImportSubmit,function(){},function(){});
+        ajaxPost($("#importFileInput"), true, _urlImportSubmit, function () { }, function () { });
         initTree($scope);
         $.Dialog.close();
     };
@@ -272,6 +316,19 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
         $window.location.href = "dashboard#/group-create-template?" + serializedCurrentGroupId;
     };
 
+    $scope.InitAccountManagment = function () {
+        resetScopeGroup();
+        var groupArr = getAllGroup(global_tree);
+        calFrameHeight();
+        initSelect2(groupArr);
+        hideLoader();
+        initAccountId();
+    };
+
+    var initAccountId = function () {
+        var uuid = $routeParams.uuid;
+        $("#uuid").val(uuid);
+    };
     var initGroupId = function () {
         $("#groupParent").select2("val", $routeParams.groupParent);
         $scope.group.groupName = $routeParams.groupName;
@@ -291,11 +348,6 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
 
     var resetChildIndex = function () {
         $scope.childIndex = -1;
-    };
-
-    var getImportFileInfo = function () {
-        //todo ajax get file info
-        $scope.importFile = { date: "2014/09/29 04:10PM", size: "10.45 KB" };
     };
 
     var getCompileContent = function ($content) {
@@ -386,8 +438,10 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
 
     $(".context-menu-item").on("click", function () {
         var itemName = $(this).context.innerText.trim();
-
         if (contextGroupRedirectManagement(itemName)) {
+            return;
+        }
+        else if (contextAccountRedirectManagement(itemName)) {
             return;
         }
         else if (true) {
@@ -401,7 +455,7 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
             return true;
         }
         else if (itemName == GROUP_CONTEXT_NAME_OBJ.NAME_EDIT_GROUP) {
-            var currentGroupObj = { groupParent: $(".breadcrumb").attr("data-breadcrumb-arr"), groupName: $($(".active")).find(".list-title").html() }
+            var currentGroupObj = { groupParent: $(".breadcrumb").attr("data-breadcrumb-arr"), groupName: $($(".active .list-title")).html() }
             var serializedCurrentGroup = $.param(currentGroupObj);
             redirect(_urlEditGroup + "?" + serializedCurrentGroup);
             return true;
@@ -409,6 +463,23 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
         else if (itemName == GROUP_CONTEXT_NAME_OBJ.NAME_DELETE_GROUP) {
             return true;
         }
+        return false;
+    }
+
+    var contextAccountRedirectManagement = function (itemName) {
+        if (itemName == USER_CONTEXT_NAME_OBJ.NAME_ACCOUNT_DETAIL) {
+            redirect(_urlViewAccount);
+            return true;
+        }
+        else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_EDIT_ACCOUNT) {
+            var currentGroupObj = { groupParent: $(".breadcrumb").attr("data-breadcrumb-arr"), uuid: $($(".active .account-uuid")).html() }
+            var serializedCurrentGroup = $.param(currentGroupObj);
+            redirect(_urlEditAccount + "?" + serializedCurrentGroup);
+            return true;
+        }
+        //else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_DELETE_ACCOUNT) {
+        //    return true;
+        //}
         return false;
     }
 });

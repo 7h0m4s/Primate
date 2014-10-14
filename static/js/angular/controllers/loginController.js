@@ -1,7 +1,7 @@
 ﻿var _urlLogin = "login.html";
 var _urlGetFilePath = "/get-filepath";
 
-var loginApp = angular.module("loginApp", []);
+var loginApp = angular.module("loginApp", ['ngStorage']);
 
 loginApp.directive('passwordMatch', [function () {
     return {
@@ -26,7 +26,7 @@ loginApp.directive('passwordMatch', [function () {
     };
 }]);
 
-loginApp.controller('loginController', function ($scope) {
+loginApp.controller('loginController', function ($scope, $localStorage) {
     $scope.SubmitLoginForm = function (isValid) {
         if (isValid) {
             ajaxPost($("#loginForm"), true, null, function (msg) {

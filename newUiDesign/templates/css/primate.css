@@ -996,3 +996,7 @@ button.full, a.full {
 .metro #group-management:before {
     content: "Group";
 }
+.metro #user-management:before {
+    content: "Account";
+}
+

@@ -998,3 +998,15 @@ button.full, a.full {
 .metro #group-management:before {
     content: "Group";
 }
+
+.metro #user-management:before {
+    content: "Account";
+}
+
+.metro .listview-outlook .list .list-content {
+    min-height: 54px;
+}
+
+.account-uuid {
+    display: none;
+}

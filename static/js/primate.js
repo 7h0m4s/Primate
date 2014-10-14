@@ -6,9 +6,24 @@ var GROUP_CONTEXT_NAME_OBJ = {
     NAME_EDIT_GROUP: "Edit Group",
     NAME_DELETE_GROUP: "Delete Group"
 };
+
+var USER_CONTEXT_NAME_OBJ = {
+    NAME_ACCOUNT_DETAIL: "View Account",
+    NAME_EDIT_ACCOUNT: "Edit Account",
+    NAME_DELETE_ACCOUNT: "Delete Account"
+};
+
+
 var _urlViewGroup = "#/group-view-template";
 var _urlEditGroup = "#/group-edit-template";
 var _urlDelGroup = "#/group-delete-template";
+
+var _urlViewAccount = "#/user-view-template";
+var _urlCreateAccount = "#/user-create-template";
+var _urlEditAccount = "#/user-edit-template";
+//var _urlDelAccount = "#/";
+
+
 var _backspace_keycode = 8;
 var DEFAULT_STATUS_CODE = 404;
 var calFrameHeight = function () {
@@ -131,30 +146,30 @@ var contextMenu = function () {
             callback: function (key, options) {
                 // $(this); here refers to the object that is being clicked --> <div class="context-menu-one" id="t1" name="name1">
                 ///main.html#/group-edit-template
-                console.log($(this));
-                var m = "clicked: " + key;
-                window.console && console.log(m) || alert(m);
+                //console.log($(this));
+                //var m = "clicked: " + key;
+                //window.console && console.log(m) || alert(m);
             },
             items: {
                 "RedirectUrl": {
-                    name: "Redirect to website",
+                    name: "Redirect to Website",
                 },
                 "sep1": "---------",
                 "viewAcc": {
-                    name: "View account",
+                    name: USER_CONTEXT_NAME_OBJ.NAME_ACCOUNT_DETAIL,
                 },
                 "editAcc": {
-                    name: "Edit account",
+                    name: USER_CONTEXT_NAME_OBJ.NAME_EDIT_ACCOUNT,
                 },
                 "delAcc": {
-                    name: "Delete account",
+                    name: USER_CONTEXT_NAME_OBJ.NAME_DELETE_ACCOUNT,
                 },
                 "sep2": "---------",
                 "copyCuser": {
-                    name: "Copy username",
+                    name: "Copy Username",
                 },
                 "copyPasswrd": {
-                    name: "Copy password",
+                    name: "Copy Password",
                 },
             }
         });
