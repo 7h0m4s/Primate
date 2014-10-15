@@ -282,10 +282,11 @@ var ajaxPost = function ($formObj, isAsync, requestUrl, successFunc, failureFunc
     });
 };
 
-var ajaxGet = function (isAsync, requestUrl, successFunc, failureFunc) {
-    var method = "Get";
+var ajaxGet = function (isAsync, requestUrl, postData, successFunc, failureFunc) {
+    var method = "Post";
     var url = requestUrl;
     $.ajax({
+        data: postData,
         type: method,
         url: url,
         async: isAsync

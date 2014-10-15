@@ -20,6 +20,8 @@ var _urlImportSubmit = "/import-direct";
 var _urlCreateGroupSubmit = "/create-group";
 var _urlEditGroupSubmit = "/edit-group";
 
+var _urlGetUser = "/get-user";
+
 var global_tree = null;
 
 var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
@@ -72,11 +74,27 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 deferred.resolve(datas);
             });
             return deferred.promise;
+        },
+        post: function (url, requestData) {
+            var deferred = $q.defer();
+            var def = $q.defer();
+            requestPost(def, url, requestData);
+            def.promise.then(function (datas) {
+                deferred.resolve(datas);
+            });
+            return deferred.promise;
         }
     }
     function request(def, url) {
         $http.get(url).then(function (response) {
             def.resolve(response.data);
+        });
+    }
+    function requestPost(def, url, requestData) {
+        ajaxGet(true, url, requestData, function (response) {
+            def.resolve(response);
+        }, function (response) {
+            redirectToErroPage505();
         });
     }
     return myService;
@@ -322,13 +340,31 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         calFrameHeight();
         initSelect2(groupArr);
         hideLoader();
-        initAccountId();
+        var uuid = initAccountId();
+        prepareAccountForm(uuid);
     };
 
     var initAccountId = function () {
         var uuid = $routeParams.uuid;
         $("#uuid").val(uuid);
+        return uuid;
     };
+
+    var prepareAccountForm = function (_uuid) {
+        var postData = { uuid: "e734a226-c097-164c-5e96-de0f34ec78ee" };
+        requestFactory.post(_urlGetUser, postData).then(function (response) {
+            //view parse:{"uuid":"e734a226-c097-164c-5e96-de0f34ec78ee"}
+            console.log(response);
+            $scope.account = response;
+        });
+        //ajaxGet(false, _urlGetUser, postData, function (response) {
+        //    $scope.account = $.parseJSON(response);
+        //    console.log($scope.account);
+        //}, function (response) {
+        //    redirectToErroPage505();
+        //});
+    };
+
     var initGroupId = function () {
         $("#groupParent").select2("val", $routeParams.groupParent);
         $scope.group.groupName = $routeParams.groupName;

@@ -215,9 +215,10 @@ def logoff():
 Function returns a JSON of details about requested login account.
 Form Parameter: -String uuid
 """
-@app.route("/get-user", methods=['POST'])
+@app.route("/get-user", methods=['POST', 'GET'])
 def getUser():
     uuid=request.form['uuid']
+
     for record in sessionVault.getRecords():
         if str(record._get_uuid()) == uuid:
             data={}

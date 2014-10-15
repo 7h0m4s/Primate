@@ -1,45 +1,46 @@
 <div id="loader">
     <img src="static/img/metro-loader.gif" />
 </div>
-<div class="example" id="user-management" style="margin-left: 25%; opacity: 0;" ng-init="InitAccountManagment()">
-    <form id="createUserForm" name="createUserForm">
-        <input type="hidden" name="uuid" id="uuid" />
+<div class="example" id="user-management" style="margin-left: 25%; opacity: 0;" ng-init="InitAccountManagment();">
+    <form id="userForm" novalidate name="userForm">
+        <input type="hidden" name="uuid" id="uuid" ng-model="account.uuid" />
         <fieldset>
-            <legend>
+            <legend> 
                 <h3 class="frame-title">Edit Account</h3>
             </legend>
             <label class="required" for="groupParent">Group Directory</label>
             <div class="input-control text" data-role="input-control">
-                <input class="select-search" id="groupParent" name="groupParent" ng-model="group.groupParent" />
+                <input class="select-search" id="groupParent" name="groupParent" ng-model="account.groupParent" />
             </div>
             <label class="required">Username</label>
             <div class="input-control text" data-role="input-control">
-                <input placeholder="Username" required />
+                <input placeholder="Username" name="user" id="user" ng-model="account.user" required />
                 <button class="btn-clear" tabindex="-1" type="button"></button>
             </div>
             <label class="required">Password</label>
             <div class="input-control text" data-role="input-control">
-                <input type="text" placeholder="Password" name="password" required />
+                <input type="text" placeholder="Password" name="passwd" id="passwd" ng-model="account.passwd" required />
                 <button class="btn-clear" tabindex="-1" type="button"></button>
                 <span class="validation" ng-show="createGroupForm.groupName.$error.required&& createGroupForm.groupName.$dirty">This field is required</span>
             </div>
             <label>Title</label>
             <div class="input-control text" data-role="input-control">
-                <input placeholder="Title" />
+                <input placeholder="Title" name="title" id="title" ng-model="account.title" />
                 <button class="btn-clear" tabindex="-1" type="button"></button>
             </div>
             <label>URL</label>
             <div class="input-control text" data-role="input-control">
-                <input placeholder="URL" />
+                <input placeholder="URL" name="url" id="url" ng-model="account.url" />
                 <button class="btn-clear" tabindex="-1" type="button"></button>
             </div>
             <label>Notes</label>
             <div class="input-control text" data-role="input-control">
-                <input placeholder="Notes" />
+                <input placeholder="Notes" id="notes" name="notes" ng-model="account.notes" />
                 <button class="btn-clear" tabindex="-1" type="button"></button>
+                {{account.notes}}
             </div>
             <div>
-                <button type="submit" class="btn btn-lead full submit-animate" id="btn-user-submit" ng-disabled="createuserForm.$invalid">Save Changes</button>
+                <button type="submit" class="btn btn-lead full submit-animate" id="btn-user-submit" ng-disabled="userForm.$invalid">Save Changes</button>
             </div>
         </fieldset>
     </form>
