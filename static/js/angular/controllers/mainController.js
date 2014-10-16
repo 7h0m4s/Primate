@@ -5,6 +5,7 @@ var _DEFAULT_FAILURE_CAPTION = "Error";
 var _DEFAULT_SUCCESS_MSG = "Saved successfully";
 var _DEFAULT_FAILURE_MSG = "Save failed";
 var _EDIT_SUCCESS_MSG = "Edit successfully";
+var _ADD_SUCCESS_MSG = "Add successfully";
 var _backspace_keycode = 8;
 var _defaultCheckboxValue = "on";
 var _urlErrorPage404 = "static/error-page.html";
@@ -21,6 +22,7 @@ var _urlImportSubmit = "/import-direct";
 var _urlCreateGroupSubmit = "/create-group";
 var _urlEditGroupSubmit = "/edit-group";
 var _urlCreateUserSubmit = "/create-user";
+var _urlEditUserSubmit = "/edit-user";
 var _urlGetUser = "/get-user";
 var GROUP_CONCAT_SYMBOL = ".";
 var global_tree = null;
@@ -115,7 +117,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         initTree($scope);
         initSetting($scope);
         //console.log($scope.groups);
-        //readFromLocalStorage();
+        readFromLocalStorage();
     };
 
     $scope.$watch('userSetting', function (newValue, oldvalue) {
@@ -230,6 +232,8 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         closeSilder();
     };
 
+
+
     $scope.TriggerExportDialog = function ($title) {
         if ($scope.templates.cacheExportDialogTemplate) {
             triggerDialog($title, getCompileContent($scope.templates.cacheExportDialogTemplate));
@@ -316,10 +320,16 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     };
 
     $scope.SubmitCreateGroupForm = function (isValid) {
+        var groupParentVal = $("#groupParent").val();
+        var groupNameVal = $("#groupName").val();
         if (isValid) {
             submitAnimatel();
             ajaxPost($("#createGroupForm"), true, _urlCreateGroupSubmit, function () {
+                clearInterval(submitAnimateInterval);
                 initTree($scope);
+                notifiSuccess(_NOTIFI_SETTING_CAPTION, _ADD_SUCCESS_MSG);
+                var serializedCurrentGroup = prepareGroupUrl(groupParentVal, groupNameVal);
+                redirect(_urlViewGroup + "?" + serializedCurrentGroup);
             },
             function () {
                 redirectToErroPage505();
@@ -329,16 +339,50 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         }
     };
 
-    $scope.SubmitEditGroupForm = function (isValid) {
+    $scope.SubmitEditGroupForm = function(isValid) {
+        var groupParentVal = $("#groupParent").val();
+        var groupNameVal = $("#groupName").val();
+        if (isValid) {
+            submitAnimatel();
+            ajaxPost($("#editGroupForm"), true, _urlEditGroupSubmit, function() {
+                    clearInterval(submitAnimateInterval);
+                    initTree($scope);
+                    notifiSuccess(_NOTIFI_SETTING_CAPTION, _EDIT_SUCCESS_MSG);
+                    var serializedCurrentGroup = prepareGroupUrl(groupParentVal, groupNameVal);
+                    redirect(_urlViewGroup + "?" + serializedCurrentGroup);
+                },
+                function() {
+                    redirectToErroPage505();
+                });
+        } else {
+            redirectToErroPage505();
+        }
+    };
+
+    $scope.SubmitCreateAccountForm = function (isValid) {
         if (isValid) {
             submitAnimatel();
             ajaxPost($("#editGroupForm"), true, _urlEditGroupSubmit, function () {
+                clearInterval(submitAnimateInterval);
                 initTree($scope);
-                //todo test
-                //var backcrumbIndex = $scope.breadcrumbs.length - 1;
-                //console.log(backcrumbIndex);
-                //console.log($scope.breadcrumbs);
-                //$scope.BreadcrumbRedirect($scope.breadcrumbs[backcrumbIndex]);
+                notifiSuccess(_NOTIFI_SETTING_CAPTION, _EDIT_SUCCESS_MSG);
+                var serializedCurrentGroup = prepareGroupUrl(groupParentVal, groupNameVal);
+                redirect(_urlViewGroup + "?" + serializedCurrentGroup);
+            },
+                function () {
+                    redirectToErroPage505();
+                });
+        } else {
+            redirectToErroPage505();
+        }
+    };
+
+
+    $scope.SubmitEditAccountForm = function (isValid) {
+        if (isValid) {
+            submitAnimatel();
+            ajaxPost($("#editAccountForm"), true, _urlEditUserSubmit, function () {
+                alert("asd");
             },
             function () {
                 redirectToErroPage505();
@@ -346,7 +390,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         } else {
             redirectToErroPage505();
         }
-    }
+    };
 
     $scope.RedirectGroupCreate = function () {
         var currentGroupIdObj = { groupParent: $(".breadcrumb").attr("data-breadcrumb-arr") }
@@ -354,13 +398,16 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         $window.location.href = "dashboard#/group-create-template?" + serializedCurrentGroupId;
     };
     $scope.RedirectUserCreate = function () {
-        $window.location.href = "dashboard#/user-create-template";
+        redirect(_urlCreateAccount);
     };
-    $scope.RedirectUserEdit = function () {
-        $window.location.href = "dashboard#/user-edit-template";
-    };
+    //$scope.RedirectUserEdit = function () {
+    //    $window.location.href = "dashboard#/user-edit-template";
+    //};
     $scope.RedirectGroupEdit = function () {
-        $window.location.href = "dashboard#/group-edit-template";
+        var groupParentVal = $("#pGroupParent").html();
+        var groupNameVal = $("#pGroupName").html();
+        var serializedCurrentGroup = prepareGroupUrl(groupParentVal, groupNameVal);
+        redirect(_urlEditGroup + "?" + serializedCurrentGroup);
     };
     $scope.InitAccountManagment = function () {
         resetScopeGroup();
@@ -369,6 +416,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         initSelect2(groupArr);
         hideLoader();
         var uuid = initAccountId();
+        console.log(uuid);
         prepareAccountForm(uuid);
     };
 
@@ -378,24 +426,21 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         return uuid;
     };
 
-    var prepareAccountForm = function (_uuid) {
-        var postData = { uuid: "e734a226-c097-164c-5e96-de0f34ec78ee" };
-        requestFactory.post(_urlGetUser, postData).then(function (response) {
-            //view parse:{"uuid":"e734a226-c097-164c-5e96-de0f34ec78ee"}
-            console.log(response);
-            $scope.account = response;
+    var prepareAccountForm = function (uuid) {
+        var uuidObj = { uuid: uuid };
+        console.log($routeParams.groupParent);
+        $("#groupParent").select2("val", $routeParams.groupParent);
+        ajaxGet(false, _urlGetUser, uuidObj, function (response) {
+            $scope.account = $.parseJSON(response);
+        }, function (response) {
+            redirectToErroPage505();
         });
-        //ajaxGet(false, _urlGetUser, postData, function (response) {
-        //    $scope.account = $.parseJSON(response);
-        //    console.log($scope.account);
-        //}, function (response) {
-        //    redirectToErroPage505();
-        //});
     };
 
     var initGroupId = function () {
         $("#groupParent").select2("val", $routeParams.groupParent);
         $scope.group.groupName = $routeParams.groupName;
+        $scope.group.groupParent = $routeParams.groupParent;
         var preGroup = $routeParams.groupParent + GROUP_CONCAT_SYMBOL + $routeParams.groupName;
         $("#preGroup").val(preGroup);
     }
@@ -471,7 +516,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                     var groupName = tree.groups[a].groupName;
                     if (idChain.length > 0) {
                         textChain = textChain + " / " + groupName;
-                        idChain = idChain + "." + groupName;
+                        idChain = idChain + GROUP_CONCAT_SYMBOL + groupName;
                     } else {
                         idChain = groupName;
                         textChain = groupName;
@@ -513,12 +558,15 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
 
     var contextGroupRedirectManagement = function (itemName) {
         if (itemName == GROUP_CONTEXT_NAME_OBJ.NAME_GROUP_DETAIL) {
-            redirect(_urlViewGroup);
+            var detailCurrentGroupObj = { groupParent: $(".breadcrumb").attr("data-breadcrumb-arr"), groupName: $($(".active .list-title")).html() }
+            var detailSerializedCurrentGroup = $.param(detailCurrentGroupObj);
+            redirect(_urlViewGroup + "?" + detailSerializedCurrentGroup);
             return true;
         }
         else if (itemName == GROUP_CONTEXT_NAME_OBJ.NAME_EDIT_GROUP) {
-            var currentGroupObj = { groupParent: $(".breadcrumb").attr("data-breadcrumb-arr"), groupName: $($(".active .list-title")).html() }
-            var serializedCurrentGroup = $.param(currentGroupObj);
+            var currentGroupParent = $(".breadcrumb").attr("data-breadcrumb-arr");
+            var currentGroupName = $($(".active .list-title")).html();
+            var serializedCurrentGroup = prepareGroupUrl(currentGroupParent, currentGroupName);
             redirect(_urlEditGroup + "?" + serializedCurrentGroup);
             return true;
         }
@@ -530,7 +578,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
 
     var contextAccountRedirectManagement = function (itemName) {
         if (itemName == USER_CONTEXT_NAME_OBJ.NAME_ACCOUNT_DETAIL) {
-            redirect(_urlViewAccount);
+            prepareRedirectAcco();
             return true;
         }
         else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_EDIT_ACCOUNT) {
@@ -540,9 +588,20 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             return true;
         }
         else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_DELETE_ACCOUNT) {
-            TriggerDeleteAccountDialog("Delete");
+            triggerDialog("Delete", "");
             return true;
         }
         return false;
+    }
+
+
+    var prepareRedirectAcco = function () {
+        var uuid = { uuid: $($(".active .account-uuid")).html() };
+        redirect(_urlViewAccount + "?" + $.param(uuid));
+    };
+
+    var prepareGroupUrl = function (groupParent, groupName) {
+        var currentGroupObj = { groupParent: groupParent, groupName: groupName }
+        return $.param(currentGroupObj);
     }
 });
