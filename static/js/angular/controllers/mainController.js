@@ -9,8 +9,9 @@ var _backspace_keycode = 8;
 var _defaultCheckboxValue = "on";
 var _urlErrorPage404 = "static/error-page.html";
 var _urlErrorPage505 = "static/error-page.html?code=505";
-var _urlExportDialogTemplate = "static/dialog-export-template.html";
-var _urlImportDialogTemplate = "static/dialog-import-template.html";
+var _urlExportDialogTemplate = "/static/dialog-export-template.html";
+var _urlImportDialogTemplate = "/static/dialog-import-template.html";
+var _urlDeleteAccountTemplate = "/static/dialog-delete-account-template.html";
 var _urlSaveUserSetting = "/config-set";
 var _urlGetUserSetting = "config-get";
 var _urlGetTree = "get-db-json";
@@ -19,7 +20,7 @@ var _urlBrowse = "/import-browse";
 var _urlImportSubmit = "/import-direct";
 var _urlCreateGroupSubmit = "/create-group";
 var _urlEditGroupSubmit = "/edit-group";
-
+var _urlCreateUserSubmit = "/create-user";
 var _urlGetUser = "/get-user";
 
 var global_tree = null;
@@ -103,7 +104,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
 .controller('mainController', function ($scope, $http, $q, $compile, $window, $location, requestFactory, $routeParams, $localStorage) {
     $scope.childIndex = -1;
     //$scope.breadcrumbs = [];
-    $scope.templates = { cacheExportDialogTemplate: "", cacheImportDialogTemplate: "" }
+    $scope.templates = { cacheExportDialogTemplate: "", cacheImportDialogTemplate: "", cacheDeleteAccountTemplate: "" }
     $scope.userSetting = null;
     $scope.tree = null;
     $scope.group = {};
@@ -258,6 +259,20 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             });
         }
     };
+    $scope.TriggerDeleteAccountDialog = function ($title) {
+        if ($scope.templates.cacheDeleteAccountTemplate) {
+            triggerDialog($title, getCompileContent($scope.templates.cacheDeleteAccountTemplate));
+        } else {
+            $http.get(_urlDeleteAccountTemplate).success(function ($content) {
+                $scope.templates.cacheDeleteAccountTemplate = $content;
+                var $compileContent = getCompileContent($content);
+                triggerDialog($title, $compileContent);
+            })
+            .error(function ($content, status) {
+                redirectToError505();
+            });
+        }
+    };
 
     $scope.Browse = function () {
         $.get(_urlBrowse, function (data) {
@@ -333,7 +348,15 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         var serializedCurrentGroupId = $.param(currentGroupIdObj);
         $window.location.href = "dashboard#/group-create-template?" + serializedCurrentGroupId;
     };
-
+    $scope.RedirectUserCreate = function () {
+        $window.location.href = "dashboard#/user-create-template";
+    };
+    $scope.RedirectUserEdit = function () {
+        $window.location.href = "dashboard#/user-edit-template";
+    };
+    $scope.RedirectGroupEdit = function () {
+        $window.location.href = "dashboard#/group-edit-template";
+    };
     $scope.InitAccountManagment = function () {
         resetScopeGroup();
         var groupArr = getAllGroup(global_tree);
@@ -513,9 +536,10 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             redirect(_urlEditAccount + "?" + serializedCurrentGroup);
             return true;
         }
-        //else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_DELETE_ACCOUNT) {
-        //    return true;
-        //}
+        else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_DELETE_ACCOUNT) {
+            TriggerDeleteAccountDialog("Delete");
+           return true;
+        }
         return false;
     }
 });
