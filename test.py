@@ -1,16 +1,23 @@
-from vault import *
-import os.path
+import os
 
-#C:\Users\thoma_000\Dropbox\UQ Semester 2-2014\DECO3801\python\flaskr\static\testfile.psafe3
-username=""
-password="test"
-dbFile="C:/Users/thoma_000/Dropbox/UQ Semester 2-2014/DECO3801/python/flaskr/static/testfile.psafe3"
-vault = Vault(password,dbFile)
+from ConfigParser import SafeConfigParser
+import appdirs
 
-for rec in vault.records:
-    print str(rec._get_uuid())
-    print str(rec._get_title())
-    print str(rec._get_group())
-    print str(rec._get_user())
-    print str(rec._get_passwd())
-    print str(rec._get_notes())
+global appName
+global appAuthor
+appName = "PasswordPrimate"
+appAuthor = "AsterixSolutions"
+
+global loginFunction
+global dashboardFunction
+global newdbFunction
+loginFunction = 'index'
+dashboardFunction = 'dashboard'
+newdbFunction='newDatabase'
+
+global confParser
+global confPath
+
+confPath = 'config.ini'
+#appdirs.user_data_dir(appName, appAuthor)
+print os.path.join(appdirs.user_data_dir(appName, appAuthor),"config.ini")
