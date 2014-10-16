@@ -325,7 +325,6 @@ var submitAnimatel = function () {
     if ($(".submit-animate").length) {
         $(".submit-animate").html("Process").attr("disabled", "");
         var defaultVal = $(".submit-animate").html();
-        console.log(defaultVal);
         var count = 0;
         var submitAnimateInterval = setInterval(function () {
             var appendVal = $(".submit-animate").html() + ".";
@@ -360,7 +359,7 @@ var hideLoader = function () {
 
 
 var redirect = function (url) {
-    //window.location.href = url;
+    window.location.href = url;
 };
 
 var redirectToErroPage = function () {

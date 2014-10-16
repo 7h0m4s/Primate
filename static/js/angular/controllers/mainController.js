@@ -22,7 +22,7 @@ var _urlCreateGroupSubmit = "/create-group";
 var _urlEditGroupSubmit = "/edit-group";
 var _urlCreateUserSubmit = "/create-user";
 var _urlGetUser = "/get-user";
-
+var GROUP_CONCAT_SYMBOL = ".";
 var global_tree = null;
 
 var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
@@ -115,7 +115,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         initTree($scope);
         initSetting($scope);
         //console.log($scope.groups);
-        readFromLocalStorage();
+        //readFromLocalStorage();
     };
 
     $scope.$watch('userSetting', function (newValue, oldvalue) {
@@ -255,7 +255,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 triggerDialog($title, $compileContent);
             })
             .error(function ($content, status) {
-                 redirectToErroPage505();
+                redirectToErroPage505();
             });
         }
     };
@@ -269,7 +269,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 triggerDialog($title, $compileContent);
             })
             .error(function ($content, status) {
-                redirectToError505();
+                redirectToErroPage505();
             });
         }
     };
@@ -299,7 +299,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         ajaxPost($("#editGroupForm"), true, _urlEditGroupSubmit, function (msg) {
             notifiSuccess(_NOTIFI_SETTING_CAPTION, _EDIT_SUCCESS_MSG);
         }, function () {
-             redirectToErroPage505();
+            redirectToErroPage505();
         });
     };
 
@@ -309,7 +309,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             if (a == 0) {
                 stringConcat = $scope.breadcrumbs[a].groupName;
             } else {
-                stringConcat += "." + $scope.breadcrumbs[a].groupName;
+                stringConcat += GROUP_CONCAT_SYMBOL + $scope.breadcrumbs[a].groupName;
             }
         }
         return stringConcat;
@@ -319,13 +319,13 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         if (isValid) {
             submitAnimatel();
             ajaxPost($("#createGroupForm"), true, _urlCreateGroupSubmit, function () {
-                initTree();
+                initTree($scope);
             },
             function () {
-                 redirectToErroPage505();
+                redirectToErroPage505();
             });
         } else {
-             redirectToErroPage505();
+            redirectToErroPage505();
         }
     };
 
@@ -333,13 +333,18 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         if (isValid) {
             submitAnimatel();
             ajaxPost($("#editGroupForm"), true, _urlEditGroupSubmit, function () {
-                initTree();
+                initTree($scope);
+                //todo test
+                //var backcrumbIndex = $scope.breadcrumbs.length - 1;
+                //console.log(backcrumbIndex);
+                //console.log($scope.breadcrumbs);
+                //$scope.BreadcrumbRedirect($scope.breadcrumbs[backcrumbIndex]);
             },
             function () {
-                 redirectToErroPage505();
+                redirectToErroPage505();
             });
         } else {
-             redirectToErroPage505();
+            redirectToErroPage505();
         }
     }
 
@@ -391,6 +396,8 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     var initGroupId = function () {
         $("#groupParent").select2("val", $routeParams.groupParent);
         $scope.group.groupName = $routeParams.groupName;
+        var preGroup = $routeParams.groupParent + GROUP_CONCAT_SYMBOL + $routeParams.groupName;
+        $("#preGroup").val(preGroup);
     }
 
     //todo test whether it is needed
@@ -534,7 +541,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         }
         else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_DELETE_ACCOUNT) {
             TriggerDeleteAccountDialog("Delete");
-           return true;
+            return true;
         }
         return false;
     }
