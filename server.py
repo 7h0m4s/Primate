@@ -198,12 +198,11 @@ If fail redirect to newDB page with error message.
 @app.route("/newDB", methods=['POST', 'GET'])
 def newDB():
     if isLoggedIn():#Redirects if already logged in
-        return redirect(url_for(dashboardFunction))
+        return "",304
     try:
         if (request.form['Password'].encode('ascii','ignore') != request.form['ConfirmPassword'].encode('ascii','ignore')):
             return redirect(url_for(newdbFunction))
         session['id'] = uuid.uuid4()
-        session['username'] = request.form['Username']
         session['password'] = request.form['Password'].encode('ascii','ignore')
         assert type(session['password']) != unicode
         session['dbFile'] = request.form['DatabaseFile']
@@ -216,7 +215,8 @@ def newDB():
 
         session['loggedIn'] = True
         getGroups() #Important, it populates the group list
-        return redirect(url_for(dashboardFunction))
+        saveDB()
+        return "",304
     except Exception,e:
         return str(e),500
 
@@ -247,11 +247,12 @@ def getUser():
             if str(record._get_uuid()) == uuid:
                 data = {}
                 data["uuid"] = str(record._get_uuid())
-                data["usr"] = str(record._get_user())
-                data["userTitle"] = str(record._get_title())
-                data["userUrl"] = str(record._get_url())
+                data["user"] = str(record._get_user())
+                data["passwd"] = str(record._get_passwd())
+                data["title"] = str(record._get_title())
+                data["url"] = str(record._get_url())
                 data["notes"] = str(record._get_notes())
-
+                data["last_mod"] = str(time.strftime("%H:%M %d-%m-%Y", time.localtime(record._get_last_mod())))
                 return json.dumps(data)
             
         return "No Account Record Found", 500
@@ -390,11 +391,19 @@ Form Parameters:    String group
 @app.route("/create-user", methods=['POST'])
 def createUser():
     try:
-        group = request.form['group']
-        usr = request.form['usr']
-        pwd = request.form['pwd']
-        userTitle = request.form['userTitle']
-        userUrl = request.form['userUrl']
+        #group = request.form['group']
+        #usr = request.form['usr']
+        #pwd = request.form['pwd']
+        #userTitle = request.form['userTitle']
+        #userUrl = request.form['userUrl']
+        #notes = request.form['notes']
+
+        uuid = request.form['uuid']
+        group = request.form['groupParent']
+        usr = request.form['user']
+        pwd = request.form['passwd']
+        userTitle = request.form['title']
+        userUrl = request.form['url']
         notes = request.form['notes']
         if len(group) <= 0:
             return "Cannot Create User. No Group Name Given.", 200
@@ -426,16 +435,18 @@ Form Parameters:    String uuid
 def editUser():
     try:
         uuid = request.form['uuid']
-        usr = request.form['usr']
-        pwd = request.form['pwd']
-        userTitle = request.form['userTitle']
-        userUrl = request.form['userUrl']
+        group = request.form['groupParent']
+        usr = request.form['user']
+        pwd = request.form['passwd']
+        userTitle = request.form['title']
+        userUrl = request.form['url']
         notes = request.form['notes']
 
         if len(userTitle) <= 0:
             return "Account Must Have A Title.", 200
         for record in sessionVault.getVault().records:
             if str(record._get_uuid()) == uuid:
+                record._set_group(group)
                 record._set_user(usr)
                 record._set_passwd(pwd)
                 record._set_title(userTitle)

@@ -144,11 +144,6 @@ var contextMenu = function () {
         $.contextMenu({
             selector: '.file-child',
             callback: function (key, options) {
-                // $(this); here refers to the object that is being clicked --> <div class="context-menu-one" id="t1" name="name1">
-                ///main.html#/group-edit-template
-                //console.log($(this));
-                //var m = "clicked: " + key;
-                //window.console && console.log(m) || alert(m);
             },
             items: {
                 "RedirectUrl": {
@@ -326,7 +321,7 @@ var submitAnimatel = function () {
         $(".submit-animate").html("Process").attr("disabled", "");
         var defaultVal = $(".submit-animate").html();
         var count = 0;
-        var submitAnimateInterval = setInterval(function () {
+        submitAnimateInterval = setInterval(function () {
             var appendVal = $(".submit-animate").html() + ".";
             if (count == 4) {
                 $(".submit-animate").html(defaultVal);
@@ -371,5 +366,5 @@ var redirectToErroPage505 = function () {
 };
 
 var redirectToMainPage = function () {
-    //window.location.href = _urlLoginRedirect;
+    window.location.href = _urlLoginRedirect;
 };
