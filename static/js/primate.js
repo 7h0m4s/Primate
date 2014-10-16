@@ -360,17 +360,17 @@ var hideLoader = function () {
 
 
 var redirect = function (url) {
-    window.location.href = url;
+    //window.location.href = url;
 };
 
 var redirectToErroPage = function () {
-    window.location.href = _urlErrorPage404;
+    //window.location.href = _urlErrorPage404;
 };
 
 var redirectToErroPage505 = function () {
-    window.location.href = _urlErrorPage505;
+    //window.location.href = _urlErrorPage505;
 };
 
 var redirectToMainPage = function () {
-    window.location.href = _urlLoginRedirect;
+    //window.location.href = _urlLoginRedirect;
 };
