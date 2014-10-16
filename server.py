@@ -39,7 +39,7 @@ global dashboardFunction
 global newdbFunction
 loginFunction = 'index'
 dashboardFunction = 'dashboard'
-newdbFunction='newDatabase'
+newdbFunction = 'newDatabase'
 
 """
 Class holds session values that are not compatiable with the Flask session variable.
@@ -56,7 +56,7 @@ class SessionVault:
     def addVault(self,vault):
         if session['id'] in self.vaults:#TODO check if vault is already loaded
             raise KeyError
-        self.vaults[session['id']]=vault
+        self.vaults[session['id']] = vault
         return
 
     def getVault(self):
@@ -78,19 +78,19 @@ If logged it it will redirect to dashboard.
 @app.route("/")
 def index():
     # For the timeout/session lifetime config to work we need
-    # to make the sessions permanent. It's false by default
+    # to make the sessions permanent.  It's false by default
     # +INFO: http://flask.pocoo.org/docs/api/#flask.session.permanent
     session.permanent = True
 
     #Test if session is initiated.
     try:
-        session['groups']==[]
+        session['groups'] == []
     except KeyError:
         session['groups'] = []
 
     #Test if the session is logged in.
     try:
-        if session['loggedIn']==True:
+        if session['loggedIn'] == True:
             return redirect(url_for(dashboardFunction))
         
     except KeyError:
@@ -109,7 +109,7 @@ def dashboard():
 
     #Test if the session is NOT logged in.
     try:
-        if session['loggedIn']==False:
+        if session['loggedIn'] == False:
             return redirect(url_for(loginFunction))
         
     except KeyError:
@@ -129,7 +129,7 @@ Returns True if logged in.
 def isLoggedIn():
 #Test if the session is logged in.
     try:
-        if session['loggedIn']==True:
+        if session['loggedIn'] == True:
             return True
         
     except KeyError:
@@ -147,13 +147,13 @@ If fail redirect to login page with error message.
 @app.route("/login", methods=['POST', 'GET'])
 def login():
     if isLoggedIn():#Redirects if already logged in
-        return redirect(url_for(dashboardFunction))
+        return "",304
     try:
-        session['id']=uuid.uuid4()
-        session['username']="sponge bob square pants"
-        session['password']=request.values['Password'].encode('ascii','ignore')
-        session['dbFile']=request.values['DatabaseFile']
-        if (os.path.isfile(session['dbFile'])==False):
+        session['id'] = uuid.uuid4()
+        session['username'] = "sponge bob square pants"
+        session['password'] = request.values['Password'].encode('ascii','ignore')
+        session['dbFile'] = request.values['DatabaseFile']
+        if (os.path.isfile(session['dbFile']) == False):
             return "Incorrect Database File",200
         
         try:
@@ -163,7 +163,7 @@ def login():
         except Exception,e:
             return str(e),200
 
-        session['loggedIn']=True
+        session['loggedIn'] = True
         getGroups() #Important, it populates the group list
         return "",304
     except Exception,e:
@@ -190,11 +190,11 @@ def newDB():
     try:
         if (request.form['Password'].encode('ascii','ignore') != request.form['ConfirmPassword'].encode('ascii','ignore')):
             return redirect(url_for(newdbFunction))
-        session['id']=uuid.uuid4()
-        session['username']=request.form['Username']
-        session['password']=request.form['Password'].encode('ascii','ignore')
+        session['id'] = uuid.uuid4()
+        session['username'] = request.form['Username']
+        session['password'] = request.form['Password'].encode('ascii','ignore')
         assert type(session['password']) != unicode
-        session['dbFile']=request.form['DatabaseFile']
+        session['dbFile'] = request.form['DatabaseFile']
         
         try:
             sessionVault.addVault(Vault(session['password'].encode('ascii','ignore')))
@@ -202,7 +202,7 @@ def newDB():
         except 'BadPasswordError':
             return redirect(url_for(newdbFunction))
 
-        session['loggedIn']=True
+        session['loggedIn'] = True
         getGroups() #Important, it populates the group list
         return redirect(url_for(dashboardFunction))
     except Exception,e:
@@ -230,15 +230,15 @@ Form Parameter: -String uuid
 @app.route("/get-user", methods=['POST'])
 def getUser():
     try:
-        uuid=request.form['uuid']
+        uuid = request.form['uuid']
         for record in sessionVault.getRecords():
             if str(record._get_uuid()) == uuid:
-                data={}
-                data["uuid"]=str(record._get_uuid())
-                data["usr"]=str(record._get_user())
-                data["userTitle"]=str(record._get_title())
-                data["userUrl"]=str(record._get_url())
-                data["notes"]=str(record._get_notes())
+                data = {}
+                data["uuid"] = str(record._get_uuid())
+                data["usr"] = str(record._get_user())
+                data["userTitle"] = str(record._get_title())
+                data["userUrl"] = str(record._get_url())
+                data["notes"] = str(record._get_notes())
 
                 return json.dumps(data)
             
@@ -252,9 +252,9 @@ Form Parameter: -String group
 """
 @app.route("/getGroup", methods=['POST'])
 def getGroup():
-    group=request.form['group']
+    group = request.form['group']
     for record in sessionVault.getVault().records:
-        outString= "uuid: "+ str(record._get_uuid()) + "\n"
+        outString = "uuid: " + str(record._get_uuid()) + "\n"
         
     return "No Group Record Found"
 
@@ -277,14 +277,14 @@ unless there is a user under that group.
 @app.route("/create-group", methods=['POST', 'GET'])
 def createGroup():
     try:
-        groupParent=request.form['groupParent']
-        groupName=request.form['groupName']
+        groupParent = request.form['groupParent']
+        groupName = request.form['groupName']
         if len(groupParent) == 0:
             addGroup(groupName)
         else:
             if groupParent not in getGroups():
                 return "Group Parent Not Found", 500
-            session['groups'].append(groupParent +"."+ groupName)#
+            session['groups'].append(groupParent + "." + groupName)#
 
         return "Group Added Successfully", 304
     except Exception,e:
@@ -302,11 +302,11 @@ TODO: Make it update users recursively to subgroups
 def editGroup():
     try:
         #sessionData.logger.error("stuff")
-        group=request.form['group']
-        groupParent=request.form['groupParent']
-        groupName=request.form['groupName']
-        outstring=[]
-        if len(groupParent)>0:
+        group = request.form['group']
+        groupParent = request.form['groupParent']
+        groupName = request.form['groupName']
+        outstring = []
+        if len(groupParent) > 0:
             groupName = groupParent + "." + groupName
         
         #update group list
@@ -342,11 +342,11 @@ TODO: Make it delete users recursively to subgroups
 @app.route("/delete-group", methods=['POST'])
 def deleteGroup():
     try:
-        group=request.form['group']
-        groupParent=request.form['groupParent']
-        groupName=request.form['groupName']
+        group = request.form['group']
+        groupParent = request.form['groupParent']
+        groupName = request.form['groupName']
        
-        if len(groupParent)>0:
+        if len(groupParent) > 0:
             groupName = groupParent + "." + groupName
 
         #delete from group list
@@ -378,13 +378,13 @@ Form Parameters:    String group
 @app.route("/create-user", methods=['POST'])
 def createUser():
     try:
-        group=request.form['group']
-        usr=request.form['usr']
-        pwd=request.form['pwd']
-        userTitle=request.form['userTitle']
-        userUrl=request.form['userUrl']
-        notes=request.form['notes']
-        if len(group)<= 0:
+        group = request.form['group']
+        usr = request.form['usr']
+        pwd = request.form['pwd']
+        userTitle = request.form['userTitle']
+        userUrl = request.form['userUrl']
+        notes = request.form['notes']
+        if len(group) <= 0:
             return "Cannot Create User. No Group Name Given.", 200
         entry = Vault.Record.create()
         entry._set_group(group)
@@ -414,13 +414,13 @@ Form Parameters:    String uuid
 def editUser():
     try:
         uuid = request.form['uuid']
-        usr=request.form['usr']
-        pwd=request.form['pwd']
-        userTitle=request.form['userTitle']
-        userUrl=request.form['userUrl']
-        notes=request.form['notes']
+        usr = request.form['usr']
+        pwd = request.form['pwd']
+        userTitle = request.form['userTitle']
+        userUrl = request.form['userUrl']
+        notes = request.form['notes']
 
-        if len(userTitle)<= 0:
+        if len(userTitle) <= 0:
             return "Account Must Have A Title.", 200
         for record in sessionVault.getVault().records:
             if str(record._get_uuid()) == uuid:
@@ -466,7 +466,7 @@ def getGroups():
     try:
         if session['groups'] == []:
             getGroupsHelper()
-    except KeyError:#yes I know this is repeated code. I was lazy tonight :P
+    except KeyError:#yes I know this is repeated code.  I was lazy tonight :P
             session['groups'] = []
             getGroupsHelper()
                     
@@ -491,9 +491,9 @@ def getGroupsHelper():
 Function gets a string of a group name and returns a list of the group and all its parents names as a list of strings.
 """
 def groupNameSplitter(groupName):
-    outList=[]
-    groupNameSplit= csv.reader(cStringIO.StringIO(groupName), delimiter='.', escapechar='\\').next()
-    count=1
+    outList = []
+    groupNameSplit = csv.reader(cStringIO.StringIO(groupName), delimiter='.', escapechar='\\').next()
+    count = 1
     while count <= len(groupNameSplit):
         outList.append(".".join(groupNameSplit[:count]))
         count += 1
@@ -512,11 +512,11 @@ Function saves changes to the database to the database file.
 @app.route("/save", methods=['POST'])
 def saveDB():
     try:
-        if isLoggedIn()==False:
+        if isLoggedIn() == False:
             return "User Not Logged In.",200
         sessionVault.getVault().write_to_file(session['dbFile'], session['password'])
         
-        return "Database was saved to "+session['dbFile']
+        return "Database was saved to " + session['dbFile']
     except Exception,e:
         return str(e),500
 
@@ -529,7 +529,7 @@ Parameter: newPassword= string of new password
 @app.route("/new-master-password", methods=['POST'])
 def newMasterPasword():
     try:
-        if isLoggedIn()==False:
+        if isLoggedIn() == False:
             return "User not logged in.",200
         newPass = request.values.get('newPassword', default="")
         oldPass = request.values.get('oldPassword', default="")
@@ -590,7 +590,7 @@ def fileBrowse():
     root.lift()
     root.focus_force()
     
-    file_path=''
+    file_path = ''
     file_path = tkFileDialog.askopenfilename(initialdir=(os.path.expanduser('~/')),parent=root)
     root.destroy()
 
@@ -609,7 +609,7 @@ def importFileDirect():
 
         file_path = request.form['file']
 
-        if str(os.path.splitext(file_path)[1])!=".csv":
+        if str(os.path.splitext(file_path)[1]) != ".csv":
             return "Incorrect File Format.", 200
         
         importedFile = open(file_path,'r')
@@ -619,9 +619,9 @@ def importFileDirect():
 
             if not (lineDict.has_key('uuid') and lineDict.has_key('group') and lineDict.has_key('title') and lineDict.has_key('url') and lineDict.has_key('user')):
                 return "Incorrect Data Format",200
-            if len(lineDict)> 7:
+            if len(lineDict) > 7:
                 return "Incorrect Data Format. Too Many Items On Line " + str(i),200
-            if len(lineDict.get('uuid',''))!=36:
+            if len(lineDict.get('uuid','')) != 36:
                 return "Incorrect UUID On Line " + str(i),200
 
 
@@ -629,7 +629,7 @@ def importFileDirect():
             #if doesUuidExit(lineDict.get('uuid',default=''))==False:
             #   entry._set_uuid(uuid.UUID(lineDict.get('uuid',default='')))
                 
-            if lineDict.get('group','') not in getGroups():#Add new groups to the session group list 
+            if lineDict.get('group','') not in getGroups():#Add new groups to the session group list
                 session['groups'].append(lineDict.get('group',''))
             entry._set_group(lineDict.get('group',''))
             entry._set_title(lineDict.get('title',''))
@@ -640,7 +640,7 @@ def importFileDirect():
             sessionVault.getVault().records.append(entry)
             i += 1
             
-        if i <=1:
+        if i <= 1:
             return "File Is Empty", 200
         saveDB()
         importedFile.close()
@@ -659,7 +659,7 @@ Return True if it does exist.
 """
 def doesUuidExit(uuid):
     for record in sessionVault.getVault().records:
-        if record._get_uuid()==uuid:
+        if record._get_uuid() == uuid:
             return True
     return False
 
@@ -669,7 +669,7 @@ Else return None
 """
 def getByUuid(uuid):
     for record in sessionVault.getVault().records:
-        if record._get_uuid()==uuid:
+        if record._get_uuid() == uuid:
             return record
     return None
 
@@ -717,7 +717,7 @@ def allowed_file(filename):
 Funciton returns a list of all Titles in the database.
 """
 def getAllTitles():
-    titleList=[]
+    titleList = []
     for rec in sessionVault.getVault().records:
         if rec._get_title() not in titleList:
             titleList.append(rec._get_title())
@@ -727,7 +727,7 @@ def getAllTitles():
 Funciton returns a list of all Groups in the database.
 """
 def getAllGroups():
-    groupList=[]
+    groupList = []
     for rec in sessionVault.getVault().records:
         if rec._get_group() not in groupList:
             groupList.append(rec._get_group())
@@ -753,7 +753,7 @@ attribute: the attribute that is to be copied.
 @app.route("/copy",methods=['POST'])
 def copy():
     try:
-        if isLoggedIn()==False:
+        if isLoggedIn() == False:
                 return "User Not Logged In.",200
         out = ""
         uuid = request.form['uuid']
@@ -761,18 +761,18 @@ def copy():
         account = None
 
         for record in sessionVault.getVault().records:
-                if str(record._get_uuid())== str(uuid):
+                if str(record._get_uuid()) == str(uuid):
                     account = record
                     break
         
         if account is None:
             return "No Account Found With That UUID.", 200
 
-        if attribute=="username":
+        if attribute == "username":
             out = str(account._get_user())
-        elif attribute=="password":
+        elif attribute == "password":
             out = str(account._get_passwd())
-        elif attribute=="url":
+        elif attribute == "url":
             out = str(account._get_url())
         else:
             return "Invalid attribute.", 200
@@ -845,11 +845,11 @@ def confSetToDefault():
 @app.route("/config-get")
 def getConfig():
     try:
-        data={}
+        data = {}
 
         
-        data["sessionTimeOut"]=int(int(confParser.getint("general",'sessionTimeOut'))/60)
-        data["passwrdMinLenth"]=confParser.getint("passwords",'passwrdMinLenth')
+        data["sessionTimeOut"] = int(int(confParser.getint("general",'sessionTimeOut')) / 60)
+        data["passwrdMinLenth"] = confParser.getint("passwords",'passwrdMinLenth')
         getConfCheckboxes(data,"passwords","isLowercase")
         getConfCheckboxes(data,"passwords","isUppercase")
         getConfCheckboxes(data,"passwords","isDigit")
@@ -864,19 +864,19 @@ def getConfig():
 Helper fuction for getConfig() to help with checkbox wierdness.
 """
 def getConfCheckboxes(dataDict, cfgSection, cfgOption):
-    if confParser.getint(cfgSection,cfgOption)==1:
-        dataDict[cfgOption]= "on"
+    if confParser.getint(cfgSection,cfgOption) == 1:
+        dataDict[cfgOption] = "on"
         
     return
 
 @app.route("/config-set",methods=['POST'])
 def setConfig():
     try:#request.form.get('test1', default=False, type=bool)
-        if (request.form.get('sessionTimeOut', False) != False) and int(request.form.get('sessionTimeOut'))>0:
-            confParser.set("general",'sessiontimeout',str(int(request.values.get('sessionTimeOut'))*60))
+        if (request.form.get('sessionTimeOut', False) != False) and int(request.form.get('sessionTimeOut')) > 0:
+            confParser.set("general",'sessiontimeout',str(int(request.values.get('sessionTimeOut')) * 60))
         else:
             return "No sessionTimeOut set",200
-        if request.form.get('passwrdMinLenth', False) and int(request.form.get('passwrdMinLenth'))>=0:
+        if request.form.get('passwrdMinLenth', False) and int(request.form.get('passwrdMinLenth')) >= 0:
             confParser.set("passwords",'passwrdminlenth',str(request.values.get('passwrdMinLenth')))
         else:
             return "No passwrdminlenth set",200
@@ -909,10 +909,10 @@ e.g.: {groupName:"",children:[{uuid:"79873249827346",title:"hello",user:"usernam
 """
 @app.route("/get-db-json")
 def getDbJson():
-    if isLoggedIn()==False:
+    if isLoggedIn() == False:
             return "User Not Logged In.",200
     try:
-        dbDict={}
+        dbDict = {}
         #dbDict= {"groupName":"","children":[],"groups":[]}
         dbDict = getChildren("")
 
@@ -926,24 +926,24 @@ Helper function for getDbJson(). Uses recursion to find an collect passwords and
 single.
 """
 def getChildren(groupName):
-    returnDict={"groupName":"","children":[],"groups":[]}
-    if groupName!="":
+    returnDict = {"groupName":"","children":[],"groups":[]}
+    if groupName != "":
         returnDict["groupName"] = splitGroups(groupName)[-1]
     else:
-        returnDict["groupName"]= ""
-    groupList=[]
+        returnDict["groupName"] = ""
+    groupList = []
     for record in sessionVault.getVault().records:
         if record._get_group() == groupName:
             returnDict["children"].append(getChild(record))
 
 
     for record in getGroups():
-        if groupName=="":
+        if groupName == "":
             if splitGroups(record)[0] not in groupList:
                 groupList.append(splitGroups(record)[0])
         elif splitGroups(record)[:-1] == splitGroups(groupName):
-            if '.'.join(splitGroups(record)[:len(splitGroups(groupName))+1]) not in groupList:
-                groupList.append('.'.join(splitGroups(record)[:len(splitGroups(groupName))+1]))
+            if '.'.join(splitGroups(record)[:len(splitGroups(groupName)) + 1]) not in groupList:
+                groupList.append('.'.join(splitGroups(record)[:len(splitGroups(groupName)) + 1]))
 
                 
     for group in groupList:        
@@ -956,7 +956,7 @@ Helper function for getChildren().
 Returns a single dict representation of a child.
 """
 def getChild(record):
-    data={
+    data = {
             "uuid" : "",
             "title" : "",
             "user" : "",
@@ -965,13 +965,13 @@ def getChild(record):
             "last_mod" : 0,
             "url" : ""
             }
-    data["uuid"]=str(record._get_uuid())
-    data["title"]=str(record._get_title())
-    data["user"]=str(record._get_user())
-    data["passwd"]=str(record._get_passwd())
-    data["notes"]=str(record._get_notes())
-    data["last_mod"]=str(time.strftime("%H:%M %d-%m-%Y", time.localtime(record._get_last_mod())))
-    data["url"]=str(record._get_url())
+    data["uuid"] = str(record._get_uuid())
+    data["title"] = str(record._get_title())
+    data["user"] = str(record._get_user())
+    data["passwd"] = str(record._get_passwd())
+    data["notes"] = str(record._get_notes())
+    data["last_mod"] = str(time.strftime("%H:%M %d-%m-%Y", time.localtime(record._get_last_mod())))
+    data["url"] = str(record._get_url())
     return data
 
 """
@@ -981,7 +981,7 @@ Returns a list of groups split up by the delimiter '.'
 def splitGroups(groups):
     if groups == "":
         return []
-    groupList= csv.reader(cStringIO.StringIO(groups), delimiter='.', escapechar='\\').next()
+    groupList = csv.reader(cStringIO.StringIO(groups), delimiter='.', escapechar='\\').next()
     return groupList
 
 
@@ -1027,10 +1027,12 @@ if __name__ == "__main__":
     #This key is used to encrypt the session cookies for security.
     app.secret_key = os.urandom(24)
 
-    #This is how long the session will remain active untill it times-out. 
+    #This is how long the session will remain active untill it times-out.
     app.permanent_session_lifetime = timedelta(seconds=600)
     
-    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER # Placeholder for where files should be stored if files are uploaded via HTML form.
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER # Placeholder for where files should be stored if files are uploaded via HTML
+                                                # form.
     app.debug = True #Disable this for demonstrations to prevent the double loading problem.
-    #app.threaded = True #Change if the server handles multiple requests at once.
+    #app.threaded = True #Change if the server handles multiple requests at
+                        #once.
     app.run()#Start the webserver.
