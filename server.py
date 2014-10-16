@@ -27,6 +27,7 @@ import tkFileDialog
 import pyperclip
 import time
 from ConfigParser import SafeConfigParser
+import appdirs
 
 
 #Configuration to handle HTML file uploads if implemented later.
@@ -34,12 +35,23 @@ UPLOAD_FOLDER = 'uploads/'
 ALLOWED_EXTENSIONS = set(['csv'])
 
 app = Flask(__name__)
+
+global appName
+global appAuthor
+appName = "PasswordPrimate"
+appAuthor = "AsterixSolutions"
+
 global loginFunction
 global dashboardFunction
 global newdbFunction
 loginFunction = 'index'
 dashboardFunction = 'dashboard'
 newdbFunction='newDatabase'
+
+global confParser
+global confPath
+confParser = SafeConfigParser()
+confPath = str(os.path.join(appdirs.user_data_dir(appName, appAuthor),"config.ini"))
 
 """
 Class holds session values that are not compatiable with the Flask session variable.
@@ -786,12 +798,12 @@ def copy():
 Function initiates configuration file.
 """
 def initConfig():
-    global confParser
-    global confPath
-    confParser = SafeConfigParser()
-    confPath = 'config.ini'
-    if not os.path.isfile(confPath):
-        file(confPath, 'w').close()
+
+##    if not os.path.isfile(confPath):
+##        file(confPath, 'w').close()
+    configDir = os.path.dirname(confPath)
+    if not os.path.exists(configDir):
+        os.makedirs(configDir)
     confParser.read(confPath)
     if not confParser.has_section("general"):
         confParser.add_section('general')
@@ -819,6 +831,9 @@ def initConfig():
 Function saves conficuration to file.
 """
 def saveConfig():
+    configDir = os.path.dirname(confPath)
+    if not os.path.exists(configDir):
+        os.makedirs(configDir)
     if not os.path.isfile(confPath):
         file(confPath, 'w').close()
     cfgFile = open(confPath,'w')
