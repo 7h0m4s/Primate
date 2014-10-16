@@ -408,7 +408,7 @@ def createUser():
         sessionVault.getVault().records.append(entry)
 
         saveDB()
-        return "Group Added Successfully", 304
+        return str(entry._get_uuid()), 304
     except Exception,e:
         return str(e),500
 
