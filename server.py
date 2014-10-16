@@ -27,12 +27,7 @@ import tkFileDialog
 import pyperclip
 import time
 from ConfigParser import SafeConfigParser
-if os.name=='posix':
-    import pygtk
-    #pygtk.require('2.0')
-    import gtk
-else:
-    import wx
+
 
 #Configuration to handle HTML file uploads if implemented later.
 UPLOAD_FOLDER = 'uploads/'
@@ -560,29 +555,7 @@ Returns selected filepath as a string.
 @app.route("/get-filepath")
 def getFilepath():
     try:
-##        root = Tkinter.Tk()
-##        root.withdraw()
-##        root.overrideredirect(True)
-##        root.geometry('0x0+0+0')#make tkinter window invisible
-##        #Tkinter.Tk().withdraw() # Close the root window
-##
-##        # Show window again and lift it to top so it can get focus,
-##        # otherwise dialogs will end up behind the terminal.
-##        root.deiconify()
-##        root.lift()
-##        root.focus_force()
-##        in_path = ''
-##        in_path = tkFileDialog.askopenfilename(initialdir=(os.path.expanduser('~/')),parent=root)
-##        root.destroy()
 
-##        in_path=''
-##        app = wx.App(False)
-##        wildcard = "All files (*.*)|*.*"
-##        dialog = wx.FileDialog(None, "Choose a file", os.path.expanduser('~'), "", wildcard, wx.OPEN)
-##        if dialog.ShowModal() == wx.ID_OK:
-##            in_path = dialog.GetPath() 
-##
-##        dialog.Destroy()
         return fileBrowse()
     except Exception,e:
         return str(e),500
@@ -595,30 +568,7 @@ Returns the selected filepath as a string.
 @app.route("/import-browse")
 def importBrowser():
     try:
-##        root = Tkinter.Tk()
-##        root.withdraw()# Close the root window
-##        root.overrideredirect(True)
-##        root.geometry('0x0+0+0')#make tkinter window invisible
-##
-##        # Show window again and lift it to top so it can get focus,
-##        # otherwise dialogs will end up behind the terminal.
-##        root.deiconify()
-##        root.lift()
-##        root.focus_force()
-##        
-##        file_path=''
-##        file_path = tkFileDialog.askopenfilename(initialdir=(os.path.expanduser('~/')),parent=root)
-##        root.destroy()
 
-
-##        file_path=''
-##        app = wx.App(False)
-##        wildcard = "All files (*.*)|*.*"
-##        dialog = wx.FileDialog(None, "Choose a file", os.path.expanduser('~'), "", wildcard, wx.OPEN)
-##        if dialog.ShowModal() == wx.ID_OK:
-##            file_path = dialog.GetPath() 
-##
-##        dialog.Destroy()
 
         return fileBrowse()
     except Exception,e:
@@ -628,30 +578,22 @@ def importBrowser():
 Function acts as the file browser for importbrowse and getfilepath
 """
 def fileBrowse():
+
+    root = Tkinter.Tk()
+    root.withdraw()# Close the root window
+    root.overrideredirect(True)
+    root.geometry('0x0+0+0')#make tkinter window invisible
+
+    # Show window again and lift it to top so it can get focus,
+    # otherwise dialogs will end up behind the terminal.
+    root.deiconify()
+    root.lift()
+    root.focus_force()
+    
     file_path=''
-    if os.name=='posix':
-        dialog = gtk.FileChooserDialog("Open..",None,
-                                       gtk.FILE_CHOOSER_ACTION_OPEN,
-                                       (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-                                        gtk.STOCK_OPEN, gtk.RESPONSE_OK))
-        dialog.set_default_response(gtk.RESPONSE_OK)
-        response = dialog.run()
-        if response == gtk.RESPONSE_OK:
-            file_path = dialog.get_filename(), 'selected'
-        elif response == gtk.RESPONSE_CANCEL:
-            file_path = ""
-        else:
-            file_path = ""
-        dialog.destroy()
+    file_path = tkFileDialog.askopenfilename(initialdir=(os.path.expanduser('~/')),parent=root)
+    root.destroy()
 
-
-    else:
-        app = wx.App(False)
-        wildcard = "All files (*.*)|*.*"
-        dialog = wx.FileDialog(None, "Choose a file", os.path.expanduser('~'), "", wildcard, wx.OPEN)
-        if dialog.ShowModal() == wx.ID_OK:
-            file_path = dialog.GetPath() 
-        dialog.Destroy()
     return file_path
 
 
