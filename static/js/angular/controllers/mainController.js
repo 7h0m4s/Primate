@@ -239,7 +239,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 triggerDialog($title, $compileContent);
             })
             .error(function ($content, status) {
-                redirectToError505();
+                redirectToErroPage505();
             });
         }
     };
@@ -254,7 +254,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 triggerDialog($title, $compileContent);
             })
             .error(function ($content, status) {
-                redirectToError505();
+                 redirectToErroPage505();
             });
         }
     };
@@ -284,7 +284,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         ajaxPost($("#editGroupForm"), true, _urlEditGroupSubmit, function (msg) {
             notifiSuccess(_NOTIFI_SETTING_CAPTION, _EDIT_SUCCESS_MSG);
         }, function () {
-            redirectToError505();
+             redirectToErroPage505();
         });
     };
 
@@ -307,10 +307,10 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 initTree();
             },
             function () {
-                redirectToError505();
+                 redirectToErroPage505();
             });
         } else {
-            redirectToError505();
+             redirectToErroPage505();
         }
     };
 
@@ -321,10 +321,10 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 initTree();
             },
             function () {
-                redirectToError505();
+                 redirectToErroPage505();
             });
         } else {
-            redirectToError505();
+             redirectToErroPage505();
         }
     }
 
@@ -405,10 +405,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             msg = _DEFAULT_FAILURE_MSG;
         }
         $.Notify({ style: { background: 'red', color: 'white' }, caption: _caption, content: msg });
-    };
-
-    var redirectToError505 = function () {
-        $window.location.href = _urlErrorPage505;
     };
 
     var initSetting = function (scope) {
