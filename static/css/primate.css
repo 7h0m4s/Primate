@@ -887,8 +887,21 @@ button.full, a.full {
 /*end of browse button*/
 
 /*Manage group*/
+
 .metro legend {
     overflow: hidden;
+}
+
+/*layout of viewgroup and account*/
+.view-page label {
+   font-weight: bold;
+   background-color: #e6f2fa;
+   outline: none;
+   padding:5px;
+}
+.view-page p {
+    padding-left: 5px;
+    font-size: 13px;
 }
 
 .btn.btn-white {

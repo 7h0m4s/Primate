@@ -67,8 +67,15 @@
                             <!--<li class="unavailable"><a href="javascript:;">Data</a></li>-->
                         </ul>
                     </div>
-                    <div class="refresh-icon icon-style">
-                        <a href="javascript:;" ng-click="RedirectGroupCreate();"><span class="icon-plus"></span></a>
+                    <div class="refresh-icon icon-style" style="padding-right:0px">
+                    <a class="dropdown-toggle dis-block" href="#">
+                        <span class="icon-plus"></span>
+                    </a>
+                         <ul class="dropdown-menu place-right" data-role="dropdown">
+                            <li><a href="javascript:;" ng-click="RedirectGroupCreate()">Create Group</a></li>
+                            <li><a href="javascript:;" ng-click="RedirectUserCreate()">Create Account</a></li>
+                            
+                        </ul>
                     </div>
                     <div class="clearfix"></div>
                 </div>

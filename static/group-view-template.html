@@ -1,1 +1,23 @@
-﻿<h1>View Group</h1>
+﻿<div id="loader">
+    <img src="static/img/metro-loader.gif" />
+</div>
+<div class="example" id="group-management" style="margin-left: 25%; opacity: 0;" ng-init="InitGroupManagment()">
+    <form id="viewGroupForm" name="viewGroupForm">
+        <fieldset class="view-page">
+            <legend>
+                <h3 class="frame-title">Group Detail</h3>
+            </legend>
+            <label>Group Name</label>
+            <div class="input-control text" data-role="input-control">
+                <p>Employee </p>
+            </div>
+            <label for="groupParent">Group Directory</label>
+            <div class="input-control text" data-role="input-control">
+                <p>Sites / SitesSub1 </p>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-lead full submit-animate" id="btn-user-submit" ng-click="RedirectGroupEdit();">Edit</button>
+            </div>
+        </fieldset>
+    </form>
+</div>
