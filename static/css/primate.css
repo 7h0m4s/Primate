@@ -1029,6 +1029,7 @@ button.full, a.full {
 }
 
 #notes {
+    font-family: Arial;
     font-size: 14px;
 }
 
@@ -1036,4 +1037,10 @@ button.full, a.full {
     display: block;
     margin-bottom: 10px;
     margin-top: -5px;
+}
+
+.word-break {
+    word-wrap: break-word; /* IE 5.5-7 */
+    white-space: -moz-pre-wrap; /* Firefox 1.0-2.0 */
+    white-space: pre-wrap; /* current browsers */
 }

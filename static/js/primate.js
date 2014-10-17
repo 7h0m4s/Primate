@@ -293,6 +293,22 @@ var ajaxGet = function (isAsync, requestUrl, postData, successFunc, failureFunc)
     });
 };
 
+var ajaxGetMethod = function (isAsync, requestUrl, postData, successFunc, failureFunc) {
+    var method = "Get";
+    var url = requestUrl;
+    $.ajax({
+        data: postData,
+        type: method,
+        url: url,
+        async: isAsync
+    }).done(function (msg) {
+        successFunc(msg);
+
+    }).fail(function (msg) {
+        failureFunc(msg);
+    });
+};
+
 
 var triggerDialog = function ($title, $content) {
     $.Dialog({

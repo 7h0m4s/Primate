@@ -405,6 +405,7 @@ var mainApp = angular.module("mainApp", ['ngRoute'])
     //todo test only to be removed
     var initTree2 = function (scope) {
         requestFactory.get(_urlGetTree2).then(function (data) {
+            console.log(data);
             scope.tree = data;
         });
     };
