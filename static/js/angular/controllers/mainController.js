@@ -371,13 +371,12 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         var groupParentVal = $("#groupParent").val();
         if (isValid) {
             submitAnimatel();
-            ajaxPost($("#createAccountForm"), true, _urlCreateUserSubmit, function (data) {
+            ajaxPost($("#createAccountForm"), true, _urlCreateUserSubmit, function (uuid) {
                 initTree($scope);
                 notifiSuccess(_NOTIFI_ACCOUNT_CAPTION, _EDIT_SUCCESS_MSG);
-                console.log("i want uuid");
-                console.log(data);
-                //var serializedCurrentGroup = prepareGroupUrl(groupParentVal, );
-                //redirect(_urlViewGroup + "?" + serializedCurrentGroup);
+                var currentGroupObj = { uuid: uuid }
+                var serializedCurrentGroup = $.param(currentGroupObj);
+                redirect(_urlViewAccount + "?" + serializedCurrentGroup);
             },
             function () {
                 redirectToErroPage505();
@@ -407,11 +406,13 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     $scope.RedirectGroupCreate = function () {
         var currentGroupIdObj = { groupParent: getGroupParent() }
         var serializedCurrentGroupId = $.param(currentGroupIdObj);
-        $window.location.href = _urlCreateGroup + "?" + serializedCurrentGroupId;
+        redirect(_urlCreateGroup + "?" + serializedCurrentGroupId);
     };
 
     $scope.RedirectUserCreate = function () {
-        redirect(_urlCreateAccount);
+        var currentGroupIdObj = { groupParent: getGroupParent() }
+        var serializedCurrentGroupId = $.param(currentGroupIdObj);
+        redirect(_urlCreateAccount + "?" + serializedCurrentGroupId);
     };
 
     $scope.RedirectFromViewToGroupEdit = function () {
@@ -451,20 +452,21 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
 
     var prepareAccountForm = function (uuid) {
         var uuidObj = { uuid: uuid };
-        var groupParent = $routeParams.groupParent;
         var $groupParent = $("#groupParent");
-        if ($groupParent.length > 0) {
-            $groupParent.select2("val", groupParent);
-        }
         if (!isUndifined(uuid)) {
             ajaxGet(false, _urlGetUser, uuidObj, function (response) {
                 $scope.account = $.parseJSON(response);
-                $scope.account.groupParent = groupParent;
+                if ($groupParent.length > 0) {
+                    $groupParent.select2("val", $scope.account.groupParent);
+                }
+
+                //$scope.account.groupParent = groupParent;
             }, function (response) {
                 redirectToErroPage505();
             });
         } else {
             resetScopeAccount();
+            $groupParent.select2("val", $routeParams.groupParent);
         }
     };
 
@@ -628,9 +630,8 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     }
 
     var prepareRedirectAcco = function (url) {
-        var groupParent = getGroupParent();
         var uuid = getUuid();
-        var currentGroupObj = { groupParent: groupParent, uuid: uuid }
+        var currentGroupObj = { uuid: uuid }
         var serializedCurrentGroup = $.param(currentGroupObj);
         redirect(url + "?" + serializedCurrentGroup);
     };

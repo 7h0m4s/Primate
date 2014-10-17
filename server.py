@@ -422,7 +422,7 @@ def createUser():
         sessionVault.getVault().records.append(entry)
 
         saveDB()
-        return str(entry._get_uuid()), 304
+        return str(entry._get_uuid()), 200
     except Exception,e:
         return str(e),500
 
@@ -457,9 +457,8 @@ def editUser():
                 record._set_title(userTitle)
                 record._set_url(userUrl)
                 record._set_notes(notes)
-            
                 saveDB()
-                return str(entry._get_uuid()), 304
+                return str(record._get_uuid()), 200
             
         return "Account was not found.", 500
     except Exception,e:
