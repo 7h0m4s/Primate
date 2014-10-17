@@ -13,7 +13,7 @@ var USER_CONTEXT_NAME_OBJ = {
     NAME_DELETE_ACCOUNT: "Delete Account"
 };
 
-
+var _urlCreateGroup = "#/group-create-template";
 var _urlViewGroup = "#/group-view-template";
 var _urlEditGroup = "#/group-edit-template";
 var _urlDelGroup = "#/group-delete-template";
@@ -144,11 +144,6 @@ var contextMenu = function () {
         $.contextMenu({
             selector: '.file-child',
             callback: function (key, options) {
-                // $(this); here refers to the object that is being clicked --> <div class="context-menu-one" id="t1" name="name1">
-                ///main.html#/group-edit-template
-                //console.log($(this));
-                //var m = "clicked: " + key;
-                //window.console && console.log(m) || alert(m);
             },
             items: {
                 "RedirectUrl": {
@@ -322,21 +317,21 @@ var initSelect2 = function (data) {
 
 //submit animation
 var submitAnimatel = function () {
-    if ($(".submit-animate").length) {
-        $(".submit-animate").html("Process").attr("disabled", "");
-        var defaultVal = $(".submit-animate").html();
-        console.log(defaultVal);
+    var $submitAni = $(".submit-animate");
+    if ($submitAni.length) {
+        $submitAni.html("Processing ").attr("disabled", "");
+        var defaultVal = $submitAni.html();
         var count = 0;
         var submitAnimateInterval = setInterval(function () {
-            var appendVal = $(".submit-animate").html() + ".";
+            var appendVal = $submitAni.html() + ".";
             if (count == 4) {
-                $(".submit-animate").html(defaultVal);
+                $submitAni.html(defaultVal);
                 count = 0;
             }
             else {
-                $(".submit-animate").html(appendVal);
+                $submitAni.html(appendVal);
             }
-            if (!$(".submit-animate").length) {
+            if ($(".submit-animate").attr("disabled") != "disabled") {
                 clearInterval(submitAnimateInterval);
             }
             count++;
@@ -364,13 +359,17 @@ var redirect = function (url) {
 };
 
 var redirectToErroPage = function () {
-    window.location.href = _urlErrorPage404;
+    //window.location.href = _urlErrorPage404;
 };
 
 var redirectToErroPage505 = function () {
-    window.location.href = _urlErrorPage505;
+    //window.location.href = _urlErrorPage505;
 };
 
 var redirectToMainPage = function () {
     window.location.href = _urlLoginRedirect;
+};
+
+var isUndifined = function (target) {
+    return typeof target == _undefined;
 };

@@ -1,48 +1,45 @@
 <div id="loader">
-    <img src="img/metro-loader.gif" />
+    <img src="static/img/metro-loader.gif" />
 </div>
-<div class="example" id="User-management">
-    <form id="createUserForm" name="createUserForm" >
+<div class="example" id="user-management" style="margin-left: 25%; opacity: 0;" ng-init="InitAccountManagment();">
+    <form novalidate name="userForm" id="createAccountForm" ng-submit="SubmitCreateAccountForm(userForm.$valid);">
+        <input type="hidden" name="uuid" id="uuid" ng-model="account.uuid" />
         <fieldset>
             <legend>
                 <h3 class="frame-title">Create Account</h3>
             </legend>
-            <label for="groupParent">Group Directory</label>
+            <label class="required" for="groupParent">Group Directory</label>
             <div class="input-control text" data-role="input-control">
-                <input class="select-search" id="groupParent" name="groupParent" ng-model="group.groupParent" />
+                <input class="select-search" id="groupParent" name="groupParent" ng-model="account.groupParent" />
             </div>
             <label class="required">Username</label>
             <div class="input-control text" data-role="input-control">
-                <input class="select-search" placeholder="Username" required/>
+                <input placeholder="Username" name="user" id="user" ng-model="account.user" />
                 <button class="btn-clear" tabindex="-1" type="button"></button>
             </div>
+            <span class="validation" ng-show="userForm.user.$error.required&& userForm.user.$dirty">This field is required</span>
             <label class="required">Password</label>
-            <div class="input-control text" data-role="input-control">
-                <input type="text" placeholder="Password" name="password"  required />
-                <button class="btn-clear" tabindex="-1" type="button"></button>
-                <span class="validation" ng-show="createGroupForm.groupName.$error.required&& createGroupForm.groupName.$dirty">This field is required</span>
+            <div class="input-control password" data-role="input-control">
+                <input type="password" placeholder="Password" name="passwd" id="passwd" ng-model="account.passwd" required />
+                <button class="btn-reveal" tabindex="-1" type="button"></button>
             </div>
-           
-
+            <span class="validation" ng-show="userForm.passwd.$error.required&& userForm.passwd.$dirty">This field is required</span>
             <label>Title</label>
             <div class="input-control text" data-role="input-control">
-                <input class="select-search" placeholder="Title"/>
+                <input placeholder="Title" name="title" id="title" ng-model="account.title" />
                 <button class="btn-clear" tabindex="-1" type="button"></button>
             </div>
-              <label>URL</label>
+            <label>URL</label>
             <div class="input-control text" data-role="input-control">
-                <input class="select-search" placeholder="URL"/>
+                <input placeholder="URL" name="url" id="url" ng-model="account.url" />
                 <button class="btn-clear" tabindex="-1" type="button"></button>
             </div>
-              <label>Notes</label>
-            <div class="input-control text" data-role="input-control">
-                <input class="select-search" placeholder="Notes"/>
-                <button class="btn-clear" tabindex="-1" type="button"></button>
+            <label>Notes</label>
+            <div class="input-control textarea">
+                <textarea id="notes" name="notes" ng-model="account.notes" placeholder="Notes">...</textarea>
             </div>
-
-
             <div>
-                <button type="submit" class="btn btn-lead full submit-animate" id="btn-user-submit" ng-disabled="createuserForm.$invalid">Create</button>
+                <button type="submit" class="btn btn-lead full submit-animate" id="btn-user-submit" ng-disabled="userForm.$invalid">Save Changes</button>
             </div>
         </fieldset>
     </form>

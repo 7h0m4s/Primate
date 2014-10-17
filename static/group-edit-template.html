@@ -3,6 +3,7 @@
 </div>
 <div class="example" id="group-management" style="margin-left: 25%; opacity: 0;" ng-init="InitGroupManagment()">
     <form id="editGroupForm" name="editGroupForm" novalidate ng-submit="SubmitEditGroupForm(editGroupForm.$valid);">
+        <input type="hidden" name="group" id="preGroup" ng-model="group.preGroup" />
         <fieldset>
             <legend>
                 <h3 class="frame-title">Edit Group</h3>

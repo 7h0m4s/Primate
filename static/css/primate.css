@@ -1,4 +1,19 @@
-﻿.fl {
+﻿@font-face {
+    font-family: HelveticaRegular;
+    src: url(/static/fonts/Helvetica.otf);
+}
+@font-face {
+    font-family: HelveticaLight;
+    src: url(/static/fonts/Helvetica-Light.otf);
+}
+* {
+    font-family: HelveticaLight !important;
+}
+h1 h2 h3 h4 h5 {
+    font-family: HelveticaRegular !important;
+}
+
+.fl {
     float: left;
 }
 
@@ -149,9 +164,11 @@
         text-align: right;
         padding-top: 5px;
     }
-    .metro .input-control.text input#databaseFile {
-        padding-right: 26px;
-    }
+
+.metro .input-control.text input#databaseFile {
+    padding-right: 26px;
+}
+
 .metro .error-msg {
     margin-bottom: 5px;
     color: #f36e65;
@@ -894,11 +911,12 @@ button.full, a.full {
 
 /*layout of viewgroup and account*/
 .view-page label {
-   font-weight: bold;
-   background-color: #e6f2fa;
-   outline: none;
-   padding:5px;
+    font-weight: bold;
+    background-color: #e6f2fa;
+    outline: none;
+    padding: 5px;
 }
+
 .view-page p {
     padding-left: 5px;
     font-size: 13px;
@@ -1005,7 +1023,8 @@ button.full, a.full {
 }
 /*end of Manage group*/
 .icon-style {
-    font-size: 24px;
+    margin-top: 8px;
+    font-size: 16px;
 }
 
 .metro #group-management:before {
@@ -1022,4 +1041,17 @@ button.full, a.full {
 
 .account-uuid {
     display: none;
+}
+
+#notes {
+    font-size: 14px;
+}
+
+#user-management .validation {
+    display: block;
+    margin-bottom: 10px;
+    margin-top: -5px;
+}
+.metro .new-grp.dropdown-toggle:after {
+    content: none;
 }

@@ -1,6 +1,6 @@
 ﻿var _urlLogin = "login.html";
 var _urlGetFilePath = "/get-filepath";
-
+var _urlDashboard = "/dashboard";
 var loginApp = angular.module("loginApp", ['ngStorage']);
 
 loginApp.directive('passwordMatch', [function () {
@@ -87,7 +87,7 @@ loginApp.controller('loginController', function ($scope, $localStorage) {
         if (isValid) {
             submitAnimatel();
             ajaxPost($("#newDBForm"), true, null, function () {
-                redirect(_urlLogin);
+                redirect(_urlDashboard);
             },
             function () {
                 redirectToErroPage505();
