@@ -622,7 +622,8 @@ def fileBrowse():
 ##    root.destroy()
     file_path=''
     if os.name=='posix':
-        file_path=''
+        file_path = subprocess.check_output('./MacBrowse3', shell=True)
+        file_path = file_path.replace('file://',1)
     else:
         file_path = subprocess.check_output('BrowseDialog.exe', shell=True)
 
