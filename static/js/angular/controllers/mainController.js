@@ -374,6 +374,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             ajaxPost($("#createAccountForm"), true, _urlCreateUserSubmit, function (data) {
                 initTree($scope);
                 notifiSuccess(_NOTIFI_ACCOUNT_CAPTION, _EDIT_SUCCESS_MSG);
+                console.log("i want uuid");
                 console.log(data);
                 //var serializedCurrentGroup = prepareGroupUrl(groupParentVal, );
                 //redirect(_urlViewGroup + "?" + serializedCurrentGroup);
@@ -521,7 +522,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     var initTree = function (scope) {
         requestFactory.get(_urlGetTree).then(function (data) {
             console.log(data);
-
             $scope.tree = data;
             global_tree = data;
         });
@@ -661,14 +661,11 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         $scope.account = {};
     }
 
-
-
     var resetGroupBreadChildren = function () {
         $scope.groups = {};
         $scope.children = {};
         $scope.breadcrumbs = [];
     }
-
 
     //var testGetTree = function () {
     //    //ajaxGet(true, _urlGetTree, {}, function (msg) {
@@ -701,13 +698,14 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     };
 
     var findGroupFromNewTreeByParentName = function (groupParentIndex, newGroupObj) {
+        var groupArr = groupParentIndex.split('.');
+        var count = 0;
         var resultObj;
         var recursiveGroup = function (tree) {
             for (var a = 0; a < tree.groups.length; a++) {
                 if (tree.groups[a] != null) {
                     var groupName = tree.groups[a].groupName;
                     if (groupName == groupParentIndex) {
-                        console.log(tree.groups);
                         resultObj = tree.groups[a].groups.push(newGroupObj);
                     }
                     recursiveGroup(tree.groups[a]);

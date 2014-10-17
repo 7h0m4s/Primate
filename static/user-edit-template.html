@@ -3,6 +3,7 @@
 </div>
 <div class="example" id="user-management" style="margin-left: 25%; opacity: 0;" ng-init="InitAccountManagment();">
     <form novalidate name="userForm" id="editAccountForm" ng-submit="SubmitEditAccountForm(userForm.$valid);">
+        <input type="hidden" name="uuid" id="uuid" />
         <fieldset>
             <legend>
                 <h3 class="frame-title">Edit Account</h3>

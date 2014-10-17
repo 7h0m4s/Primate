@@ -28,6 +28,8 @@ import pyperclip
 import time
 from ConfigParser import SafeConfigParser
 import appdirs
+import subprocess
+
 
 
 #Configuration to handle HTML file uploads if implemented later.
@@ -298,6 +300,8 @@ def createGroup():
         else:
             if groupParent not in getGroups():
                 return "Group Parent Not Found", 500
+            if (groupParent + "." + groupName)in getGroups():
+                return "Group already exists", 500
             session['groups'].append(groupParent + "." + groupName)#
 
         return "Group Added Successfully", 304
@@ -603,20 +607,25 @@ Function acts as the file browser for importbrowse and getfilepath
 """
 def fileBrowse():
 
-    root = Tkinter.Tk()
-    root.withdraw()# Close the root window
-    root.overrideredirect(True)
-    root.geometry('0x0+0+0')#make tkinter window invisible
-
-    # Show window again and lift it to top so it can get focus,
-    # otherwise dialogs will end up behind the terminal.
-    root.deiconify()
-    root.lift()
-    root.focus_force()
-    
-    file_path = ''
-    file_path = tkFileDialog.askopenfilename(initialdir=(os.path.expanduser('~/')),parent=root)
-    root.destroy()
+##    root = Tkinter.Tk()
+##    root.withdraw()# Close the root window
+##    root.overrideredirect(True)
+##    root.geometry('0x0+0+0')#make tkinter window invisible
+##
+##    # Show window again and lift it to top so it can get focus,
+##    # otherwise dialogs will end up behind the terminal.
+##    root.deiconify()
+##    root.lift()
+##    root.focus_force()
+##    
+##    file_path = ''
+##    file_path = tkFileDialog.askopenfilename(initialdir=(os.path.expanduser('~/')),parent=root)
+##    root.destroy()
+    file_path=''
+    if os.name=='posix':
+        file_path=''
+    else:
+        file_path = subprocess.check_output('BrowseDialog.exe', shell=True)
 
     return file_path
 
