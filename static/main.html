@@ -51,7 +51,7 @@
                     <li class="stick">
                         <a class="dropdown-toggle" href="javascript:;"><i class="icon-tree-view"></i>Database Name</a>
                         <ul data-role="dropdown" style="display: block;">
-                            <li ng-repeat="node in tree.groups" ng-click="SelectRoot(node)"><a ng-bind="AssessName(node.groupName)"></a></li>
+                            <li ng-repeat="node in tree.groups" ng-click="SelectRoot(node)"><a ng-bind="AssessName(node.groupName)" class="word-break"></a></li>
                         </ul>
                     </li>
                 </ul>
@@ -63,7 +63,7 @@
                     <div class="fl">
                         <ul class="breadcrumb" data-breadcrumb-arr="{{GetGroupId();}}">
                             <!--ng-class="CheckIfLastBreadcrumb(breadcrumb)"-->
-                            <li ng-repeat="breadcrumb in breadcrumbs"><a ng-click="BreadcrumbRedirect(breadcrumb)" ng-bind="breadcrumb.groupName"></a></li>
+                            <li ng-repeat="breadcrumb in breadcrumbs" class="word-break"><a ng-click="BreadcrumbRedirect(breadcrumb)" ng-bind="breadcrumb.groupName"></a></li>
                             <!--<li class="unavailable"><a href="javascript:;">Data</a></li>-->
                         </ul>
                     </div>
