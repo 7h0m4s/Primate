@@ -247,6 +247,7 @@ def getUser():
             if str(record._get_uuid()) == uuid:
                 data = {}
                 data["uuid"] = str(record._get_uuid())
+                data['groupParent']= str(record._get_group())
                 data["user"] = str(record._get_user())
                 data["passwd"] = str(record._get_passwd())
                 data["title"] = str(record._get_title())
@@ -454,7 +455,7 @@ def editUser():
                 record._set_notes(notes)
             
                 saveDB()
-                return "Account Edited Successfully", 304
+                return str(entry._get_uuid()), 304
             
         return "Account was not found.", 500
     except Exception,e:
