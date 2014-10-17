@@ -318,7 +318,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         var groupNameVal = $("#groupName").val();
 
         if (groupNameVal.indexOf(_GROUP_CONCAT_SYMBOL) > -1) {
-
             return;
         }
 
@@ -373,7 +372,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             submitAnimatel();
             ajaxPost($("#createAccountForm"), true, _urlCreateUserSubmit, function (uuid) {
                 initTree($scope);
-                notifiSuccess(_NOTIFI_ACCOUNT_CAPTION, _EDIT_SUCCESS_MSG);
+                notifiSuccess(_NOTIFI_ACCOUNT_CAPTION, _ADD_SUCCESS_MSG);
                 var currentGroupObj = { uuid: uuid }
                 var serializedCurrentGroup = $.param(currentGroupObj);
                 redirect(_urlViewAccount + "?" + serializedCurrentGroup);
