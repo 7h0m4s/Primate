@@ -1,19 +1,4 @@
-﻿@font-face {
-    font-family: HelveticaRegular;
-    src: url(/static/fonts/Helvetica.otf);
-}
-@font-face {
-    font-family: HelveticaLight;
-    src: url(/static/fonts/Helvetica-Light.otf);
-}
-* {
-    font-family: HelveticaLight !important;
-}
-h1 h2 h3 h4 h5 {
-    font-family: HelveticaRegular !important;
-}
-
-.fl {
+﻿.fl {
     float: left;
 }
 
@@ -1044,6 +1029,7 @@ button.full, a.full {
 }
 
 #notes {
+    font-family: Arial;
     font-size: 14px;
 }
 
@@ -1052,6 +1038,9 @@ button.full, a.full {
     margin-bottom: 10px;
     margin-top: -5px;
 }
-.metro .new-grp.dropdown-toggle:after {
-    content: none;
+
+.word-break {
+    word-wrap: break-word; /* IE 5.5-7 */
+    white-space: -moz-pre-wrap; /* Firefox 1.0-2.0 */
+    white-space: pre-wrap; /* current browsers */
 }

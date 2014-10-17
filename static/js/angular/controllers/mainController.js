@@ -102,7 +102,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     //$scope.breadcrumbs = [];
     $scope.templates = { cacheExportDialogTemplate: "", cacheImportDialogTemplate: "", cacheDeleteAccountTemplate: "" }
     $scope.userSetting = null;
-    $scope.tree = null;
+    //$scope.tree = null;
     $scope.group = {};
     //$scope.groups = {};
     //$scope.children = {};
@@ -280,6 +280,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     $scope.ImportSubmit = function () {
         ajaxPost($("#importFileInput"), true, _urlImportSubmit, function () { }, function () { });
         initTree($scope);
+        console.log($scope.tree);
         $.Dialog.close();
     };
 
@@ -315,18 +316,33 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     $scope.SubmitCreateGroupForm = function (isValid) {
         var groupParentVal = $("#groupParent").val();
         var groupNameVal = $("#groupName").val();
+
+        if (groupNameVal.indexOf(_GROUP_CONCAT_SYMBOL) > -1) {
+
+            return;
+        }
+
         if (isValid) {
             submitAnimatel();
             ajaxPost($("#createGroupForm"), true, _urlCreateGroupSubmit, function () {
-                //clearInterval(submitAnimateInterval);
+                //$scope.groups = findGroupFromNewTreeByParentName("", global_tree);
                 initTree($scope);
+                var newGroupObj = { groupName: groupNameVal, children: [], groups: [] };
+                console.log($scope.tree);
+                if (groupParentVal.length == 0) {
+                    $scope.tree.groups.push(newGroupObj);
+                } else {
+                    findGroupFromNewTreeByParentName(groupParentVal, newGroupObj);
+                }
+
+
                 notifiSuccess(_NOTIFI_GROUP_CAPTION, _ADD_SUCCESS_MSG);
                 var serializedCurrentGroup = prepareGroupUrl(groupParentVal, groupNameVal);
                 redirect(_urlViewGroup + "?" + serializedCurrentGroup);
             },
-            function () {
-                redirectToErroPage505();
-            });
+        function () {
+            redirectToErroPage505();
+        });
         } else {
             redirectToErroPage505();
         }
@@ -355,12 +371,12 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         var groupParentVal = $("#groupParent").val();
         if (isValid) {
             submitAnimatel();
-            ajaxPost($("#createAccountForm"), true, _urlCreateUserSubmit, function () {
+            ajaxPost($("#createAccountForm"), true, _urlCreateUserSubmit, function (data) {
                 initTree($scope);
                 notifiSuccess(_NOTIFI_ACCOUNT_CAPTION, _EDIT_SUCCESS_MSG);
-                var serializedCurrentGroup = prepareGroupUrl(groupParentVal, groupNameVal);
-                redirect(_urlViewGroup + "?" + serializedCurrentGroup);
-                redirectWithExistingParms(_urlViewAccount);
+                console.log(data);
+                //var serializedCurrentGroup = prepareGroupUrl(groupParentVal, );
+                //redirect(_urlViewGroup + "?" + serializedCurrentGroup);
             },
             function () {
                 redirectToErroPage505();
@@ -504,7 +520,9 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
 
     var initTree = function (scope) {
         requestFactory.get(_urlGetTree).then(function (data) {
-            scope.tree = data;
+            console.log(data);
+
+            $scope.tree = data;
             global_tree = data;
         });
     };
@@ -642,4 +660,84 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     var resetScopeAccount = function () {
         $scope.account = {};
     }
+
+
+
+    var resetGroupBreadChildren = function () {
+        $scope.groups = {};
+        $scope.children = {};
+        $scope.breadcrumbs = [];
+    }
+
+
+    //var testGetTree = function () {
+    //    //ajaxGet(true, _urlGetTree, {}, function (msg) {
+    //    //    console.log("testtt");
+    //    //    debugger;
+    //    //    var aa = $.parseJSON(msg);
+    //    //    $scope.tree = $.parseJSON(msg);
+    //    //}, function () { });
+
+    //    $scope.$apply(function () {
+    //        requestFactory.get(_urlGetTree).then(function (data) {
+    //            $scope.tree = data;
+    //            global_tree = data;
+    //            $scope.tree.groups = data.groups;
+    //        });
+    //    });
+    //};
+
+    //$scope.$watch('tree', function (newValue, oldvalue) {
+    //    if (newValue != oldvalue) {
+    //        console.log(oldvalue);
+    //        alert("tree editted");
+    //        console.log(newValue);
+    //    }
+    //});
+
+    var groupObj = function (groupParentIndex, groupName) {
+        this.groupParentIndex = groupParentIndex;
+        this.groupName = groupName;
+    };
+
+    var findGroupFromNewTreeByParentName = function (groupParentIndex, newGroupObj) {
+        var resultObj;
+        var recursiveGroup = function (tree) {
+            for (var a = 0; a < tree.groups.length; a++) {
+                if (tree.groups[a] != null) {
+                    var groupName = tree.groups[a].groupName;
+                    if (groupName == groupParentIndex) {
+                        console.log(tree.groups);
+                        resultObj = tree.groups[a].groups.push(newGroupObj);
+                    }
+                    recursiveGroup(tree.groups[a]);
+                }
+            }
+        };
+        if ($scope.tree != null) {
+            recursiveGroup($scope.tree);
+        }
+        return resultObj;
+    }
 });
+
+
+//mainApp.directive('notargetSymbol', [function () {
+//    return {
+//        restrict: 'A',
+//        scope: true,
+//        link: function (scope, elem, attrs, val, control) {
+//            var checker = function () {
+//                debugger;
+//                var targetVal = scope.$eval(attrs.context.val);
+//                console.log(targetVal);
+//                //targetVal.indexOf(_GROUP_CONCAT_SYMBOL) > 0
+//                return true;
+//            };
+//            scope.$watch(checker, function (n) {
+//                console.log(n);
+//                //control.$setValidity("dot", n);
+//            });
+//        }
+//    };
+//}]);
