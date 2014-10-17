@@ -1,0 +1,14 @@
+@font-face {
+    font-family: HelveticaRegular;
+    src: url(/static/fonts/Helvetica.otf);
+}
+@font-face {
+    font-family: HelveticaLight;
+    src: url(/static/fonts/Helvetica-Light.otf);
+}
+* {
+	font-family: HelveticaLight !important;
+}
+h1 h2 h3 h4 h5 {
+	font-family: HelveticaRegular !important;
+}
