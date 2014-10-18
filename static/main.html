@@ -21,6 +21,7 @@
                             <span class="icon-cog"></span>
                         </a>
                         <ul class="dropdown-menu place-right" data-role="dropdown">
+                            <li><a href="javascript:;" ng-click="TriggerMasterPasswordDialog('Master Password')">Master Password</a></li>
                             <li><a href="javascript:;" ng-click="TriggerSlider()">Settings</a></li>
                             <li><a href="javascript:;" ng-click="TriggerImportDialog('Import')">Import</a></li>
                             <li><a href="javascript:;" ng-click="TriggerExportDialog('Export')">Export</a></li>
@@ -94,7 +95,7 @@
                                 <div class=" list-content">
                                     <span class="account-uuid">{{child.uuid}}</span>
                                     <span class="list-title"><span class="place-right icon-flag-2 fg-red smaller"></span>{{child.title}}</span>
-                                    <span class="list-subtitle">Last Modified: {{child.last_mod}} 26/10/2013</span>
+                                    <span class="list-subtitle">Last Modified: {{child.last_mod}}</span>
                                     <span class="list-remark">{{child.notes}}</span>
                                 </div>
                             </a>

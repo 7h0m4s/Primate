@@ -810,7 +810,7 @@ def copy():
             return "Invalid attribute.", 200
         
         pyperclip.copy(out)
-        return "Copied to clipboard!"
+        return str(out)
     except Exception,e:
         return str(e),500
 
