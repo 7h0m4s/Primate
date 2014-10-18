@@ -649,10 +649,13 @@ def importFileDirect():
         for lineDict in reader:
 
             if not (lineDict.has_key('uuid') and lineDict.has_key('group') and lineDict.has_key('title') and lineDict.has_key('url') and lineDict.has_key('user')):
+                importedFile.close()
                 return "Incorrect Data Format",200
             if len(lineDict) > 7:
+                importedFile.close()
                 return "Incorrect Data Format. Too Many Items On Line " + str(i),200
             if len(lineDict.get('uuid','')) != 36:
+                importedFile.close()
                 return "Incorrect UUID On Line " + str(i),200
 
 
@@ -672,6 +675,7 @@ def importFileDirect():
             i += 1
             
         if i <= 1:
+            importedFile.close()
             return "File Is Empty", 200
         saveDB()
         importedFile.close()
