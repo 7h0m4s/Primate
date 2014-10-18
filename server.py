@@ -566,7 +566,7 @@ def newMasterPasword():
             return "New Password Cannot Match Old Password.",200
         session['password'] = newPass
         saveDB()
-        return "Master Password changed."
+        return "Master Password changed.",304
     except Exception,e:
         return str(e),500
 
