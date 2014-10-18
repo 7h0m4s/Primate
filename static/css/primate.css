@@ -871,7 +871,7 @@ a.spin-up {
 button.full, a.full {
     display: block;
     width: 100%;
-    margin: 40px 0 10px;
+    /*margin: 40px 0 10px;*/
 }
 
 .metro .window.flat {

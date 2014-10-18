@@ -389,3 +389,13 @@ var redirectToMainPage = function () {
 var isUndifined = function (target) {
     return typeof target == _undefined;
 };
+
+$('input[placeholder]').placeholder();
+$("#passwd").complexify({}, function(valid, complexity){
+    if (!valid) {
+        $('#complexity').animate({'width':complexity + '%'}).removeClass('valid').addClass('invalid');
+    } else {
+        $('#complexity').animate({'width':complexity + '%'}).removeClass('invalid').addClass('valid');
+    }
+    $('#complexity').html(Math.round(complexity) + '%');
+});
