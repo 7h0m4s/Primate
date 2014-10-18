@@ -3,12 +3,16 @@
         <strong>Warning!!!</strong> Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit
     </div>
     <div class="file-info margin-top10">
-        <div class="input-control file" data-role="input-control">
-            <input type="text" name="file" id="importFileInput" class="file-path">
-            <button class="btn-file browse-btn" type="button" ng-click="Browse()"></button>
-        </div>
-        <div>
-            <a href="#" class="btn btn-lead full" id="import-download" ng-click="ImportSubmit()">Import</a>
-        </div>
+        <form name="fileImportForm" id="fileImport">
+            <div class="input-control file" data-role="input-control">
+                <input type="text" name="file" id="importFileInput" class="file-path" ng-model="file.filePath" required />
+                <button class="btn-file browse-btn" type="button" ng-click="OpenImportFileDialog()"></button>
+            </div>
+            <span class="validation" ng-show="fileImportForm.file.$error.required&& fileImportForm.file.$dirty" style="display: none;">This field is required</span>
+            <span class="validation" id="import-customMsg"></span>
+            <div>
+                <a href="#" class="btn btn-lead full" id="import-download" ng-click="ImportSubmit()">Import</a>
+            </div>
+        </form>
     </div>
 </div>

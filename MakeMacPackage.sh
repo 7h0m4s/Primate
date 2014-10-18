@@ -7,3 +7,4 @@ python appSetup.py py2app
 mv dist/server.app dist/PasswordPrimate.app
 cp -r static/ dist/PasswordPrimate.app/Contents/Resources/
 cp -r templates/ dist/PasswordPrimate.app/Contents/Resources/
+cp MacBrowse3 dist/PasswordPrimate.app/Contents/Resources/MacBrowse3

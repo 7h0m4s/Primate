@@ -328,20 +328,19 @@ def editGroup():
             groupName = groupParent + "." + groupName
         
         #update group list
-        if groupName in session['groups']:
-            session['groups'].remove(group)
+        
             
         for name in session['groups']:
-            if name == group:
+            if name.startswith(group):
                 session['groups'].remove(name)
-                session['groups'].append(groupName)
-                break
+                session['groups'].append(name.replace(group, groupName,1))
+                
 
             
         #update related records
         for record in sessionVault.getVault().records:
-            if record._get_group() == group:
-                record._set_group(groupName)
+            if record._get_group().startswith(group):
+                record._set_group(record._get_group().replace(group, groupName,1))
 
         saveDB()
         return "Group edited Successfully", 304
@@ -369,13 +368,12 @@ def deleteGroup():
 
         #delete from group list
         for name in session['groups']:
-            if name == group:
+            if name.startswith(group):
                 session['groups'].remove(name)
-                break
             
         #delete related records
         for record in sessionVault.getVault().records:
-            if record._get_group() == group:
+            if record._get_group().startswith(group):
                 sessionVault.getVault().records.remove(record)
 
         saveDB()
@@ -568,7 +566,7 @@ def newMasterPasword():
             return "New Password Cannot Match Old Password.",200
         session['password'] = newPass
         saveDB()
-        return "Master Password changed."
+        return "Master Password changed.",304
     except Exception,e:
         return str(e),500
 
@@ -584,6 +582,29 @@ def getFilepath():
     try:
 
         return fileBrowse()
+    except Exception,e:
+        return str(e),500
+
+
+
+"""
+Function is used in the newdatabase.html template JS code.
+Will open a file selection dialog window for user to create database file.
+Returns selected filepath as a string.
+Returns empty string if cancelled
+"""
+@app.route("/set-filepath")
+def setFilepath():
+    try:
+
+        file_path=''
+        if os.name=='posix':####TODO CHANGE THIS TO SAVEDIALOG BINARY!!!!
+            file_path = subprocess.check_output('./MacBrowse3', shell=True)####TODO CHANGE THIS TO SAVEDIALOG BINARY!!!!
+            file_path = file_path.replace('file://',1)####TODO CHANGE THIS TO SAVEDIALOG BINARY!!!!
+        else:
+            file_path = subprocess.check_output('SaveFileDialog.exe', shell=True)
+
+        return file_path
     except Exception,e:
         return str(e),500
 
@@ -622,7 +643,8 @@ def fileBrowse():
 ##    root.destroy()
     file_path=''
     if os.name=='posix':
-        file_path=''
+        file_path = subprocess.check_output('./MacBrowse3', shell=True)
+        file_path = file_path.replace('file://',1)
     else:
         file_path = subprocess.check_output('BrowseDialog.exe', shell=True)
 
@@ -650,10 +672,13 @@ def importFileDirect():
         for lineDict in reader:
 
             if not (lineDict.has_key('uuid') and lineDict.has_key('group') and lineDict.has_key('title') and lineDict.has_key('url') and lineDict.has_key('user')):
+                importedFile.close()
                 return "Incorrect Data Format",200
             if len(lineDict) > 7:
+                importedFile.close()
                 return "Incorrect Data Format. Too Many Items On Line " + str(i),200
             if len(lineDict.get('uuid','')) != 36:
+                importedFile.close()
                 return "Incorrect UUID On Line " + str(i),200
 
 
@@ -673,6 +698,7 @@ def importFileDirect():
             i += 1
             
         if i <= 1:
+            importedFile.close()
             return "File Is Empty", 200
         saveDB()
         importedFile.close()
@@ -810,7 +836,7 @@ def copy():
             return "Invalid attribute.", 200
         
         pyperclip.copy(out)
-        return "Copied to clipboard!"
+        return str(out)
     except Exception,e:
         return str(e),500
 

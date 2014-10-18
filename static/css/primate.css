@@ -33,6 +33,11 @@
     overflow: hidden;
 }
 
+.valid-blk {
+    display: block;
+    text-align: left;
+}
+
 /*Login*/
 .logo p {
     color: #1ba1e2;
@@ -1046,6 +1051,29 @@ button.full, a.full {
     white-space: -moz-pre-wrap; /* Firefox 1.0-2.0 */
     white-space: pre-wrap; /* current browsers */
 }
+
 .metro .create-ddl.dropdown-toggle:after {
     content: none;
+}
+
+#fileImport {
+    margin: 0;
+}
+
+
+/*master password*/
+.ms-left {
+    float: left;
+    width: 150px;
+}
+
+.ms-right {
+    float: left;
+    width: 300px !important;
+}
+
+#masterPasswordForm label {
+    height: 34px;
+    vertical-align: middle;
+    text-align: left!important;
 }
