@@ -328,20 +328,19 @@ def editGroup():
             groupName = groupParent + "." + groupName
         
         #update group list
-        if groupName in session['groups']:
-            session['groups'].remove(group)
+        
             
         for name in session['groups']:
-            if name == group:
+            if name.startswith(group):
                 session['groups'].remove(name)
-                session['groups'].append(groupName)
-                break
+                session['groups'].append(name.replace(group, groupName,1))
+                
 
             
         #update related records
         for record in sessionVault.getVault().records:
-            if record._get_group() == group:
-                record._set_group(groupName)
+            if record._get_group().startswith(group):
+                record._set_group(record._get_group().replace(group, groupName,1))
 
         saveDB()
         return "Group edited Successfully", 304
@@ -369,13 +368,12 @@ def deleteGroup():
 
         #delete from group list
         for name in session['groups']:
-            if name == group:
+            if name.startswith(group):
                 session['groups'].remove(name)
-                break
             
         #delete related records
         for record in sessionVault.getVault().records:
-            if record._get_group() == group:
+            if record._get_group().startswith(group):
                 sessionVault.getVault().records.remove(record)
 
         saveDB()
