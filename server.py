@@ -586,6 +586,29 @@ def getFilepath():
         return str(e),500
 
 
+
+"""
+Function is used in the newdatabase.html template JS code.
+Will open a file selection dialog window for user to create database file.
+Returns selected filepath as a string.
+Returns empty string if cancelled
+"""
+@app.route("/set-filepath")
+def setFilepath():
+    try:
+
+        file_path=''
+        if os.name=='posix':####TODO CHANGE THIS TO SAVEDIALOG BINARY!!!!
+            file_path = subprocess.check_output('./MacBrowse3', shell=True)####TODO CHANGE THIS TO SAVEDIALOG BINARY!!!!
+            file_path = file_path.replace('file://',1)####TODO CHANGE THIS TO SAVEDIALOG BINARY!!!!
+        else:
+            file_path = subprocess.check_output('SaveFileDialog.exe', shell=True)
+
+        return file_path
+    except Exception,e:
+        return str(e),500
+
+
 """
 Function opens file broswer dialog window for user to select file with.
 Returns the selected filepath as a string.
