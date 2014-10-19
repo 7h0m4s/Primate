@@ -8,6 +8,8 @@
     <link href="static/css/jquery.splitter.css" rel="stylesheet" />
     <link href="static/css/select2.css" rel="stylesheet" />
     <link href="static/css/primate.css" rel="stylesheet" />
+    <link rel="stylesheet" href="static/css/style.css">
+   
 </head>
 <body class="metro" ng-app="mainApp" ng-controller="mainController" ng-init="init()">
     <header class="bg-blue">
@@ -21,7 +23,6 @@
                             <span class="icon-cog"></span>
                         </a>
                         <ul class="dropdown-menu place-right" data-role="dropdown">
-                            <li><a href="javascript:;" ng-click="TriggerMasterPasswordDialog('Master Password')">Master Password</a></li>
                             <li><a href="javascript:;" ng-click="TriggerSlider()">Settings</a></li>
                             <li><a href="javascript:;" ng-click="TriggerImportDialog('Import')">Import</a></li>
                             <li><a href="javascript:;" ng-click="TriggerExportDialog('Export')">Export</a></li>
@@ -85,7 +86,7 @@
                         <div class="group-content" style="display: block;">
                             <a href="javascript:;" class="list file-group" ng-repeat="group in groups" ng-click="NavIn(group)">
                                 <div class="list-content">
-                                    <span class="list-title">{{group.groupName}}</span>
+                                    <span class="list-title"><span class="place-right icon-copy smaller"></span>{{group.groupName}}</span>
                                     <span class="list-subtitle">MetroUI: News on 26/10/2013</span>
                                     <span class="list-remark">Hello friend! Newest for Metro UI CSS</span>
                                 </div>
@@ -94,7 +95,7 @@
                             <a href="javascript:;" class="list file-child" ng-repeat="child in children" ng-click="SetActive($index,$event);ViewAccountDetail()">
                                 <div class=" list-content">
                                     <span class="account-uuid">{{child.uuid}}</span>
-                                    <span class="list-title"><span class="place-right icon-flag-2 fg-red smaller"></span>{{child.title}}</span>
+                                    <span class="list-title"><span class="place-right icon-new smaller"></span>{{child.title}}</span>
                                     <span class="list-subtitle">Last Modified: {{child.last_mod}}</span>
                                     <span class="list-remark">{{child.notes}}</span>
                                 </div>
@@ -206,6 +207,7 @@
             </div>
         </div>
     </div>
+
     <div id="loader-wrapper">
         <div class="loader">
             <h1>Asterix Solutions</h1>
@@ -217,6 +219,7 @@
             </div>
         </div>
     </div>
+
 </body>
 </html>
 <script src="static/js/jquery.min.js"></script>
@@ -229,6 +232,22 @@
 <script src="static/js/jquery.contextMenu.js"></script>
 <script src="static/js/jquery.spinner.min.js"></script>
 <script src="static/js/select2.min.js"></script>
+<script src="static/js/jquery.complexify.js"></script>
+<script src="static/js/jquery.placeholder.min.js"></script>
 <script src="static/js/primate.js"></script>
 <script src="static/js/angular/controllers/loginController.js"></script>
 <script src="static/js/angular/controllers/mainController.js"></script>
+
+ <script>
+        $(function(){
+            $('input[placeholder]').placeholder();
+            $("#passwd").complexify({}, function(valid, complexity){
+                if (!valid) {
+                    $('#complexity').animate({'width':complexity + '%'}).removeClass('valid').addClass('invalid');
+                } else {
+                    $('#complexity').animate({'width':complexity + '%'}).removeClass('invalid').addClass('valid');
+                }
+                $('#complexity').html(Math.round(complexity) + '%');
+            });
+        });
+    </script>

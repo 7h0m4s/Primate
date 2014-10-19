@@ -15,6 +15,7 @@ var _urlExportDialogTemplate = "/static/dialog-export-template.html";
 var _urlImportDialogTemplate = "/static/dialog-import-template.html";
 var _urlMasterPasswordDialogTemplate = "/static/dialog-master-password-edit-template.html";
 var _urlDeleteAccountTemplate = "/static/dialog-delete-account-template.html";
+var _urlDeleteGroupTemplate = "/static/dialog-delete-group-template.html";
 var _urlSaveUserSetting = "/config-set";
 var _urlGetUserSetting = "config-get";
 var _urlGetTree = "get-db-json";
@@ -296,7 +297,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             $http.get(_urlDeleteAccountTemplate).success(function ($content) {
                 $scope.templates.cacheDeleteAccountTemplate = $content;
                 var $compileContent = getCompileContent($content);
-                triggerDialog($title, $compileContent);
+                return triggerDialog($title, $compileContent);
             })
             .error(function ($content, status) {
                 redirectToErroPage505();
@@ -314,6 +315,24 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             }
         }, function () {
             redirectToErroPage505();
+    $scope.TriggerDeleteGroupDialog = function ($title) {
+        if ($scope.templates.cacheDeleteGroupTemplate) {
+            triggerDialog($title, getCompileContent($scope.templates.cacheDeleteGroupTemplate));
+        } else {
+            $http.get(_urlDeleteGroupTemplate).success(function ($content) {
+                $scope.templates.cacheDeleteGroupTemplate = $content;
+                var $compileContent = getCompileContent($content);
+                return triggerDialog($title, $compileContent);
+            })
+            .error(function ($content, status) {
+                redirectToErroPage505();
+            });
+        }
+    };
+
+    $scope.Browse = function () {
+        $.get(_urlBrowse, function (data) {
+            $("#import-dialog .file-path").val(data);
         });
     };
 
@@ -686,6 +705,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             return true;
         }
         else if (itemName == GROUP_CONTEXT_NAME_OBJ.NAME_DELETE_GROUP) {
+            $scope.TriggerDeleteGroupDialog("Delete Group");
             return true;
         }
         return false;
@@ -701,7 +721,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             return true;
         }
         else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_DELETE_ACCOUNT) {
-            triggerDialog("Delete", "");
+            $scope.TriggerDeleteAccountDialog("Delete Account");
             return true;
         }
         else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_COPY_URL) {

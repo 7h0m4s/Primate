@@ -17,12 +17,18 @@
                 <input class="select-search" placeholder="Username" required/>
                 <button class="btn-clear" tabindex="-1" type="button"></button>
             </div>
+            <div id="page-wrap">
             <label class="required">Password</label>
             <div class="input-control text" data-role="input-control">
                 <input type="text" placeholder="Password" name="password"  required />
                 <button class="btn-clear" tabindex="-1" type="button"></button>
                 <span class="validation" ng-show="createGroupForm.groupName.$error.required&& createGroupForm.groupName.$dirty">This field is required</span>
             </div>
+            <div id="complexitywrap">
+            <div id="complexity">0%</div>
+            </div>
+         </div>
+         
             <label>Title</label>
             <div class="input-control text" data-role="input-control">
                 <input class="select-search" placeholder="Title"/>

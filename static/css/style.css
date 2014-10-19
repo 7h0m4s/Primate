@@ -1,0 +1,29 @@
+#page-wrap{
+	margin: 0 auto;
+	width: 310px;
+	text-align: center;
+	font-size: 12px;
+	padding:0px;
+	font-family: Arial;
+	margin-top: 150px;
+}
+
+#complexitywrap{
+	border: 1px #d9d9d9 solid;
+	padding:0;
+	margin-bottom: 15px;
+}
+
+#complexity{
+	font-size: 12px;
+	margin: 0;
+	color: #CCC;
+}
+
+.valid{
+	background: green;
+}
+
+.invalid{
+	background: red;
+}
