@@ -2,12 +2,19 @@
 var _NOTIFI_SETTING_CAPTION = "Setting";
 var _NOTIFI_GROUP_CAPTION = "Group";
 var _NOTIFI_ACCOUNT_CAPTION = "Account";
+var _NOTIFI_CLIPBOARD_CAPTION = "Clipboard";
 var _DEFAULT_FAILURE_CAPTION = "Error";
 var _DEFAULT_SUCCESS_MSG = "Saved successfully";
 var _DEFAULT_FAILURE_MSG = "Save failed";
 var _EDIT_SUCCESS_MSG = "Edit successfully";
 var _DELETE_SUCCESS_MSG = "Detele successfully";
 var _ADD_SUCCESS_MSG = "Add successfully";
+
+var _COPY_URL_MSG = "Copy URL successfully";
+var _COPY_USERNAME_MSG = "Copy username successfully";
+var _COPY_PASSWORD_MSG = "Copy password successfully";
+
+
 var _backspace_keycode = 8;
 var _defaultCheckboxValue = "on";
 var _urlErrorPage404 = "static/error-page.html";
@@ -302,7 +309,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         });
     };
 
-
     $scope.TriggerDeleteAccountDialog = function ($title) {
         $scope.delete.uuid = getUuid();
         $http.get(_urlDeleteAccountTemplate).success(function ($content) {
@@ -336,6 +342,11 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
 
         });
     };
+
+    $scope.DeleteGroup = function () {
+
+    };
+
 
     $scope.OpenImportFileDialog = function () {
         ajaxGetMethod(true, _urlGetFilePath, {}, function (content) {
@@ -465,6 +476,9 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         }
     };
 
+
+
+
     $scope.SubmitCreateAccountForm = function (isValid) {
         var groupParentVal = $("#groupParent").val();
         if (isValid) {
@@ -485,9 +499,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             redirectToErroPage505();
         }
     };
-
-
-
 
     $scope.SubmitEditAccountForm = function (isValid) {
         var groupParentVal = $("#groupParent").val();
@@ -755,13 +766,19 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 $scope.TriggerDeleteAccountDialog("Delete Account");
             return true;
         } else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_COPY_URL) {
-            ajaxPostOnly({ uuid: getUuid(), attribute: _CONTEXT_ATTRIBUTE.URL }, _CONTENT_COPY, function () { });
+            ajaxPostOnly({ uuid: getUuid(), attribute: _CONTEXT_ATTRIBUTE.URL }, _CONTENT_COPY, function() {
+                notifiSuccess(_NOTIFI_CLIPBOARD_CAPTION, _COPY_URL_MSG);
+            });
             return true;
         } else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_COPY_PASSWORD) {
-            ajaxPostOnly({ uuid: getUuid(), attribute: _CONTEXT_ATTRIBUTE.PASSWORD }, _CONTENT_COPY, function () { });
+            ajaxPostOnly({ uuid: getUuid(), attribute: _CONTEXT_ATTRIBUTE.PASSWORD }, _CONTENT_COPY, function () {
+                notifiSuccess(_NOTIFI_CLIPBOARD_CAPTION, _COPY_PASSWORD_MSG);
+            });
             return true;
         } else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_COPY_USERNAME) {
-            ajaxPostOnly({ uuid: getUuid(), attribute: _CONTEXT_ATTRIBUTE.USERNAME }, _CONTENT_COPY, function () { });
+            ajaxPostOnly({ uuid: getUuid(), attribute: _CONTEXT_ATTRIBUTE.USERNAME }, _CONTENT_COPY, function () {
+                notifiSuccess(_NOTIFI_CLIPBOARD_CAPTION, _COPY_USERNAME_MSG);
+            });
             return true;
         } else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_REDIRECT_URL) {
             ajaxPostOnly({ uuid: getUuid(), attribute: _CONTEXT_ATTRIBUTE.USERNAME }, _CONTENT_COPY, function (url) {
