@@ -54,7 +54,7 @@ loginApp.controller('loginController', function ($scope, $localStorage) {
     $scope.OpenFileDialog = function () {
         ajaxGetMethod(true, _urlGetFilePath, {}, function (content) {
             if (content.length != 0) {
-                setDatabaseInputModified(); 
+                setDatabaseInputModified();
                 setDatabaseInputNotRequired();
                 $("#databaseFile").val(content);
             }

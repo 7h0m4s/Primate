@@ -9,7 +9,7 @@
     <link href="static/css/select2.css" rel="stylesheet" />
     <link href="static/css/primate.css" rel="stylesheet" />
     <link rel="stylesheet" href="static/css/style.css">
-   
+
 </head>
 <body class="metro" ng-app="mainApp" ng-controller="mainController" ng-init="init()" id="main-body">
     <header class="bg-blue">
@@ -238,16 +238,16 @@
 <script src="static/js/angular/controllers/loginController.js"></script>
 <script src="static/js/angular/controllers/mainController.js"></script>
 
- <script>
-        $(function(){
-            $('input[placeholder]').placeholder();
-            $("#passwd").complexify({}, function(valid, complexity){
-                if (!valid) {
-                    $('#complexity').animate({'width':complexity + '%'}).removeClass('valid').addClass('invalid');
-                } else {
-                    $('#complexity').animate({'width':complexity + '%'}).removeClass('invalid').addClass('valid');
-                }
-                $('#complexity').html(Math.round(complexity) + '%');
-            });
+<script>
+    $(function () {
+        $('input[placeholder]').placeholder();
+        $("#passwd").complexify({}, function (valid, complexity) {
+            if (!valid) {
+                $('#complexity').animate({ 'width': complexity + '%' }).removeClass('valid').addClass('invalid');
+            } else {
+                $('#complexity').animate({ 'width': complexity + '%' }).removeClass('invalid').addClass('valid');
+            }
+            $('#complexity').html(Math.round(complexity) + '%');
         });
-    </script>
+    });
+</script>

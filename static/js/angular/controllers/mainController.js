@@ -6,6 +6,7 @@ var _DEFAULT_FAILURE_CAPTION = "Error";
 var _DEFAULT_SUCCESS_MSG = "Saved successfully";
 var _DEFAULT_FAILURE_MSG = "Save failed";
 var _EDIT_SUCCESS_MSG = "Edit successfully";
+var _DELETE_SUCCESS_MSG = "Detele successfully";
 var _ADD_SUCCESS_MSG = "Add successfully";
 var _backspace_keycode = 8;
 var _defaultCheckboxValue = "on";
@@ -30,7 +31,7 @@ var _GROUP_CONCAT_SYMBOL = ".";
 var _VALIDATE_DOT = '.';
 var _EMPTY_NAME = "N/A";
 var _urlSetFilePath = "/set-filePath";
-
+var _urlDeleteUser = "/delete-user";
 var _urlResetMasterPassword = "/new-master-password"; //post
 //new Password
 //old Password
@@ -111,7 +112,26 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     }
     return myService;
 })
-
+.directive('notargetSymbol', [function () {
+    return {
+        restrict: 'A',
+        scope: true,
+        require: 'ngModel',
+        link: function (scope, elem, attrs, control) {
+            var checker = function () {
+                var val = elem.context.value;
+                if (!isUndifined(val)) {
+                    var isValid = !(val.indexOf(_VALIDATE_DOT) > -1);
+                    return isValid;
+                }
+                return true;
+            };
+            scope.$watch(checker, function (n) {
+                control.$setValidity("dot", n);
+            });
+        }
+    };
+}])
 .controller('mainController', function ($scope, $http, $q, $compile, $window, $location, requestFactory, $routeParams, $localStorage) {
     $scope.childIndex = -1;
     //$scope.breadcrumbs = [];
@@ -121,7 +141,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     $scope.group = {};
     //$scope.groups = {};
     //$scope.children = {};
-
+    $scope.delete = {};
     $scope.init = function () {
         initTree($scope);
         initSetting($scope);
@@ -284,18 +304,37 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
 
 
     $scope.TriggerDeleteAccountDialog = function ($title) {
-        if ($scope.templates.cacheDeleteAccountTemplate) {
-            triggerDialog($title, getCompileContent($scope.templates.cacheDeleteAccountTemplate));
-        } else {
-            $http.get(_urlDeleteAccountTemplate).success(function ($content) {
-                $scope.templates.cacheDeleteAccountTemplate = $content;
-                var $compileContent = getCompileContent($content);
-                return triggerDialog($title, $compileContent);
-            })
-            .error(function ($content, status) {
+        $scope.delete.uuid = getUuid();
+        $http.get(_urlDeleteAccountTemplate).success(function ($content) {
+            var $compileContent = getCompileContent($content);
+            return triggerDialog($title, $compileContent);
+        })
+        .error(function ($content, status) {
+            redirectToErroPage505();
+        });
+    };
+
+    $scope.DeleteAccount = function () {
+        var uuid = $scope.delete.uuid;
+        if (isUndifined(uuid)) {
+            redirectToErroPage505();
+        }
+        var postData = { uuid: uuid };
+        ajaxGet(true, _urlGetUser, postData, function (accountJson) {
+            var accountObj = $.parseJSON(accountJson);
+            ajaxGet(true, _urlDeleteUser, postData, function () {
+                $.Dialog.close();
+                console.log($scope);
+                removeAtiveElem();
+                deleteGroupFromNewTreeByParentName(accountObj.groupParent, accountObj, false);
+                notifiSuccess(_NOTIFI_ACCOUNT_CAPTION, _DELETE_SUCCESS_MSG);
+            }, function () {
                 redirectToErroPage505();
             });
-        }
+        }, function () {
+            redirectToErroPage505();
+
+        });
     };
 
     $scope.OpenImportFileDialog = function () {
@@ -305,22 +344,24 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             }
         }, function () {
             redirectToErroPage505();
-            $scope.TriggerDeleteGroupDialog = function ($title) {
-                if ($scope.templates.cacheDeleteGroupTemplate) {
-                    triggerDialog($title, getCompileContent($scope.templates.cacheDeleteGroupTemplate));
-                } else {
-                    $http.get(_urlDeleteGroupTemplate).success(function ($content) {
-                        $scope.templates.cacheDeleteGroupTemplate = $content;
-                        var $compileContent = getCompileContent($content);
-                        return triggerDialog($title, $compileContent);
-                    })
-                        .error(function ($content, status) {
-                            redirectToErroPage505();
-                        });
-                }
-            };
         });
-    }
+    };
+
+    $scope.TriggerDeleteGroupDialog = function ($title) {
+        if ($scope.templates.cacheDeleteGroupTemplate) {
+            triggerDialog($title, getCompileContent($scope.templates.cacheDeleteGroupTemplate));
+        } else {
+            $http.get(_urlDeleteGroupTemplate).success(function ($content) {
+                $scope.templates.cacheDeleteGroupTemplate = $content;
+                var $compileContent = getCompileContent($content);
+                return triggerDialog($title, $compileContent);
+            })
+            .error(function ($content, status) {
+                redirectToErroPage505();
+            });
+        }
+    };
+
     $scope.Browse = function () {
         $.get(_urlBrowse, function (data) {
             $("#import-dialog .file-path").val(data);
@@ -444,6 +485,9 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             redirectToErroPage505();
         }
     };
+
+
+
 
     $scope.SubmitEditAccountForm = function (isValid) {
         var groupParentVal = $("#groupParent").val();
@@ -707,7 +751,8 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             prepareRedirectAcco(_urlEditAccount);
             return true;
         } else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_DELETE_ACCOUNT) {
-            $scope.TriggerDeleteAccountDialog("Delete Account");
+                uuid: getUuid(),
+                $scope.TriggerDeleteAccountDialog("Delete Account");
             return true;
         } else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_COPY_URL) {
             ajaxPostOnly({ uuid: getUuid(), attribute: _CONTEXT_ATTRIBUTE.URL }, _CONTENT_COPY, function () { });
@@ -827,6 +872,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     }
 
     var deleteGroupFromNewTreeByParentName = function (groupParentIndex, oldObj, isGroup) {
+        debugger;
         var groupArr = groupParentIndex.split('.');
         var count = 0;
         var resultObj = null;
@@ -889,10 +935,9 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             $scope.account.notes = "";
         }
     };
-
-    var setimportInputModified = function () {
+    var removeAtiveElem = function () {
+        $(".active").remove();
     }
-
 });
 
 
@@ -917,42 +962,5 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
 //    return resultObj;
 //}
 
-mainApp.directive('notargetSymbol', [function () {
-    return {
-        restrict: 'A',
-        scope: true,
-        require: 'ngModel',
-        link: function (scope, elem, attrs, control) {
-            var checker = function () {
-                var val = elem.context.value;
-                if (!isUndifined(val)) {
-                    var isValid = !(val.indexOf(_VALIDATE_DOT) > -1);
-                    return isValid;
-                }
-                return true;
-            };
-            scope.$watch(checker, function (n) {
-                control.$setValidity("dot", n);
-            });
-        }
-    };
-}]);
 
-//mainApp.directive('regexValidate', function () {
-//    return {
-//        restrict: 'A',
-//        require: 'ngModel',
-//        link: function (scope, elem, attr, ctrl) {
-//            var flags = attr.regexValidateFlags || '';
-//            var regex = new RegExp(attr.regexValidate, flags);
-//            ctrl.$parsers.unshift(function (value) {
-//                ctrl.$setValidity('regexValidate', valid);
-//                return valid;
-//            });
-//            ctrl.$formatters.unshift(function (value) {
-//                ctrl.$setValidity('regexValidate', regex.test(value));
-//                return value;
-//            });
-//        }
-//    };
-//});
+

@@ -409,11 +409,37 @@ var isUndifined = function (target) {
 };
 
 $('input[placeholder]').placeholder();
-$("#passwd").complexify({}, function(valid, complexity){
+$("#passwd").complexify({}, function (valid, complexity) {
     if (!valid) {
-        $('#complexity').animate({'width':complexity + '%'}).removeClass('valid').addClass('invalid');
+        $('#complexity').animate({ 'width': complexity + '%' }).removeClass('valid').addClass('invalid');
     } else {
-        $('#complexity').animate({'width':complexity + '%'}).removeClass('invalid').addClass('valid');
+        $('#complexity').animate({ 'width': complexity + '%' }).removeClass('invalid').addClass('valid');
     }
     $('#complexity').html(Math.round(complexity) + '%');
 });
+
+//$(".btn-reveal").on('click', function () {
+//    console.log("n");
+//});
+
+//$(".btn-reveal").on('mouseup', function () {
+//    console.log("n");
+//});
+
+//$(".btn-reveal").on('mousedown', function () {
+//    console.log("n");
+//});
+
+//$(function () {
+//    $(".btn-reveal").on('click', function () {
+//        console.log("n");
+//    });
+
+//    $(".btn-reveal").on('mouseup', function () {
+//        console.log("n");
+//    });
+
+//    $(".btn-reveal").on('mousedown', function () {
+//        console.log("n");
+//    });
+//});
