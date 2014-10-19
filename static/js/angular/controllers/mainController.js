@@ -238,6 +238,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     };
 
     $scope.TriggerSlider = function () {
+        initSetting($scope);
         $(".slide-right").show();
         $(".slide-right-wrapper").animate({ 'opacity': 0.3, 'filter': 'alpha(opacity=30)' });
         $(".slide-right-panel").animate({ 'margin-right': 0, 'opacity': 1, 'filter': 'alpha(opacity=100)' });
