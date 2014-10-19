@@ -240,8 +240,8 @@ var unbindBackspace = function () {
 };
 
 var self_invoke_func = (function () {
-    contextMenu();
-    contextFileGroupMenu();
+    //contextMenu();
+    //contextFileGroupMenu();
     responsiveFrame();
     unbindBackspace();
 })();

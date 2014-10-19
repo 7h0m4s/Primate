@@ -720,74 +720,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         this.groups = groups;
     }
 
-    $(".context-menu-item").on("click", function () {
-        var itemName = $(this).context.innerText.trim();
-        if (contextGroupRedirectManagement(itemName)) {
-            return;
-        } else if (contextAccountRedirectManagement(itemName)) {
-            return;
-        } else if (true) {
-            return;
-        }
-    });
-
-    var contextGroupRedirectManagement = function (itemName) {
-        if (itemName == GROUP_CONTEXT_NAME_OBJ.NAME_GROUP_DETAIL) {
-            var detailCurrentGroupObj = {
-                groupParent: getGroupParent(),
-                groupName: getGroupName()
-            }
-            var detailSerializedCurrentGroup = $.param(detailCurrentGroupObj);
-            redirect(_urlViewGroup + "?" + detailSerializedCurrentGroup);
-            return true;
-        } else if (itemName == GROUP_CONTEXT_NAME_OBJ.NAME_EDIT_GROUP) {
-            debugger;
-            var currentGroupParent = getGroupParent();
-            var currentGroupName = getGroupName();
-            var serializedCurrentGroup = prepareGroupUrl(currentGroupParent, currentGroupName);
-            redirect(_urlEditGroup + "?" + serializedCurrentGroup);
-            return true;
-        } else if (itemName == GROUP_CONTEXT_NAME_OBJ.NAME_DELETE_GROUP) {
-            $scope.TriggerDeleteGroupDialog("Delete Group");
-            return true;
-        }
-        return false;
-    }
-
-    var contextAccountRedirectManagement = function (itemName) {
-        if (itemName == USER_CONTEXT_NAME_OBJ.NAME_ACCOUNT_DETAIL) {
-            prepareRedirectAcco(_urlViewAccount);
-            return true;
-        } else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_EDIT_ACCOUNT) {
-            prepareRedirectAcco(_urlEditAccount);
-            return true;
-        } else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_DELETE_ACCOUNT) {
-                uuid: getUuid(),
-                $scope.TriggerDeleteAccountDialog("Delete Account");
-            return true;
-        } else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_COPY_URL) {
-            ajaxPostOnly({ uuid: getUuid(), attribute: _CONTEXT_ATTRIBUTE.URL }, _CONTENT_COPY, function() {
-                notifiSuccess(_NOTIFI_CLIPBOARD_CAPTION, _COPY_URL_MSG);
-            });
-            return true;
-        } else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_COPY_PASSWORD) {
-            ajaxPostOnly({ uuid: getUuid(), attribute: _CONTEXT_ATTRIBUTE.PASSWORD }, _CONTENT_COPY, function () {
-                notifiSuccess(_NOTIFI_CLIPBOARD_CAPTION, _COPY_PASSWORD_MSG);
-            });
-            return true;
-        } else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_COPY_USERNAME) {
-            ajaxPostOnly({ uuid: getUuid(), attribute: _CONTEXT_ATTRIBUTE.USERNAME }, _CONTENT_COPY, function () {
-                notifiSuccess(_NOTIFI_CLIPBOARD_CAPTION, _COPY_USERNAME_MSG);
-            });
-            return true;
-        } else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_REDIRECT_URL) {
-            ajaxPostOnly({ uuid: getUuid(), attribute: _CONTEXT_ATTRIBUTE.USERNAME }, _CONTENT_COPY, function (url) {
-                window.open(url, '_blank');
-            });
-            return true;
-        }
-        return false;
-    }
 
     var prepareRedirectAcco = function (url) {
         var uuid = getUuid();
@@ -827,31 +759,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         $scope.children = {};
         $scope.breadcrumbs = [];
     }
-
-    //var testGetTree = function () {
-    //    //ajaxGet(true, _urlGetTree, {}, function (msg) {
-    //    //    console.log("testtt");
-    //    //    debugger;
-    //    //    var aa = $.parseJSON(msg);
-    //    //    $scope.tree = $.parseJSON(msg);
-    //    //}, function () { });
-
-    //    $scope.$apply(function () {
-    //        requestFactory.get(_urlGetTree).then(function (data) {
-    //            $scope.tree = data;
-    //            global_tree = data;
-    //            $scope.tree.groups = data.groups;
-    //        });
-    //    });
-    //};
-
-    //$scope.$watch('tree', function (newValue, oldvalue) {
-    //    if (newValue != oldvalue) {
-    //        console.log(oldvalue);
-    //        alert("tree editted");
-    //        console.log(newValue);
-    //    }
-    //});
 
     var groupObj = function (groupParentIndex, groupName) {
         this.groupParentIndex = groupParentIndex;
@@ -954,30 +861,92 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     };
     var removeAtiveElem = function () {
         $(".active").remove();
-    }
+    };
+
+    $.contextMenu({
+        selector: '.file-group',
+        callback: function (key, options) {
+            if (key == "ViewGroup") {
+                var detailCurrentGroupObj = {
+                    groupParent: getGroupParent(),
+                    groupName: getGroupName()
+                }
+                var detailSerializedCurrentGroup = $.param(detailCurrentGroupObj);
+                redirect(_urlViewGroup + "?" + detailSerializedCurrentGroup);
+            } else if (key == "EditGroup") {
+                var currentGroupParent = getGroupParent();
+                var currentGroupName = getGroupName();
+                var serializedCurrentGroup = prepareGroupUrl(currentGroupParent, currentGroupName);
+                redirect(_urlEditGroup + "?" + serializedCurrentGroup);
+            } else if (key == "DeleteGroup") {
+                $scope.TriggerDeleteGroupDialog("Delete Group");
+            }
+        },
+        items: {
+            "ViewGroup": {
+                name: GROUP_CONTEXT_NAME_OBJ.NAME_GROUP_DETAIL,
+            },
+            "EditGroup": {
+                name: GROUP_CONTEXT_NAME_OBJ.NAME_EDIT_GROUP,
+            },
+            "DeleteGroup": {
+                name: GROUP_CONTEXT_NAME_OBJ.NAME_DELETE_GROUP,
+            }
+        }
+    });
+
+    $.contextMenu({
+        selector: '.file-child',
+        callback: function (key, options) {
+            if (key == "viewAcc") {
+                prepareRedirectAcco(_urlViewAccount);
+            } else if (key == "editAcc") {
+                prepareRedirectAcco(_urlEditAccount);
+            } else if (key == "delAcc") {
+                    uuid: getUuid(),
+                    $scope.TriggerDeleteAccountDialog("Delete Account");
+            } else if (key == "copyUrl") {
+                ajaxPostOnly({ uuid: getUuid(), attribute: _CONTEXT_ATTRIBUTE.URL }, _CONTENT_COPY, function () {
+                    notifiSuccess(_NOTIFI_CLIPBOARD_CAPTION, _COPY_URL_MSG);
+                });
+            } else if (key == "copyPasswrd") {
+                ajaxPostOnly({ uuid: getUuid(), attribute: _CONTEXT_ATTRIBUTE.PASSWORD }, _CONTENT_COPY, function () {
+                    notifiSuccess(_NOTIFI_CLIPBOARD_CAPTION, _COPY_PASSWORD_MSG);
+                });
+            } else if (key == "copyCuser") {
+                ajaxPostOnly({ uuid: getUuid(), attribute: _CONTEXT_ATTRIBUTE.USERNAME }, _CONTENT_COPY, function () {
+                    notifiSuccess(_NOTIFI_CLIPBOARD_CAPTION, _COPY_USERNAME_MSG);
+                });
+            } else if (key == "RedirectUrl") {
+                ajaxPostOnly({ uuid: getUuid(), attribute: _CONTEXT_ATTRIBUTE.USERNAME }, _CONTENT_COPY, function (url) {
+                    window.open(url, '_blank');
+                });
+            }
+        },
+        items: {
+            "RedirectUrl": {
+                name: USER_CONTEXT_NAME_OBJ.NAME_REDIRECT_URL,
+            },
+            "sep1": "---------",
+            "viewAcc": {
+                name: USER_CONTEXT_NAME_OBJ.NAME_ACCOUNT_DETAIL,
+            },
+            "editAcc": {
+                name: USER_CONTEXT_NAME_OBJ.NAME_EDIT_ACCOUNT,
+            },
+            "delAcc": {
+                name: USER_CONTEXT_NAME_OBJ.NAME_DELETE_ACCOUNT,
+            },
+            "sep2": "---------",
+            "copyCuser": {
+                name: USER_CONTEXT_NAME_OBJ.NAME_COPY_USERNAME,
+            },
+            "copyPasswrd": {
+                name: USER_CONTEXT_NAME_OBJ.NAME_COPY_PASSWORD,
+            },
+            "copyUrl": {
+                name: USER_CONTEXT_NAME_OBJ.NAME_COPY_URL,
+            },
+        }
+    });
 });
-
-
-//var findGroupFromNewTreeByParentName = function (groupParentIndex, newGroupObj) {
-//    var groupArr = groupParentIndex.split('.');
-//    var count = 0;
-//    var resultObj;
-//    var recursiveGroup = function (tree) {
-//        for (var a = 0; a < tree.groups.length; a++) {
-//            if (tree.groups[a] != null) {
-//                var groupName = tree.groups[a].groupName;
-//                if (groupName == groupParentIndex) {
-//                    resultObj = tree.groups[a].groups.push(newGroupObj);
-//                }
-//                recursiveGroup(tree.groups[a]);
-//            }
-//        }
-//    };
-//    if ($scope.tree != null) {
-//        recursiveGroup($scope.tree);
-//    }
-//    return resultObj;
-//}
-
-
-
