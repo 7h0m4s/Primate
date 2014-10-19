@@ -420,7 +420,16 @@ def createUser():
         sessionVault.getVault().records.append(entry)
 
         saveDB()
-        return str(entry._get_uuid()), 200
+        data = {}
+        data["uuid"] = str(entry._get_uuid())
+        data['groupParent']= str(entry._get_group())
+        data["user"] = str(entry._get_user())
+        data["passwd"] = str(entry._get_passwd())
+        data["title"] = str(entry._get_title())
+        data["url"] = str(entry._get_url())
+        data["notes"] = str(entry._get_notes())
+        data["last_mod"] = str(time.strftime("%H:%M %d-%m-%Y", time.localtime(entry._get_last_mod())))
+        return json.dumps(data), 200
     except Exception,e:
         return str(e),500
 
