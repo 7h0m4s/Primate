@@ -360,28 +360,5 @@ $("#passwd").complexify({}, function (valid, complexity) {
     $('#complexity').html(Math.round(complexity) + '%');
 });
 
-//$(".btn-reveal").on('click', function () {
-//    console.log("n");
-//});
 
-//$(".btn-reveal").on('mouseup', function () {
-//    console.log("n");
-//});
 
-//$(".btn-reveal").on('mousedown', function () {
-//    console.log("n");
-//});
-
-//$(function () {
-//    $(".btn-reveal").on('click', function () {
-//        console.log("n");
-//    });
-
-//    $(".btn-reveal").on('mouseup', function () {
-//        console.log("n");
-//    });
-
-//    $(".btn-reveal").on('mousedown', function () {
-//        console.log("n");
-//    });
-//});

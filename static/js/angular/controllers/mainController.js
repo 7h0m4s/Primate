@@ -619,6 +619,25 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         console.log($scope.searchChildren);
     };
 
+    $scope.Reveal = function (id) {
+        $(id).attr("type", "text");
+    };
+    $scope.Hide = function (id) {
+        console.log("hide");
+        $(id).attr("type", "password");
+    };
+
+    $scope.RevealCheckboxPassword = function (chkID, targetID) {
+        var $target = $(targetID);
+        var password = $target.attr("data-password");
+        var mask = $target.attr("data-mask");
+        if ($(chkID).is(':checked')) {
+            $target.html(password);
+        } else {
+            $target.html(mask);
+        }
+    }
+
     var initAccountId = function () {
         var uuid = $routeParams.uuid;
         $("#uuid").val(uuid);
@@ -1000,23 +1019,20 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         }
     });
 
-
-    $scope.Reveal = function (id) {
-        $(id).attr("type", "text");
-    };
-    $scope.Hide = function (id) {
-        console.log("hide");
-        $(id).attr("type", "password");
-    };
-
-    $scope.RevealCheckboxPassword = function (chkID, targetID) {
-        var $target = $(targetID);
-        var password = $target.attr("data-password");
-        var mask = $target.attr("data-mask");
-        if ($(chkID).is(':checked')) {
-            $target.html(password);
-        } else {
-            $target.html(mask);
+    $("#genPassword").pGenerator({
+        'bind': 'click',
+        'passwordElement': "#passwd",
+        'displayElement': '#my-display-element',
+        'passwordLength': 12,
+        'uppercase': true,
+        'lowercase': true,
+        'numbers': true,
+        'specialChars': true,
+        'onPasswordGenerated': function (generatedPassword) {
+            $scope.Reveal("#passwd");
+            setTimeout(function () {
+                $scope.Hide("#passwd");
+            }, 1000);
         }
-    }
+    });
 });

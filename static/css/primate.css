@@ -1111,3 +1111,45 @@ p.validation {
     padding: 0;
     margin: 0;
 }
+
+.metro .btn-danger {
+    color: #fff;
+    background-color: #d9534f;
+    border-color: #d43f3a;
+}
+
+    .metro .btn-danger:hover {
+        color: #fff;
+        background-color: #d2322d;
+        border-color: #ac2925;
+    }
+
+.metro .btn-default, .metro .btn-default:focus {
+    color: #333;
+    background-color: #fff;
+    border-color: #ccc;
+    outline: none !important;
+}
+
+    .metro .btn-default:hover, .metro .btn-default:active {
+        color: #333;
+        background-color: #ebebeb;
+        border-color: #adadad;
+        outline: none !important;
+    }
+
+.metro .input-control.password.account-password {
+    float: left;
+    width: 90%;
+}
+
+.generate-password {
+    float: left;
+    width: 10%;
+}
+
+#main-body.metro .generate-password .btn {
+    margin-top: 0;
+    margin-left: -2px;
+    border-left: 0;
+}

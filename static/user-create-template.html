@@ -19,9 +19,18 @@
             </div>
             <span class="validation" ng-show="userForm.user.$error.required&& userForm.user.$dirty">This field is required</span>
             <label class="required">Password</label>
-            <div class="input-control password" data-role="input-control">
-                <input type="password" placeholder="Password" name="passwd" id="passwd" ng-model="account.passwd" ng-class="{'error-state': userForm.passwd.$error.required&& userForm.passwd.$dirty}" required />
-                <button class="btn-reveal" tabindex="-1" type="button" ng-mousedown="Reveal('#passwd')" ng-mouseup="Hide('#passwd')"></button>
+            <div class="ofh">
+                <div class="input-control password account-password" data-role="input-control">
+                    <input type="password" placeholder="Password" name="passwd" id="passwd" ng-model="account.passwd" ng-class="{'error-state': userForm.passwd.$error.required&& userForm.passwd.$dirty}" required />
+                    <button class="btn-reveal" tabindex="-1" type="button" ng-mousedown="Reveal('#passwd')" ng-mouseup="Hide('#passwd')"></button>
+                </div>
+                <div class="generate-password"><button type="button" id="genPassword" class="btn btn-default full"><span class="icon-key"></span></button></div>
+            </div>
+            <div>
+                <div class="column">Please use:</div>
+                <div class="column" id="password-length"><span class="icon-small tick-fail"></span><span>8 to 32 characters</span></div>
+                <div class="column" id="password-contain-mixed-case"><span class="icon-small tick-fail"></span>Upper and lowercase letters</div>
+                <div class="column" id="password-contain-numbers-special" style="color: rgb(0, 0, 0);"><span class="icon-small tick-pass"></span>Numbers</div>
             </div>
             <span class="validation" ng-show="userForm.passwd.$error.required&& userForm.passwd.$dirty">This field is required</span>
             <label>Title</label>

@@ -83,6 +83,19 @@
                     <div class="clearfix"></div>
                 </div>
                 <div class="listview-outlook" id="default-list" data-role="listview">
+                    <div class="list-group collapsed">
+                        <a href="" class="group-title">Search Account ...</a>
+                        <div class="group-content" style="display: none;">
+                            <a href="javascript:;" class="list file-child" ng-repeat="child in searchChildren  | orderBy : 'title' | filter:accountSearch:title" ng-click="SetActive($index,$event);ViewAccountDetail()">
+                                <div class=" list-content">
+                                    <span class="account-uuid">{{child.uuid}}</span>
+                                    <span class="list-title"><span class="place-right icon-new smaller"></span>{{child.title}}</span>
+                                    <span class="list-subtitle">Last Modified: {{child.last_mod}}</span>
+                                    <span class="list-remark">{{child.notes}}</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
                     <div class="list-group">
                         <a href="" class="group-title">View All</a>
                         <div class="group-content" style="display: block;">
@@ -95,19 +108,6 @@
                             </a>
                             <!--ng-class="{'active': childIndex == $index}"-->
                             <a href="javascript:;" class="list file-child" ng-repeat="child in children" ng-click="SetActive($index,$event);ViewAccountDetail()">
-                                <div class=" list-content">
-                                    <span class="account-uuid">{{child.uuid}}</span>
-                                    <span class="list-title"><span class="place-right icon-new smaller"></span>{{child.title}}</span>
-                                    <span class="list-subtitle">Last Modified: {{child.last_mod}}</span>
-                                    <span class="list-remark">{{child.notes}}</span>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="list-group collapsed">
-                        <a href="" class="group-title">Search Account ...</a>
-                        <div class="group-content" style="display: none;">
-                            <a href="javascript:;" class="list file-child" ng-repeat="child in searchChildren  | orderBy : 'title' | filter:accountSearch:title" ng-click="SetActive($index,$event);ViewAccountDetail()">
                                 <div class=" list-content">
                                     <span class="account-uuid">{{child.uuid}}</span>
                                     <span class="list-title"><span class="place-right icon-new smaller"></span>{{child.title}}</span>
@@ -246,22 +246,7 @@
 <script src="static/js/jquery.contextMenu.js"></script>
 <script src="static/js/jquery.spinner.min.js"></script>
 <script src="static/js/select2.min.js"></script>
-<script src="static/js/jquery.complexify.js"></script>
-<script src="static/js/jquery.placeholder.min.js"></script>
+<script src="static/js/pGenerator.jquery.js"></script>
 <script src="static/js/primate.js"></script>
 <script src="static/js/angular/controllers/loginController.js"></script>
 <script src="static/js/angular/controllers/mainController.js"></script>
-
-<script>
-    $(function () {
-        $('input[placeholder]').placeholder();
-        $("#passwd").complexify({}, function (valid, complexity) {
-            if (!valid) {
-                $('#complexity').animate({ 'width': complexity + '%' }).removeClass('valid').addClass('invalid');
-            } else {
-                $('#complexity').animate({ 'width': complexity + '%' }).removeClass('invalid').addClass('valid');
-            }
-            $('#complexity').html(Math.round(complexity) + '%');
-        });
-    });
-</script>
