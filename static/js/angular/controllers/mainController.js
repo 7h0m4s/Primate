@@ -3,6 +3,7 @@ var _NOTIFI_SETTING_CAPTION = "Setting";
 var _NOTIFI_GROUP_CAPTION = "Group";
 var _NOTIFI_ACCOUNT_CAPTION = "Account";
 var _NOTIFI_CLIPBOARD_CAPTION = "Clipboard";
+var _NOTIFI_MASTERPASSWORD_CAPTION = "Master Password";
 var _DEFAULT_FAILURE_CAPTION = "Error";
 var _DEFAULT_SUCCESS_MSG = "Saved successfully";
 var _DEFAULT_FAILURE_MSG = "Save failed";
@@ -40,13 +41,18 @@ var _urlDeleteGroup = "_urlDeleteGroup";
 var _urlResetMasterPassword = "/new-master-password"; //post
 //new Password
 //old Password
-
+var _TIME_SHOWPASSWORD = 1500;
 var _CONTENT_COPY = "/copy";
 var _CONTEXT_ATTRIBUTE = {
     USERNAME: "username",
     PASSWORD: "password",
     URL: "url"
 };
+
+var numberRegex = /\d+/;
+var lowerCaseRegex = /[a-z]+/;
+var updateCaseRegex = /[A-Z]+/;
+var symbolRegex = /[!@#$%^&*()_+=\[{\]};:<>|./?,\\'""-]+/;
 
 var global_tree = null;
 
@@ -193,6 +199,49 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             $("#isSymbol").prop('checked', isCheck);
         }
     });
+
+    $scope.$watch('account.passwd', function (newValue, oldvalue) {
+        debugger;
+        if (newValue != oldvalue) {
+            if (typeof newValue == "string") {
+
+                if (lowerCaseRegex.test(newValue)) {
+                    addApprovedClass("#password-contain-lowercase");
+                } else {
+                    removeApprovedClass("#password-contain-lowercase");
+                }
+
+                if (updateCaseRegex.test(newValue)) {
+                    addApprovedClass("#password-contain-uppercase");
+                } else {
+                    removeApprovedClass("#password-contain-uppercase");
+                }
+
+                if (numberRegex.test(newValue)) {
+                    addApprovedClass("#password-contain-numbers-special");
+                } else {
+                    removeApprovedClass("#password-contain-numbers-special");
+                }
+
+                if (symbolRegex.test(newValue)) {
+                    addApprovedClass("#password-contain-mixed-symbol");
+                } else {
+                    removeApprovedClass("#password-contain-mixed-symbol");
+                }
+            }
+        }
+    });
+
+    var addApprovedClass = function (id) {
+        $(id).addClass("black");
+        $(id + " span").addClass("tick-pass");
+    };
+
+    var removeApprovedClass = function (id) {
+        $(id).removeClass("black");
+        $(id + " span").removeClass("tick-pass");
+    }
+
 
     $scope.$watch('groups', function (newValue, oldvalue) {
         if (newValue != oldvalue) {
@@ -511,7 +560,25 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         }
     };
 
-
+    $scope.SubmitMasterPasswordForm = function (isValid) {
+        if (isValid) {
+            submitAnimatel();
+            ajaxPost($("#masterPasswordForm"), true, _urlResetMasterPassword, function (msg) {
+                if (!msg) {
+                    $.Dialog.close();
+                    notifiSuccess(_NOTIFI_MASTERPASSWORD_CAPTION, _DEFAULT_SUCCESS_MSG);
+                } else {
+                    $("#master-pwd-alert").show();
+                    $("#master-pwd-alert").text();
+                }
+            },
+            function () {
+                redirectToErroPage505();
+            });
+        } else {
+            redirectToErroPage505();
+        }
+    }
 
 
     $scope.SubmitCreateAccountForm = function (isValid) {
@@ -1032,7 +1099,8 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             $scope.Reveal("#passwd");
             setTimeout(function () {
                 $scope.Hide("#passwd");
-            }, 1000);
+            }, _TIME_SHOWPASSWORD);
+            $('#passwd').change();
         }
     });
 });

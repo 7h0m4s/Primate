@@ -1153,3 +1153,41 @@ p.validation {
     margin-left: -2px;
     border-left: 0;
 }
+
+.validation-message, .password-strength {
+    margin: 2px 0 10px;
+    font-size: .8em;
+}
+
+.column {
+    position: relative;
+    display: -moz-inline-stack;
+    display: inline-block;
+    vertical-align: middle;
+    zoom: 1;
+    height: 100%;
+}
+
+#password-contain-uppercase, #password-contain-lowercase, #password-contain-numbers-special, #password-contain-mixed-symbol {
+    color: #a5a5a5;
+}
+
+.tick-fail {
+    background-position: 8px 0 !important;
+}
+
+.icon-small {
+    display: inline-block;
+    width: 21px;
+    height: 10px;
+    padding-left: 8px;
+    padding-right: 3px;
+}
+
+.tick-pass {
+    color: green;
+}
+
+.black {
+    color: #000 !important;
+}

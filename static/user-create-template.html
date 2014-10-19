@@ -13,24 +13,25 @@
                 <input class="select-search" id="groupParent" name="groupParent" ng-model="account.groupParent" />
             </div>
             <label class="required">Username</label>
-            <div class="input-control text" data-role="input-control">
+            <div class="input-control text" data-role="input-control" ng-class="{'error-state': userForm.user.$invalid && userForm.user.$dirty}">
                 <input placeholder="Username" name="user" id="user" ng-model="account.user" ng-class="{'error-state': userForm.user.$error.required&& userForm.user.$dirty}" required />
                 <button class="btn-clear" tabindex="-1" type="button"></button>
             </div>
             <span class="validation" ng-show="userForm.user.$error.required&& userForm.user.$dirty">This field is required</span>
             <label class="required">Password</label>
             <div class="ofh">
-                <div class="input-control password account-password" data-role="input-control">
+                <div class="input-control password account-password" data-role="input-control" ng-class="{'error-state': userForm.passwd.$invalid && userForm.passwd.$dirty}">
                     <input type="password" placeholder="Password" name="passwd" id="passwd" ng-model="account.passwd" ng-class="{'error-state': userForm.passwd.$error.required&& userForm.passwd.$dirty}" required />
                     <button class="btn-reveal" tabindex="-1" type="button" ng-mousedown="Reveal('#passwd')" ng-mouseup="Hide('#passwd')"></button>
                 </div>
                 <div class="generate-password"><button type="button" id="genPassword" class="btn btn-default full"><span class="icon-key"></span></button></div>
             </div>
-            <div>
+            <div class="row password-strength" id="password-strength">
                 <div class="column">Please use:</div>
-                <div class="column" id="password-length"><span class="icon-small tick-fail"></span><span>8 to 32 characters</span></div>
-                <div class="column" id="password-contain-mixed-case"><span class="icon-small tick-fail"></span>Upper and lowercase letters</div>
-                <div class="column" id="password-contain-numbers-special" style="color: rgb(0, 0, 0);"><span class="icon-small tick-pass"></span>Numbers</div>
+                <div class="column" id="password-contain-lowercase"><span class="icon-checkmark icon-small"></span><span>Lowercase letters</span></div>
+                <div class="column" id="password-contain-uppercase"><span class="icon-checkmark icon-small"></span>Upper letters</div>
+                <div class="column" id="password-contain-numbers-special"><span class="icon-checkmark icon-small"></span>Numbers</div>
+                <div class="column" id="password-contain-mixed-symbol"><span class="icon-checkmark icon-small"></span>User symbols (%,$,@,#,etc.)</div>
             </div>
             <span class="validation" ng-show="userForm.passwd.$error.required&& userForm.passwd.$dirty">This field is required</span>
             <label>Title</label>
