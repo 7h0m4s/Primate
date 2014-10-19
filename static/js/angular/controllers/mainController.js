@@ -9,12 +9,9 @@ var _DEFAULT_FAILURE_MSG = "Save failed";
 var _EDIT_SUCCESS_MSG = "Edit successfully";
 var _DELETE_SUCCESS_MSG = "Detele successfully";
 var _ADD_SUCCESS_MSG = "Add successfully";
-
 var _COPY_URL_MSG = "Copy URL successfully";
 var _COPY_USERNAME_MSG = "Copy username successfully";
 var _COPY_PASSWORD_MSG = "Copy password successfully";
-
-
 var _backspace_keycode = 8;
 var _defaultCheckboxValue = "on";
 var _urlErrorPage404 = "static/error-page.html";
@@ -39,6 +36,7 @@ var _VALIDATE_DOT = '.';
 var _EMPTY_NAME = "N/A";
 var _urlSetFilePath = "/set-filePath";
 var _urlDeleteUser = "/delete-user";
+var _urlDeleteGroup = "_urlDeleteGroup";
 var _urlResetMasterPassword = "/new-master-password"; //post
 //new Password
 //old Password
@@ -139,6 +137,30 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         }
     };
 }])
+
+.directive('passwordMatch', [function () {
+    return {
+        restrict: 'A',
+        scope: true,
+        require: 'ngModel',
+        link: function (scope, elem, attrs, control) {
+            var checker = function () {
+                var e1 = scope.$eval(attrs.ngModel);
+                var e2 = scope.$eval(attrs.passwordMatch);
+                return e1 == e2;
+            };
+            scope.$watch(checker, function (n) {
+                if (n) {
+                    $(".login-validate").eq(2).slideUp("fast");
+                } else {
+                    $(".login-validate").eq(2).slideDown("fast");
+                }
+                control.$setValidity("unique", n);
+            });
+        }
+    };
+}])
+
 .controller('mainController', function ($scope, $http, $q, $compile, $window, $location, requestFactory, $routeParams, $localStorage) {
     $scope.childIndex = -1;
     //$scope.breadcrumbs = [];
@@ -302,6 +324,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     $scope.TriggerMasterPasswordDialog = function ($title) {
         $http.get(_urlMasterPasswordDialogTemplate).success(function ($content) {
             var $compileContent = getCompileContent($content);
+            $scope.master = {};
             triggerDialog($title, $compileContent);
         })
         .error(function ($content, status) {
@@ -339,12 +362,24 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             });
         }, function () {
             redirectToErroPage505();
-
         });
     };
 
     $scope.DeleteGroup = function () {
-
+        var deleteGroup = $scope.deleteGroup;
+        if (isUndifined(deleteGroup)) {
+            redirectToErroPage505();
+            return;
+        }
+        ajaxGet(true, _urlDeleteGroup, postData, function () {
+            $.Dialog.close();
+            console.log($scope);
+            removeAtiveElem();
+            deleteGroupFromNewTreeByParentName(accountObj.groupParent, accountObj, false);
+            notifiSuccess(_NOTIFI_ACCOUNT_CAPTION, _DELETE_SUCCESS_MSG);
+        }, function () {
+            redirectToErroPage505();
+        });
     };
 
 
@@ -568,6 +603,20 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             return _EMPTY_NAME;
         }
         return str;
+    };
+
+    $scope.getAllChildren = function () {
+        $scope.searchChildren = [];
+        var recursiveGroup = function (tree) {
+            for (var b = 0; b < tree.children.length; b++) {
+                $scope.searchChildren.push(tree.children[b]);
+            }
+            for (var a = 0; a < tree.groups.length; a++) {
+                recursiveGroup(tree.groups[a]);
+            }
+        };
+        recursiveGroup($scope.tree);
+        console.log($scope.searchChildren);
     };
 
     var initAccountId = function () {
@@ -871,6 +920,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                     groupParent: getGroupParent(),
                     groupName: getGroupName()
                 }
+                $scope.deleteGroup = detailCurrentGroupObj;
                 var detailSerializedCurrentGroup = $.param(detailCurrentGroupObj);
                 redirect(_urlViewGroup + "?" + detailSerializedCurrentGroup);
             } else if (key == "EditGroup") {
@@ -949,4 +999,24 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             },
         }
     });
+
+
+    $scope.Reveal = function (id) {
+        $(id).attr("type", "text");
+    };
+    $scope.Hide = function (id) {
+        console.log("hide");
+        $(id).attr("type", "password");
+    };
+
+    $scope.RevealCheckboxPassword = function (chkID, targetID) {
+        var $target = $(targetID);
+        var password = $target.attr("data-password");
+        var mask = $target.attr("data-mask");
+        if ($(chkID).is(':checked')) {
+            $target.html(password);
+        } else {
+            $target.html(mask);
+        }
+    }
 });

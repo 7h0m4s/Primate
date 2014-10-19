@@ -23,9 +23,11 @@
                             <span class="icon-cog"></span>
                         </a>
                         <ul class="dropdown-menu place-right" data-role="dropdown">
+                            <li><a href="javascript:;" ng-click="TriggerMasterPasswordDialog('Master Password')">Master Password</a></li>
                             <li><a href="javascript:;" ng-click="TriggerSlider()">Settings</a></li>
                             <li><a href="javascript:;" ng-click="TriggerImportDialog('Import')">Import</a></li>
                             <li><a href="javascript:;" ng-click="TriggerExportDialog('Export')">Export</a></li>
+                            <li><a href="javascript:;">Settings</a></li>
                             <li><a href="logout">Log Out</a></li>
                         </ul>
                     </div>
@@ -43,8 +45,8 @@
             <div class="nav-search">
                 <form>
                     <div class="input-control text">
-                        <input type="text" placeholder="Search..." ng-model="query">
-                        <button class="btn-search"></button>
+                        <input type="text" placeholder="Search by account title..." ng-model="accountSearch.title">
+                        <button class="btn-search" ng-click="getAllChildren()"></button>
                     </div>
                 </form>
             </div>
@@ -80,9 +82,9 @@
                     </div>
                     <div class="clearfix"></div>
                 </div>
-                <div class="listview-outlook" data-role="listview">
+                <div class="listview-outlook" id="default-list" data-role="listview">
                     <div class="list-group">
-                        <a href="" class="group-title">Malesuada neque</a>
+                        <a href="" class="group-title">View All</a>
                         <div class="group-content" style="display: block;">
                             <a href="javascript:;" class="list file-group" ng-repeat="group in groups" ng-click="NavIn(group)">
                                 <div class="list-content">
@@ -93,6 +95,19 @@
                             </a>
                             <!--ng-class="{'active': childIndex == $index}"-->
                             <a href="javascript:;" class="list file-child" ng-repeat="child in children" ng-click="SetActive($index,$event);ViewAccountDetail()">
+                                <div class=" list-content">
+                                    <span class="account-uuid">{{child.uuid}}</span>
+                                    <span class="list-title"><span class="place-right icon-new smaller"></span>{{child.title}}</span>
+                                    <span class="list-subtitle">Last Modified: {{child.last_mod}}</span>
+                                    <span class="list-remark">{{child.notes}}</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="list-group collapsed">
+                        <a href="" class="group-title">Search Account ...</a>
+                        <div class="group-content" style="display: none;">
+                            <a href="javascript:;" class="list file-child" ng-repeat="child in searchChildren  | orderBy : 'title' | filter:accountSearch:title" ng-click="SetActive($index,$event);ViewAccountDetail()">
                                 <div class=" list-content">
                                     <span class="account-uuid">{{child.uuid}}</span>
                                     <span class="list-title"><span class="place-right icon-new smaller"></span>{{child.title}}</span>
@@ -158,7 +173,6 @@
                             </div>
                             <div class="clearfix"></div>
                         </p>
-
                         <p>
                             <div class="policy-font">Use lowercase letters</div>
                             <div class="input-control checkbox fr">

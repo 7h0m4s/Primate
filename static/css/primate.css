@@ -16,6 +16,10 @@
     margin-top: 0 !important;
 }
 
+.metro p.margin-top-5 {
+    margin-top: -5px !important;
+}
+
 .margin-top10 {
     margin-top: 10px !important;
 }
@@ -1071,19 +1075,13 @@ p.validation {
 /*master password*/
 .ms-left {
     float: left;
-    width: 150px;
+    text-align: left;
 }
 
 .ms-right {
     float: left;
-    width: 300px !important;
 }
 
-#masterPasswordForm label {
-    height: 34px;
-    vertical-align: middle;
-    text-align: left !important;
-}
 
 #main-body.metro .btn {
     margin-top: 25px;
@@ -1093,4 +1091,23 @@ p.validation {
     position: absolute;
     top: 32px;
     left: 0;
+}
+
+#master-pwd-dialog {
+    padding-bottom: 0;
+}
+
+.metro .window.flat {
+    height: auto !important;
+}
+
+.metro .input-control.text .display-password {
+    display: block;
+    top: 0;
+}
+
+.metro .view-page .reveal-chb {
+    background-color: white;
+    padding: 0;
+    margin: 0;
 }
