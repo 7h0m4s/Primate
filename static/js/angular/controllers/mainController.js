@@ -27,6 +27,7 @@ var _urlCreateUserSubmit = "/create-user";
 var _urlEditUserSubmit = "/edit-user";
 var _urlGetUser = "/get-user";
 var _GROUP_CONCAT_SYMBOL = ".";
+var _VALIDATE_DOT = '.';
 var _EMPTY_NAME = "N/A";
 var _urlSetFilePath = "/set-filePath";
 
@@ -210,14 +211,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     };
 
     $scope.Back = function ($event) {
-        var testArr = [0, 1, 2, 3, 4];
-        console.log("before");
-        console.log(testArr);
-        delete testArr[0];
-        console.log("testArr");
-        console.log(testArr);
-
-
         var currentKeyCode = $event.keyCode;
         if (currentKeyCode == _backspace_keycode) {
             var backcrumbIndex = $scope.breadcrumbs.length - 2;
@@ -307,29 +300,27 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
 
     $scope.OpenImportFileDialog = function () {
         ajaxGetMethod(true, _urlGetFilePath, {}, function (content) {
-            debugger;
             if (content.length != 0) {
                 $("#importFileInput").val(content);
-                setimportInputModified();
-                setimportInputNotRequired();
             }
         }, function () {
             redirectToErroPage505();
-    $scope.TriggerDeleteGroupDialog = function ($title) {
-        if ($scope.templates.cacheDeleteGroupTemplate) {
-            triggerDialog($title, getCompileContent($scope.templates.cacheDeleteGroupTemplate));
-        } else {
-            $http.get(_urlDeleteGroupTemplate).success(function ($content) {
-                $scope.templates.cacheDeleteGroupTemplate = $content;
-                var $compileContent = getCompileContent($content);
-                return triggerDialog($title, $compileContent);
-            })
-            .error(function ($content, status) {
-                redirectToErroPage505();
-            });
-        }
-    };
-
+            $scope.TriggerDeleteGroupDialog = function ($title) {
+                if ($scope.templates.cacheDeleteGroupTemplate) {
+                    triggerDialog($title, getCompileContent($scope.templates.cacheDeleteGroupTemplate));
+                } else {
+                    $http.get(_urlDeleteGroupTemplate).success(function ($content) {
+                        $scope.templates.cacheDeleteGroupTemplate = $content;
+                        var $compileContent = getCompileContent($content);
+                        return triggerDialog($title, $compileContent);
+                    })
+                        .error(function ($content, status) {
+                            redirectToErroPage505();
+                        });
+                }
+            };
+        });
+    }
     $scope.Browse = function () {
         $.get(_urlBrowse, function (data) {
             $("#import-dialog .file-path").val(data);
@@ -339,7 +330,8 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     $scope.ImportSubmit = function () {
         ajaxPost($("#importFileInput"), true, _urlImportSubmit, function (msg) {
             if (msg.length == 0) {
-                redirect(_urlLoginRedirect);
+                //redirect(_urlLoginRedirect);
+                //window.location.reload();
             } else {
                 $("#import-customMsg").html(msg);
             }
@@ -397,9 +389,9 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 var serializedCurrentGroup = prepareGroupUrl(groupParentVal, groupNameVal);
                 redirect(_urlViewGroup + "?" + serializedCurrentGroup);
             },
-        function () {
-            redirectToErroPage505();
-        });
+                function () {
+                    redirectToErroPage505();
+                });
         } else {
             redirectToErroPage505();
         }
@@ -445,9 +437,9 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 redirect(_urlViewAccount + "?" + serializedCurrentGroup);
                 notifiSuccess(_NOTIFI_ACCOUNT_CAPTION, _ADD_SUCCESS_MSG);
             },
-            function () {
-                redirectToErroPage505();
-            });
+                function () {
+                    redirectToErroPage505();
+                });
         } else {
             redirectToErroPage505();
         }
@@ -463,7 +455,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 processAccountScope();
                 ajaxGet(false, _urlGetUser, uuidObj, function (response) {
                     $scope.account = $.parseJSON(response);
-                    debugger;
                     deleteGroupFromNewTreeByParentName($scope.oldAccountGroupParent, $scope.oldAccount, false);
                     addGroupFromNewTreeByParentName(groupParentVal, $scope.account, false);
                     notifiSuccess(_NOTIFI_ACCOUNT_CAPTION, _EDIT_SUCCESS_MSG);
@@ -474,9 +465,9 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
 
 
             },
-            function () {
-                redirectToErroPage505();
-            });
+                function () {
+                    redirectToErroPage505();
+                });
         } else {
             redirectToErroPage505();
         }
@@ -678,11 +669,9 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         var itemName = $(this).context.innerText.trim();
         if (contextGroupRedirectManagement(itemName)) {
             return;
-        }
-        else if (contextAccountRedirectManagement(itemName)) {
+        } else if (contextAccountRedirectManagement(itemName)) {
             return;
-        }
-        else if (true) {
+        } else if (true) {
             return;
         }
     });
@@ -696,15 +685,14 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             var detailSerializedCurrentGroup = $.param(detailCurrentGroupObj);
             redirect(_urlViewGroup + "?" + detailSerializedCurrentGroup);
             return true;
-        }
-        else if (itemName == GROUP_CONTEXT_NAME_OBJ.NAME_EDIT_GROUP) {
+        } else if (itemName == GROUP_CONTEXT_NAME_OBJ.NAME_EDIT_GROUP) {
+            debugger;
             var currentGroupParent = getGroupParent();
             var currentGroupName = getGroupName();
             var serializedCurrentGroup = prepareGroupUrl(currentGroupParent, currentGroupName);
             redirect(_urlEditGroup + "?" + serializedCurrentGroup);
             return true;
-        }
-        else if (itemName == GROUP_CONTEXT_NAME_OBJ.NAME_DELETE_GROUP) {
+        } else if (itemName == GROUP_CONTEXT_NAME_OBJ.NAME_DELETE_GROUP) {
             $scope.TriggerDeleteGroupDialog("Delete Group");
             return true;
         }
@@ -715,28 +703,22 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         if (itemName == USER_CONTEXT_NAME_OBJ.NAME_ACCOUNT_DETAIL) {
             prepareRedirectAcco(_urlViewAccount);
             return true;
-        }
-        else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_EDIT_ACCOUNT) {
+        } else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_EDIT_ACCOUNT) {
             prepareRedirectAcco(_urlEditAccount);
             return true;
-        }
-        else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_DELETE_ACCOUNT) {
+        } else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_DELETE_ACCOUNT) {
             $scope.TriggerDeleteAccountDialog("Delete Account");
             return true;
-        }
-        else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_COPY_URL) {
+        } else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_COPY_URL) {
             ajaxPostOnly({ uuid: getUuid(), attribute: _CONTEXT_ATTRIBUTE.URL }, _CONTENT_COPY, function () { });
             return true;
-        }
-        else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_COPY_PASSWORD) {
+        } else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_COPY_PASSWORD) {
             ajaxPostOnly({ uuid: getUuid(), attribute: _CONTEXT_ATTRIBUTE.PASSWORD }, _CONTENT_COPY, function () { });
             return true;
-        }
-        else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_COPY_USERNAME) {
+        } else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_COPY_USERNAME) {
             ajaxPostOnly({ uuid: getUuid(), attribute: _CONTEXT_ATTRIBUTE.USERNAME }, _CONTENT_COPY, function () { });
             return true;
-        }
-        else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_REDIRECT_URL) {
+        } else if (itemName == USER_CONTEXT_NAME_OBJ.NAME_REDIRECT_URL) {
             ajaxPostOnly({ uuid: getUuid(), attribute: _CONTEXT_ATTRIBUTE.USERNAME }, _CONTENT_COPY, function (url) {
                 window.open(url, '_blank');
             });
@@ -762,7 +744,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     };
 
     var getGroupName = function () {
-        return $($(".active .list-title")).html();
+        return $($(".active .list-title")).text();
     };
 
     var getUuid = function () {
@@ -909,21 +891,8 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     };
 
     var setimportInputModified = function () {
-        console.log($scope.fileImportForm);
-        $scope.fileImportForm.file.$dirty = true;
-        $scope.fileImportForm.file.$setValidity();
     }
 
-    var hahaah = true;
-    var setimportInputNotRequired = function () {
-        $scope.fileImportForm.file.$setValidity('required', true);
-        console.log($scope.fileImportForm.file.$error.required);
-        $scope.fileImportForm.file.required = true;
-        console.log($scope.fileImportForm.file.$error.required);
-        $scope.fileImportForm.file.$error.required = true;
-        console.log($scope.fileImportForm.file.$error.required);
-        hahaah = false;
-    }
 });
 
 
@@ -948,22 +917,42 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
 //    return resultObj;
 //}
 
-//mainApp.directive('notargetSymbol', [function () {
+mainApp.directive('notargetSymbol', [function () {
+    return {
+        restrict: 'A',
+        scope: true,
+        require: 'ngModel',
+        link: function (scope, elem, attrs, control) {
+            var checker = function () {
+                var val = elem.context.value;
+                if (!isUndifined(val)) {
+                    var isValid = !(val.indexOf(_VALIDATE_DOT) > -1);
+                    return isValid;
+                }
+                return true;
+            };
+            scope.$watch(checker, function (n) {
+                control.$setValidity("dot", n);
+            });
+        }
+    };
+}]);
+
+//mainApp.directive('regexValidate', function () {
 //    return {
 //        restrict: 'A',
-//        scope: true,
-//        link: function (scope, elem, attrs, val, control) {
-//            var checker = function () {
-//                debugger;
-//                var targetVal = scope.$eval(attrs.context.val);
-//                console.log(targetVal);
-//                //targetVal.indexOf(_GROUP_CONCAT_SYMBOL) > 0
-//                return true;
-//            };
-//            scope.$watch(checker, function (n) {
-//                console.log(n);
-//                //control.$setValidity("dot", n);
+//        require: 'ngModel',
+//        link: function (scope, elem, attr, ctrl) {
+//            var flags = attr.regexValidateFlags || '';
+//            var regex = new RegExp(attr.regexValidate, flags);
+//            ctrl.$parsers.unshift(function (value) {
+//                ctrl.$setValidity('regexValidate', valid);
+//                return valid;
+//            });
+//            ctrl.$formatters.unshift(function (value) {
+//                ctrl.$setValidity('regexValidate', regex.test(value));
+//                return value;
 //            });
 //        }
 //    };
-//}]);
+//});

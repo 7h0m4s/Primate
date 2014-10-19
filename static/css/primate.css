@@ -994,10 +994,16 @@ button.full, a.full {
     margin-top: 10px;
 }
 
+p.validation {
+    cursor: default !important;
+    margin-top: 5px !important;
+    margin-bottom: 10px !important;
+    color: #b94a48 !important;
+    text-align: left !important;
+}
+
 .validation {
     cursor: default;
-    margin-top: 5px;
-    margin-bottom: 10px;
     color: #b94a48;
 }
 
@@ -1058,6 +1064,7 @@ button.full, a.full {
 
 #fileImport {
     margin: 0;
+    position: relative;
 }
 
 
@@ -1075,5 +1082,15 @@ button.full, a.full {
 #masterPasswordForm label {
     height: 34px;
     vertical-align: middle;
-    text-align: left!important;
+    text-align: left !important;
+}
+
+#main-body.metro .btn {
+    margin-top: 25px;
+}
+
+#import-customMsg {
+    position: absolute;
+    top: 32px;
+    left: 0;
 }
