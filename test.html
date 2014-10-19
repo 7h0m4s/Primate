@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Password Strength Demo by GBin1.com</title>
+	
+    <link href="static/css/metro-bootstrap.css" rel="stylesheet">
+    <link href="static/css/iconFont.css" rel="stylesheet" />
+    <link href="static/css/jquery.splitter.css" rel="stylesheet" />
+    <link href="static/css/select2.css" rel="stylesheet" />
+    <link href="static/css/primate.css" rel="stylesheet" />
+    <link rel="stylesheet" href="static/css/style.css">
+	
+	
+	<script src="static/js/jquery.min.js"></script>
+	<script src="static/js/angular.min.js"></script>
+	<script src="static/js/angular-route.min.js"></script>
+	<script src="static/js/ngStorage.js"></script>
+	<script src="static/js/jquery.widget.min.js"></script>
+	<script src="static/js/metro.min.js"></script>
+	<script src="static/js/jquery.splitter.js"></script>
+	<script src="static/js/jquery.contextMenu.js"></script>
+	<script src="static/js/jquery.spinner.min.js"></script>
+	<script src="static/js/select2.min.js"></script>
+	<script src="static/js/jquery.complexify.js"></script>
+	<script src="static/js/jquery.placeholder.min.js"></script>
+	<script src="static/js/primate.js"></script>
+	<script src="static/js/angular/controllers/loginController.js"></script>
+	<script src="static/js/angular/controllers/mainController.js"></script>
+
+
+	<script>
+		$(function(){
+			$('input[placeholder]').placeholder();
+			$("#password").complexify({}, function(valid, complexity){
+				if (!valid) {
+					$('#complexity').animate({'width':complexity + '%'}).removeClass('valid').addClass('invalid');
+				} else {
+					$('#complexity').animate({'width':complexity + '%'}).removeClass('invalid').addClass('valid');
+				}
+				$('#complexity').html(Math.round(complexity) + '%');
+			});
+		});
+	</script>
+</head>
+
+<body>
+
+	<div id="page-wrap">
+		<div id="title">Password Strength</div>
+		<input type="password" name="password" id="password" placeholder="enter password"/>
+		<div id="complexitywrap">
+		<div id="complexity">0%</div>
+		</div>
+	</div>
+	
+
+
+</body>
+
+</html>

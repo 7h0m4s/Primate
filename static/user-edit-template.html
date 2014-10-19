@@ -3,7 +3,7 @@
 </div>
 <div class="example" id="user-management" style="margin-left: 25%; opacity: 0;" ng-init="InitAccountManagment();">
     <form novalidate name="userForm" id="editAccountForm" ng-submit="SubmitEditAccountForm(userForm.$valid);">
-        <input type="hidden" name="uuid" id="uuid" />
+        <input type="hidden" name="uuid" id="uuid" ng-model="account.uuid" />
         <fieldset>
             <legend>
                 <h3 class="frame-title">Edit Account</h3>
@@ -23,6 +23,10 @@
                 <input type="password" placeholder="Password" name="passwd" id="passwd" ng-model="account.passwd" required />
                 <button class="btn-reveal" tabindex="-1" type="button"></button>
             </div>
+            <div id="complexitywrap">
+            <div id="complexity">0%</div>
+            </div>
+
             <span class="validation" ng-show="userForm.passwd.$error.required&& userForm.passwd.$dirty">This field is required</span>
             <label>Title</label>
             <div class="input-control text" data-role="input-control">

@@ -53,9 +53,11 @@ loginApp.controller('loginController', function ($scope, $localStorage) {
 
     $scope.OpenFileDialog = function () {
         ajaxGetMethod(true, _urlGetFilePath, {}, function (content) {
-            setDatabaseInputModified();
-            setDatabaseInputNotRequired();
-            $("#databaseFile").val(content);
+            if (content.length != 0) {
+                setDatabaseInputModified(); 
+                setDatabaseInputNotRequired();
+                $("#databaseFile").val(content);
+            }
         }, function () {
             redirectToErroPage505();
         });

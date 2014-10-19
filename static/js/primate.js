@@ -10,7 +10,11 @@ var GROUP_CONTEXT_NAME_OBJ = {
 var USER_CONTEXT_NAME_OBJ = {
     NAME_ACCOUNT_DETAIL: "View Account",
     NAME_EDIT_ACCOUNT: "Edit Account",
-    NAME_DELETE_ACCOUNT: "Delete Account"
+    NAME_DELETE_ACCOUNT: "Delete Account",
+    NAME_COPY_USERNAME: "Copy Username",
+    NAME_COPY_PASSWORD: "Copy Password",
+    NAME_COPY_URL: "Copy Url",
+    NAME_REDIRECT_URL: "Redirect to Website"
 };
 
 var _urlCreateGroup = "#/group-create-template";
@@ -147,7 +151,7 @@ var contextMenu = function () {
             },
             items: {
                 "RedirectUrl": {
-                    name: "Redirect to Website",
+                    name: USER_CONTEXT_NAME_OBJ.NAME_REDIRECT_URL,
                 },
                 "sep1": "---------",
                 "viewAcc": {
@@ -161,10 +165,13 @@ var contextMenu = function () {
                 },
                 "sep2": "---------",
                 "copyCuser": {
-                    name: "Copy Username",
+                    name: USER_CONTEXT_NAME_OBJ.NAME_COPY_USERNAME,
                 },
                 "copyPasswrd": {
-                    name: "Copy Password",
+                    name: USER_CONTEXT_NAME_OBJ.NAME_COPY_PASSWORD,
+                },
+                "copyUrl": {
+                    name: USER_CONTEXT_NAME_OBJ.NAME_COPY_URL,
                 },
             }
         });
@@ -309,6 +316,17 @@ var ajaxGetMethod = function (isAsync, requestUrl, postData, successFunc, failur
     });
 };
 
+var ajaxPostOnly = function (postData, requestUrl, successFunc) {
+    var method = "Post";
+    $.ajax({
+        type: method,
+        url: requestUrl,
+        data: postData,
+    }).done(function (msg) {
+        successFunc(msg);
+    }).fail(function (msg) {
+    });
+};
 
 var triggerDialog = function ($title, $content) {
     $.Dialog({
@@ -389,3 +407,13 @@ var redirectToMainPage = function () {
 var isUndifined = function (target) {
     return typeof target == _undefined;
 };
+
+$('input[placeholder]').placeholder();
+$("#passwd").complexify({}, function(valid, complexity){
+    if (!valid) {
+        $('#complexity').animate({'width':complexity + '%'}).removeClass('valid').addClass('invalid');
+    } else {
+        $('#complexity').animate({'width':complexity + '%'}).removeClass('invalid').addClass('valid');
+    }
+    $('#complexity').html(Math.round(complexity) + '%');
+});
