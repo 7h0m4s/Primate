@@ -469,11 +469,11 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         var groupParentVal = $("#groupParent").val();
         if (isValid) {
             submitAnimatel();
-            ajaxPost($("#createAccountForm"), true, _urlCreateUserSubmit, function (uuid) {
-                $scope.account.uuid = uuid;
+            ajaxPost($("#createAccountForm"), true, _urlCreateUserSubmit, function (accountJson) {
+                $scope.account = $.parseJSON(accountJson);
                 processAccountScope();
                 addGroupFromNewTreeByParentName(groupParentVal, $scope.account, false);
-                var currentGroupObj = { uuid: uuid }
+                var currentGroupObj = { uuid: $scope.account.uuid }
                 var serializedCurrentGroup = $.param(currentGroupObj);
                 redirect(_urlViewAccount + "?" + serializedCurrentGroup);
                 notifiSuccess(_NOTIFI_ACCOUNT_CAPTION, _ADD_SUCCESS_MSG);
