@@ -28,10 +28,10 @@
             </div>
             <div class="row password-strength" id="password-strength">
                 <div class="column">Please use:</div>
-                <div class="column" id="password-contain-lowercase"><span class="icon-checkmark icon-small"></span><span>Lowercase letters</span></div>
-                <div class="column" id="password-contain-uppercase"><span class="icon-checkmark icon-small"></span>Upper letters</div>
-                <div class="column" id="password-contain-numbers-special"><span class="icon-checkmark icon-small"></span>Numbers</div>
-                <div class="column" id="password-contain-mixed-symbol"><span class="icon-checkmark icon-small"></span>User symbols (%,$,@,#,etc.)</div>
+                <div class="column" id="password-contain-lowercase" ng-show="{{$scope.userSetting.isLowercase == _defaultCheckboxValue}}"><span class="icon-checkmark icon-small"></span><span>Lowercase letters</span></div>
+                <div class="column" id="password-contain-uppercase" ng-show="{{$scope.userSetting.isUppercase == _defaultCheckboxValue}}"><span class="icon-checkmark icon-small"></span>Upper letters</div>
+                <div class="column" id="password-contain-numbers-special" ng-show="{{$scope.userSetting.isDigit == _defaultCheckboxValue}}"><span class="icon-checkmark icon-small"></span>Numbers</div>
+                <div class="column" id="password-contain-mixed-symbol" ng-show="{{$scope.userSetting.isSymbol == _defaultCheckboxValue}}"><span class="icon-checkmark icon-small"></span>User symbols (%,$,@,#,etc.)</div>
             </div>
             <span class="validation" ng-show="userForm.passwd.$error.required&& userForm.passwd.$dirty">This field is required</span>
             <label>Title</label>

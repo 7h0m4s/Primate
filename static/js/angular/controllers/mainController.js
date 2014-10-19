@@ -201,7 +201,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     });
 
     $scope.$watch('account.passwd', function (newValue, oldvalue) {
-        debugger;
         if (newValue != oldvalue) {
             if (typeof newValue == "string") {
 
@@ -659,6 +658,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         hideLoader();
         var uuid = initAccountId();
         prepareAccountForm(uuid);
+        $('#passwd').change();
     };
 
     $scope.ViewAccountDetail = function () {
