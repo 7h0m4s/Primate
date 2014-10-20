@@ -201,7 +201,26 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         }
     };
 }])
-
+.directive('notargetSymbol', [function () {
+    return {
+        restrict: 'A',
+        scope: true,
+        require: 'ngModel',
+        link: function (scope, elem, attrs, control) {
+            var checker = function () {
+                var val = elem.context.value;
+                if (!isUndifined(val)) {
+                    var isValid = !(val.indexOf(_VALIDATE_DOT) > -1);
+                    return isValid;
+                }
+                return true;
+            };
+            scope.$watch(checker, function (n) {
+                control.$setValidity("dot", n);
+            });
+        }
+    };
+}])
 .controller('mainController', function ($scope, $http, $q, $compile, $window, $location, requestFactory, $routeParams, $localStorage) {
     $scope.childIndex = -1;
     $scope.templates = { cacheExportDialogTemplate: "", cacheImportDialogTemplate: "", cacheDeleteAccountTemplate: "" }
@@ -488,7 +507,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         ajaxPost($("#importFileInput"), true, _urlImportSubmit, function (msg) {
             if (!msg) {
                 notifiSuccess(_NOTIFI_IMPORT_CAPTION, _Import_SUCCESS_MSG);
-                setTimeout(function() {
+                setTimeout(function () {
                     redirect(_urlLoginRedirect);
                 }, _TIME_REDIRECT);
 
@@ -1213,6 +1232,9 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     $scope.PwdLength = function () {
         return pwdLength();
     }
+    $scope.Redirect = function (url) {
+        redirect(url);
+    };
 });
 
 var isLowercase = function () {
