@@ -787,6 +787,7 @@
             show: function (opt, x, y) {
                 var targetObJ = $(this).context;
                 $(targetObJ).closest(".group-content").find("a").removeClass("active");
+                $(targetObJ).closest(".root-ul").find(".root-group").removeClass("active");
                 $(targetObJ).addClass("active");
                 //if ($(this)[0].className.indexOf("file-child ") >= 0) {
                 //    $(this)[0].click();
@@ -853,7 +854,13 @@
                 }
             },
             hide: function (opt, force) {
+                //primate customize style
+                if ($(this).attr("class").indexOf("root-group") > -1) {
+                    $(this).removeClass("active");
+                }
+
                 var $trigger = $(this);
+
                 if (!opt) {
                     opt = $trigger.data('contextMenu') || {};
                 }

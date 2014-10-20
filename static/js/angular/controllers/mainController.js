@@ -453,11 +453,10 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             redirectToErroPage505();
             return;
         }
+        var postData = $scope.delete.group;
         ajaxGet(true, _urlDeleteGroup, postData, function () {
+            deleteGroupFromNewTreeByParentName(postData.groupParent, postData, true);
             $.Dialog.close();
-            console.log($scope);
-            removeAtiveElem();
-            deleteGroupFromNewTreeByParentName(accountObj.groupParent, accountObj, false);
             notifiSuccess(_NOTIFI_ACCOUNT_CAPTION, _DELETE_SUCCESS_MSG);
         }, function () {
             redirectToErroPage505();
@@ -582,7 +581,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             ajaxPost($("#editGroupForm"), true, _urlEditGroupSubmit, function () {
                 console.log($scope.oldGroup);
                 var deletedObj = deleteGroupFromNewTreeByParentName($scope.oldGroup.groupParent, $scope.oldGroup, true);
-                console.log(deletedObj);
                 deletedObj.groupName = groupNameVal;
                 if (groupParentVal.length == 0) {
                     $scope.tree.groups.push(deletedObj);
@@ -766,14 +764,14 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     };
 
 
-    $scope.DisplaySearch=function() {
+    $scope.DisplaySearch = function () {
         $scope.getAllChildren();
         $(".default-item").hide();
         $('.active').removeClass("active");
         $(".search-item").show();
     }
 
-    $scope.HideSearch=function() {
+    $scope.HideSearch = function () {
         $(".search-item").hide();
         $('.active').removeClass("active");
         $(".default-item").show();
@@ -982,32 +980,40 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         var recursiveGroup = function (tree) {
             if (resultObj == null) {
                 for (var a = 0; a < tree.groups.length; a++) {
-                    if (tree.groups[a] != null) {
-                        var groupName = tree.groups[a].groupName;
-                        if (groupName == groupArr[count]) {
-                            if (count == groupArr.length - 1) {
-                                if (isGroup) {
-                                    for (var b = 0; b < tree.groups[a].groups.length; b++) {
-                                        if (tree.groups[a].groups[b].groupName == oldObj.groupName) {
-                                            resultObj = tree.groups[a].groups[b];
-                                            tree.groups[a].groups.splice(b, 1);
-                                            break;
+                    if (!groupParentIndex) {
+                        var rootName = tree.groups[a].groupName;
+                        if (oldObj.groupName == rootName) {
+                            resultObj = tree.groups[a];
+                            tree.groups.splice(a, 1);
+                        }
+                    } else {
+                        if (tree.groups[a] != null) {
+                            var groupName = tree.groups[a].groupName;
+                            if (groupName == groupArr[count]) {
+                                if (count == groupArr.length - 1) {
+                                    if (isGroup) {
+                                        for (var b = 0; b < tree.groups[a].groups.length; b++) {
+                                            if (tree.groups[a].groups[b].groupName == oldObj.groupName) {
+                                                resultObj = tree.groups[a].groups[b];
+                                                tree.groups[a].groups.splice(b, 1);
+                                                break;
+                                            }
+                                        }
+                                    } else {
+                                        for (var c = 0; c < tree.groups[a].children.length; c++) {
+                                            if (tree.groups[a].children[c].uuid == oldObj.uuid) {
+                                                resultObj = tree.groups[a].children[c];
+                                                tree.groups[a].children.splice(c, 1);
+                                                break;
+                                            }
                                         }
                                     }
                                 } else {
-                                    for (var c = 0; c < tree.groups[a].children.length; c++) {
-                                        if (tree.groups[a].children[c].uuid == oldObj.uuid) {
-                                            resultObj = tree.groups[a].children[c];
-                                            tree.groups[a].children.splice(c, 1);
-                                            break;
-                                        }
-                                    }
+                                    count++;
                                 }
-                            } else {
-                                count++;
                             }
+                            recursiveGroup(tree.groups[a]);
                         }
-                        recursiveGroup(tree.groups[a]);
                     }
                 }
             }
@@ -1072,7 +1078,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     $.contextMenu({
         selector: '.file-group',
         callback: function (key, options) {
-            console.log(options);
             if (key == "ViewGroup") {
                 var detailCurrentGroupObj = {
                     groupParent: getGroupParent(),
@@ -1106,21 +1111,24 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     $.contextMenu({
         selector: '.root-group',
         callback: function (key, options) {
-            console.log(options);
+            var groupName = $(this).find("a").html();
             if (key == "ViewGroup") {
                 var detailCurrentGroupObj = {
-                    groupParent: getGroupParent(),
-                    groupName: getGroupName()
+                    groupParent: "",
+                    groupName: groupName
                 }
                 $scope.deleteGroup = detailCurrentGroupObj;
                 var detailSerializedCurrentGroup = $.param(detailCurrentGroupObj);
                 redirect(_urlViewGroup + "?" + detailSerializedCurrentGroup);
             } else if (key == "EditGroup") {
-                var currentGroupParent = getGroupParent();
-                var currentGroupName = getGroupName();
+                var currentGroupParent = "";
+                var currentGroupName = groupName;
                 var serializedCurrentGroup = prepareGroupUrl(currentGroupParent, currentGroupName);
                 redirect(_urlEditGroup + "?" + serializedCurrentGroup);
             } else if (key == "DeleteGroup") {
+                $scope.delete.group = {};
+                $scope.delete.group.groupName = groupName;
+                $scope.delete.group.groupParent = "";
                 $scope.TriggerDeleteGroupDialog("Delete Group");
             }
         },

@@ -51,7 +51,7 @@
                 <ul>
                     <li class="stick">
                         <a class="dropdown-toggle" href="javascript:;"><i class="icon-tree-view"></i>Database Name</a>
-                        <ul data-role="dropdown" style="display: block;">
+                        <ul data-role="dropdown" class="root-ul" style="display: block;">
                             <li ng-repeat="node in tree.groups" class="root-group" ng-click="SelectRoot(node);HideSearch()"><a ng-bind="AssessName(node.groupName)" class="word-break"></a></li>
                         </ul>
                     </li>
@@ -100,8 +100,8 @@
                             <a href="javascript:;" class="list file-group" ng-repeat="group in groups" ng-click="NavIn(group)">
                                 <div class="list-content">
                                     <span class="list-title"><span class="place-right icon-copy smaller"></span>{{group.groupName}}</span>
-                                    <span class="list-subtitle">MetroUI: News on 26/10/2013</span>
-                                    <span class="list-remark">Hello friend! Newest for Metro UI CSS</span>
+                                    <!--<span class="list-subtitle">MetroUI: News on 26/10/2013</span>
+                                    <span class="list-remark">Hello friend! Newest for Metro UI CSS</span>-->
                                 </div>
                             </a>
                             <!--ng-class="{'active': childIndex == $index}"-->
