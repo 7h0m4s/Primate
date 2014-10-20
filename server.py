@@ -610,6 +610,7 @@ def setFilepath():
         if os.name=='posix':
             file_path = subprocess.check_output('./MacSave', shell=True)
             file_path = file_path[7:]
+            file_path = file_path.replace("%20"," ")
         else:
             file_path = subprocess.check_output('SaveFileDialog.exe', shell=True)
 
@@ -654,6 +655,7 @@ def fileBrowse():
     if os.name=='posix':
         file_path = subprocess.check_output('./MacBrowse3', shell=True)
         file_path = file_path[7:]
+        file_path = file_path.replace("%20"," ")
     else:
         file_path = subprocess.check_output('BrowseDialog.exe', shell=True)
 
