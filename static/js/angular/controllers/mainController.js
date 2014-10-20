@@ -405,9 +405,9 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     };
 
     $scope.TriggerMasterPasswordDialog = function ($title) {
+        $scope.master = {};
         $http.get(_urlMasterPasswordDialogTemplate).success(function ($content) {
             var $compileContent = getCompileContent($content);
-            $scope.master = {};
             triggerDialog($title, $compileContent);
         })
         .error(function ($content, status) {
@@ -610,7 +610,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                     notifiSuccess(_NOTIFI_MASTERPASSWORD_CAPTION, _DEFAULT_SUCCESS_MSG);
                 } else {
                     $("#master-pwd-alert").slideDown();
-                    $("#master-pwd-alert").text();
+                    $(".custom-error").html(msg);
                 }
             },
             function () {

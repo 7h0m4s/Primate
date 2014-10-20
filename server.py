@@ -570,9 +570,9 @@ def newMasterPasword():
         if newPass == "":
             return "No New Password Recived",200
         if oldPass != session['password']:
-            return "Old Password Does Not Match Backend Records.",200
+            return "Your current password is incorrect.",200
         if oldPass == newPass:
-            return "New Password Cannot Match Old Password.",200
+            return "New password cannot match old password.",200
         session['password'] = newPass
         saveDB()
         return "Master Password changed.",304
