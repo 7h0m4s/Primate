@@ -208,7 +208,12 @@ def newDB():
         session['password'] = request.form['Password'].encode('ascii','ignore')
         assert type(session['password']) != unicode
         session['dbFile'] = request.form['DatabaseFile']
-        
+        try:
+            open(session['dbFile'], 'w').close()
+            os.unlink(session['dbFile'])
+        except (OSError,IOError):
+            return "Database Filename Is Invalid",200
+            
         try:
             sessionVault.addVault(Vault(session['password'].encode('ascii','ignore')))
             sessionVault.getVault().write_to_file(session['password'].encode('ascii','ignore'),session['dbFile'])
@@ -449,8 +454,7 @@ def editUser():
         userUrl = request.form['url']
         notes = request.form['notes']
 
-        if len(userTitle) <= 0:
-            return "Account Must Have A Title.", 200
+
         for record in sessionVault.getVault().records:
             if str(record._get_uuid()) == uuid:
                 record._set_group(group)
@@ -762,7 +766,7 @@ def exportFile():
             writer.writerow(line)
 
         response = make_response(output.getvalue())
-        response.headers["Content-Disposition"] = "attachment; filename=books.csv"
+        response.headers["Content-Disposition"] = "attachment; filename=Exported_Password_Database.csv"
         return response
     except Exception,e:
         return str(e),500
@@ -1099,7 +1103,7 @@ if __name__ == "__main__":
     
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER # Placeholder for where files should be stored if files are uploaded via HTML
                                                 # form.
-    app.debug = True #Disable this for demonstrations to prevent the double loading problem.
+    app.debug = False #Disable this for demonstrations to prevent the double loading problem.
     #app.threaded = True #Change if the server handles multiple requests at
                         #once.
     app.run()#Start the webserver.
