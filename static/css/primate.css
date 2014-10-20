@@ -1191,3 +1191,9 @@ p.validation {
 .black {
     color: #000 !important;
 }
+
+.back-home {
+    display: inline-block;
+    color: #3498db;
+    border-bottom: 1px #3498db dotted;
+}
