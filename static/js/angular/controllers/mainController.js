@@ -964,8 +964,10 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                         if (count == groupArr.length - 1) {
                             if (isGroup) {
                                 resultObj = tree.groups[a].groups.push(newObj);
+                                $scope.$apply();
                             } else {
                                 resultObj = tree.groups[a].children.push(newObj);
+                                $scope.$apply();
                             }
                         } else {
                             count++;
@@ -993,6 +995,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                         if (oldObj.groupName == rootName) {
                             resultObj = tree.groups[a];
                             tree.groups.splice(a, 1);
+                            $scope.$apply();
                         }
                     } else {
                         if (tree.groups[a] != null) {
@@ -1004,6 +1007,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                                             if (tree.groups[a].groups[b].groupName == oldObj.groupName) {
                                                 resultObj = tree.groups[a].groups[b];
                                                 tree.groups[a].groups.splice(b, 1);
+                                                $scope.$apply();
                                                 break;
                                             }
                                         }
@@ -1012,6 +1016,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                                             if (tree.groups[a].children[c].uuid == oldObj.uuid) {
                                                 resultObj = tree.groups[a].children[c];
                                                 tree.groups[a].children.splice(c, 1);
+                                                $scope.$apply();
                                                 break;
                                             }
                                         }
