@@ -607,9 +607,9 @@ def setFilepath():
     try:
 
         file_path=''
-        if os.name=='posix':####TODO CHANGE THIS TO SAVEDIALOG BINARY!!!!
-            file_path = subprocess.check_output('./MacBrowse3', shell=True)####TODO CHANGE THIS TO SAVEDIALOG BINARY!!!!
-            file_path = file_path.replace('file://',1)####TODO CHANGE THIS TO SAVEDIALOG BINARY!!!!
+        if os.name=='posix':
+            file_path = subprocess.check_output('./MacSave', shell=True)
+            file_path = file_path.replace('file://',1)
         else:
             file_path = subprocess.check_output('SaveFileDialog.exe', shell=True)
 
