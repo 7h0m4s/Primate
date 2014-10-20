@@ -222,6 +222,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     };
 }])
 .controller('mainController', function ($scope, $http, $q, $compile, $window, $location, requestFactory, $routeParams, $localStorage) {
+    var lockFileDialog = false;
     $scope.childIndex = -1;
     $scope.templates = { cacheExportDialogTemplate: "", cacheImportDialogTemplate: "", cacheDeleteAccountTemplate: "" }
     $scope.userSetting = null;
@@ -277,15 +278,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         }
     });
 
-    var addApprovedClass = function (id) {
-        $(id).addClass("black");
-        $(id + " span").addClass("tick-pass");
-    };
 
-    var removeApprovedClass = function (id) {
-        $(id).removeClass("black");
-        $(id + " span").removeClass("tick-pass");
-    }
 
     $scope.$watch('breadcrumbs', function (newValue, oldvalue) {
         if (newValue != oldvalue) {
@@ -319,14 +312,12 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     };
 
     $scope.SelectRoot = function (obj) {
-        addParentToEachChild(obj);
         $scope.breadcrumbs = [];
         setGroupandChildren($scope, obj);
         $scope.breadcrumbs.push(obj);
     };
 
     $scope.NavIn = function (obj) {
-        addParentToEachChild(obj);
         resetChildIndex();
         setGroupandChildren($scope, obj);
         $scope.breadcrumbs.push(obj);
@@ -473,13 +464,17 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
 
 
     $scope.OpenImportFileDialog = function () {
-        ajaxGetMethod(true, _urlGetFilePath, {}, function (content) {
-            if (content.length != 0) {
-                $("#importFileInput").val(content);
-            }
-        }, function () {
-            redirectToErroPage505();
-        });
+        if (!lockFileDialog) {
+            lockFileDialog = true;
+            ajaxGetMethod(true, _urlGetFilePath, {}, function (content) {
+                if (content.length != 0) {
+                    $("#importFileInput").val(content);
+                }
+                lockFileDialog = false;
+            }, function () {
+                redirectToErroPage505();
+            });
+        }
     };
 
     $scope.TriggerDeleteGroupDialog = function ($title) {
@@ -748,6 +743,25 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         }
     }
 
+    $scope.IsLowercase = function () {
+        return isLowercase();
+    }
+    $scope.IsUppercase = function () {
+        return isUppercase();
+    }
+    $scope.IsDigit = function () {
+        return isDigit();
+    }
+    $scope.IsSymbol = function () {
+        return isDigit();
+    }
+    $scope.PwdLength = function () {
+        return pwdLength();
+    }
+    $scope.Redirect = function (url) {
+        redirect(url);
+    };
+
     var initAccountId = function () {
         var uuid = $routeParams.uuid;
         $("#uuid").val(uuid);
@@ -768,7 +782,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 $scope.oldAccountGroupParent = $scope.account.groupParent;
                 $.extend($scope.oldAccount, $scope.account);
             }, function (response) {
-                redirectToErroPage505();
+                redirectToErroPage();
             });
         } else {
             resetScopeAccount();
@@ -789,13 +803,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         }
         return preGroup;
     }
-
-    //todo test whether it is needed
-    var addParentToEachChild = function (obj) {
-        //for (var a = 0; a < obj.children.length; a++) {
-        //    obj.children[a].parent = obj;
-        //}
-    };
 
     var setGroupandChildren = function (scope, obj) {
         scope.groups = obj.groups;
@@ -889,15 +896,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         $scope.group = {};
     };
 
-    var treeGroupModel = function (groupName, children, groups) {
-        this.groupName = groupName;
-        this.children = [];
-        this.children = children;
-        this.groups = [];
-        this.groups = groups;
-    }
-
-
     var prepareRedirectAcco = function (url) {
         var uuid = getUuid();
         var currentGroupObj = { uuid: uuid }
@@ -930,18 +928,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     var resetScopeAccount = function () {
         $scope.account = {};
     }
-
-    var resetGroupBreadChildren = function () {
-        $scope.groups = {};
-        $scope.children = {};
-        $scope.breadcrumbs = [];
-    }
-
-    var groupObj = function (groupParentIndex, groupName) {
-        this.groupParentIndex = groupParentIndex;
-        this.groupName = groupName;
-    };
-
 
     var addGroupFromNewTreeByParentName = function (groupParentIndex, newObj, isGroup) {
         var groupArr = groupParentIndex.split('.');
@@ -1217,24 +1203,16 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     }
     settingPGenerator();
 
-    $scope.IsLowercase = function () {
-        return isLowercase();
-    }
-    $scope.IsUppercase = function () {
-        return isUppercase();
-    }
-    $scope.IsDigit = function () {
-        return isDigit();
-    }
-    $scope.IsSymbol = function () {
-        return isDigit();
-    }
-    $scope.PwdLength = function () {
-        return pwdLength();
-    }
-    $scope.Redirect = function (url) {
-        redirect(url);
+
+    var addApprovedClass = function (id) {
+        $(id).addClass("black");
+        $(id + " span").addClass("tick-pass");
     };
+
+    var removeApprovedClass = function (id) {
+        $(id).removeClass("black");
+        $(id + " span").removeClass("tick-pass");
+    }
 });
 
 var isLowercase = function () {

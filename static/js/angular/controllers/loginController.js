@@ -26,11 +26,12 @@ loginApp.directive('passwordMatch', [function () {
     };
 }]);
 
-loginApp.controller('loginController', function ($scope, $localStorage) {
+loginApp.controller('loginController', function ($scope) {
+    var lockFileDialog = false;
+
     $scope.SubmitLoginForm = function (isValid) {
         if (isValid) {
             ajaxPost($("#loginForm"), true, null, function (msg) {
-                console.log(msg);
                 if (msg) {
                     $(".login-error").html(msg);
                     $(".login-error").slideDown("fast");
@@ -51,17 +52,36 @@ loginApp.controller('loginController', function ($scope, $localStorage) {
         }
     };
 
-    $scope.OpenSetFileDialog=function() {
-        ajaxGetMethod(true, _urlSetFilePath, {}, function (content) {
-            if (content.length != 0) {
-                setDatabaseInputModified();
-                setDatabaseInputNotRequired();
-                $("#databaseFile").val(content);
-            }
-        }, function () {
-            redirectToErroPage505();
-        });
+    $scope.OpenSetFileDialog = function () {
+        if (!lockFileDialog) {
+            lockFileDialog = true;
+            ajaxGetMethod(true, _urlSetFilePath, {}, function (content) {
+                if (content.length != 0) {
+                    setDatabaseInputModified();
+                    setDatabaseInputNotRequired();
+                    $("#databaseFile").val(content);
+                }
+                lockFileDialog = false;
+            }, function () {
+                redirectToErroPage505();
+            });
+        }
     }
+    $scope.OpenFileDialog = function () {
+        if (!lockFileDialog) {
+            lockFileDialog = true;
+            ajaxGetMethod(true, _urlGetFilePath, {}, function (content) {
+                if (content.length != 0) {
+                    setLoginDatabaseInputModified();
+                    setLoginDatabaseInputNotRequired();
+                    $("#databaseFile").val(content);
+                }
+                lockFileDialog = false;
+            }, function () {
+                redirectToErroPage505();
+            });
+        }
+    };
 
     $scope.$watch('loginForm.Password.$error.required', function (newValue, oldvalue) {
         if (newValue != oldvalue) {
@@ -139,5 +159,13 @@ loginApp.controller('loginController', function ($scope, $localStorage) {
 
     var setDatabaseInputNotRequired = function () {
         $scope.newDBForm.DatabaseFile.$setValidity('required', true);
+    }
+
+    var setLoginDatabaseInputModified = function () {
+        $scope.loginForm.DatabaseFile.$dirty = true;
+    }
+
+    var setLoginDatabaseInputNotRequired = function () {
+        $scope.loginForm.DatabaseFile.$setValidity('required', true);
     }
 });

@@ -391,7 +391,7 @@ class Vault(object):
 
         self.f_tag = filehandle.read(4)  # TAG: magic tag
         if (self.f_tag != 'PWS3'):
-            raise self.VaultVersionError("Not a PasswordSafe V3 file")
+            raise self.VaultVersionError("Not a passwordSafe V3 file")
 
         self.f_salt = filehandle.read(32)  # SALT: SHA-256 salt
         self.f_iter = struct.unpack("<L", filehandle.read(4))[0]  # ITER: SHA-256 keystretch iterations
