@@ -1214,4 +1214,7 @@ p.validation {
 .search-bar span {
     font-style: italic;
 }
+.file-child {
+    outline: none !important;
+}
 /*end of search bar*/
