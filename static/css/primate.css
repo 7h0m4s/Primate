@@ -16,6 +16,10 @@
     margin-top: 0 !important;
 }
 
+.metro p.margin-top-5 {
+    margin-top: -5px !important;
+}
+
 .margin-top10 {
     margin-top: 10px !important;
 }
@@ -1071,19 +1075,13 @@ p.validation {
 /*master password*/
 .ms-left {
     float: left;
-    width: 150px;
+    text-align: left;
 }
 
 .ms-right {
     float: left;
-    width: 300px !important;
 }
 
-#masterPasswordForm label {
-    height: 34px;
-    vertical-align: middle;
-    text-align: left !important;
-}
 
 #main-body.metro .btn {
     margin-top: 25px;
@@ -1093,4 +1091,103 @@ p.validation {
     position: absolute;
     top: 32px;
     left: 0;
+}
+
+#master-pwd-dialog {
+    padding-bottom: 0;
+}
+
+.metro .window.flat {
+    height: auto !important;
+}
+
+.metro .input-control.text .display-password {
+    display: block;
+    top: 0;
+}
+
+.metro .view-page .reveal-chb {
+    background-color: white;
+    padding: 0;
+    margin: 0;
+}
+
+.metro .btn-danger {
+    color: #fff;
+    background-color: #d9534f;
+    border-color: #d43f3a;
+}
+
+    .metro .btn-danger:hover {
+        color: #fff;
+        background-color: #d2322d;
+        border-color: #ac2925;
+    }
+
+.metro .btn-default, .metro .btn-default:focus {
+    color: #333;
+    background-color: #fff;
+    border-color: #ccc;
+    outline: none !important;
+}
+
+    .metro .btn-default:hover, .metro .btn-default:active {
+        color: #333;
+        background-color: #ebebeb;
+        border-color: #adadad;
+        outline: none !important;
+    }
+
+.metro .input-control.password.account-password {
+    float: left;
+    width: 90%;
+}
+
+.generate-password {
+    float: left;
+    width: 10%;
+}
+
+#main-body.metro .generate-password .btn {
+    margin-top: 0;
+    margin-left: -2px;
+    border-left: 0;
+}
+
+.validation-message, .password-strength {
+    margin: 2px 0 10px;
+    font-size: .8em;
+}
+
+.column {
+    position: relative;
+    display: -moz-inline-stack;
+    display: inline-block;
+    vertical-align: middle;
+    zoom: 1;
+    height: 100%;
+}
+
+#password-contain-uppercase, #password-contain-lowercase, #password-contain-numbers-special, #password-contain-mixed-symbol {
+    color: #a5a5a5;
+}
+
+.tick-fail {
+    background-position: 8px 0 !important;
+}
+
+.icon-small {
+    display: inline-block;
+    width: 21px;
+    height: 10px;
+    padding-left: 8px;
+    padding-right: 3px;
+}
+
+.tick-pass {
+    color: green;
+}
+
+.black {
+    color: #000 !important;
 }

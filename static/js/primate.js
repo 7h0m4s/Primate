@@ -142,64 +142,6 @@ var responsiveFrame = function () {
     });
 }
 
-var contextMenu = function () {
-    var obj = $(".file-child");
-    if (obj.length > 0) {
-        $.contextMenu({
-            selector: '.file-child',
-            callback: function (key, options) {
-            },
-            items: {
-                "RedirectUrl": {
-                    name: USER_CONTEXT_NAME_OBJ.NAME_REDIRECT_URL,
-                },
-                "sep1": "---------",
-                "viewAcc": {
-                    name: USER_CONTEXT_NAME_OBJ.NAME_ACCOUNT_DETAIL,
-                },
-                "editAcc": {
-                    name: USER_CONTEXT_NAME_OBJ.NAME_EDIT_ACCOUNT,
-                },
-                "delAcc": {
-                    name: USER_CONTEXT_NAME_OBJ.NAME_DELETE_ACCOUNT,
-                },
-                "sep2": "---------",
-                "copyCuser": {
-                    name: USER_CONTEXT_NAME_OBJ.NAME_COPY_USERNAME,
-                },
-                "copyPasswrd": {
-                    name: USER_CONTEXT_NAME_OBJ.NAME_COPY_PASSWORD,
-                },
-                "copyUrl": {
-                    name: USER_CONTEXT_NAME_OBJ.NAME_COPY_URL,
-                },
-            }
-        });
-    }
-};
-
-var contextFileGroupMenu = function () {
-    var obj = $(".file-group");
-    if (obj.length > 0) {
-        $.contextMenu({
-            selector: '.file-group',
-            callback: function (key, options) {
-            },
-            items: {
-                "ViewGroup": {
-                    name: GROUP_CONTEXT_NAME_OBJ.NAME_GROUP_DETAIL,
-                },
-                "EditGroup": {
-                    name: GROUP_CONTEXT_NAME_OBJ.NAME_EDIT_GROUP,
-                },
-                "DeleteGroup": {
-                    name: GROUP_CONTEXT_NAME_OBJ.NAME_DELETE_GROUP,
-                }
-            }
-        });
-    }
-};
-
 //due to jquery version, it throws an error. try catch can patch it properly
 var initSplitter = function () {
     try {
@@ -408,38 +350,4 @@ var isUndifined = function (target) {
     return typeof target == _undefined;
 };
 
-$('input[placeholder]').placeholder();
-$("#passwd").complexify({}, function (valid, complexity) {
-    if (!valid) {
-        $('#complexity').animate({ 'width': complexity + '%' }).removeClass('valid').addClass('invalid');
-    } else {
-        $('#complexity').animate({ 'width': complexity + '%' }).removeClass('invalid').addClass('valid');
-    }
-    $('#complexity').html(Math.round(complexity) + '%');
-});
 
-//$(".btn-reveal").on('click', function () {
-//    console.log("n");
-//});
-
-//$(".btn-reveal").on('mouseup', function () {
-//    console.log("n");
-//});
-
-//$(".btn-reveal").on('mousedown', function () {
-//    console.log("n");
-//});
-
-//$(function () {
-//    $(".btn-reveal").on('click', function () {
-//        console.log("n");
-//    });
-
-//    $(".btn-reveal").on('mouseup', function () {
-//        console.log("n");
-//    });
-
-//    $(".btn-reveal").on('mousedown', function () {
-//        console.log("n");
-//    });
-//});

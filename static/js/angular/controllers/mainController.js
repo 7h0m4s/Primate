@@ -3,18 +3,16 @@ var _NOTIFI_SETTING_CAPTION = "Setting";
 var _NOTIFI_GROUP_CAPTION = "Group";
 var _NOTIFI_ACCOUNT_CAPTION = "Account";
 var _NOTIFI_CLIPBOARD_CAPTION = "Clipboard";
+var _NOTIFI_MASTERPASSWORD_CAPTION = "Master Password";
 var _DEFAULT_FAILURE_CAPTION = "Error";
 var _DEFAULT_SUCCESS_MSG = "Saved successfully";
 var _DEFAULT_FAILURE_MSG = "Save failed";
 var _EDIT_SUCCESS_MSG = "Edit successfully";
 var _DELETE_SUCCESS_MSG = "Detele successfully";
 var _ADD_SUCCESS_MSG = "Add successfully";
-
 var _COPY_URL_MSG = "Copy URL successfully";
 var _COPY_USERNAME_MSG = "Copy username successfully";
 var _COPY_PASSWORD_MSG = "Copy password successfully";
-
-
 var _backspace_keycode = 8;
 var _defaultCheckboxValue = "on";
 var _urlErrorPage404 = "static/error-page.html";
@@ -37,18 +35,25 @@ var _urlGetUser = "/get-user";
 var _GROUP_CONCAT_SYMBOL = ".";
 var _VALIDATE_DOT = '.';
 var _EMPTY_NAME = "N/A";
+var _DEFAULT_PWD_LENGTH = 12;
 var _urlSetFilePath = "/set-filePath";
 var _urlDeleteUser = "/delete-user";
+var _urlDeleteGroup = "_urlDeleteGroup";
 var _urlResetMasterPassword = "/new-master-password"; //post
 //new Password
 //old Password
-
+var _TIME_SHOWPASSWORD = 1500;
 var _CONTENT_COPY = "/copy";
 var _CONTEXT_ATTRIBUTE = {
     USERNAME: "username",
     PASSWORD: "password",
     URL: "url"
 };
+
+var numberRegex = /\d+/;
+var lowerCaseRegex = /[a-z]+/;
+var updateCaseRegex = /[A-Z]+/;
+var symbolRegex = /[!@#$%^&*()_+=\[{\]};:<>|./?,\\'""-]+/;
 
 var global_tree = null;
 
@@ -119,7 +124,64 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     }
     return myService;
 })
-.directive('notargetSymbol', [function () {
+.directive('passwordPolicy', [
+    function () {
+        return {
+            restrict: 'A',
+            scope: true,
+            require: 'ngModel',
+            link: function (scope, elem, attrs, control) {
+                var checker = function () {
+                    var val = elem.context.value;
+                    var check = true;
+                    if (isLowercase()) {
+                        check = check && lowerCaseRegex.test(val);
+                    }
+                    if (isUppercase()) {
+                        check = check && updateCaseRegex.test(val);
+
+                    }
+                    if (isDigit()) {
+                        check = check && numberRegex.test(val);
+
+                    }
+                    if (isSymbol()) {
+                        check = check && symbolRegex.test(val);
+                    }
+                    return check;
+                };
+                scope.$watch(checker, function (n) {
+                    control.$setValidity("passwordpolicy", n);
+                });
+            }
+        };
+    }
+])
+
+.directive('passwordMatch', [function () {
+    return {
+        restrict: 'A',
+        scope: true,
+        require: 'ngModel',
+        link: function (scope, elem, attrs, control) {
+            var checker = function () {
+                var e1 = scope.$eval(attrs.ngModel);
+                var e2 = scope.$eval(attrs.passwordMatch);
+                return e1 == e2;
+            };
+            scope.$watch(checker, function (n) {
+                if (n) {
+                    $(".login-validate").eq(2).slideUp("fast");
+                } else {
+                    $(".login-validate").eq(2).slideDown("fast");
+                }
+                control.$setValidity("unique", n);
+            });
+        }
+    };
+}])
+
+.directive('minpwdLength', [function () {
     return {
         restrict: 'A',
         scope: true,
@@ -127,27 +189,20 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         link: function (scope, elem, attrs, control) {
             var checker = function () {
                 var val = elem.context.value;
-                if (!isUndifined(val)) {
-                    var isValid = !(val.indexOf(_VALIDATE_DOT) > -1);
-                    return isValid;
-                }
-                return true;
+                return val.length >= $("#passwrdMinLenth").val();
             };
             scope.$watch(checker, function (n) {
-                control.$setValidity("dot", n);
+                control.$setValidity("minpwdlength", n);
             });
         }
     };
 }])
+
 .controller('mainController', function ($scope, $http, $q, $compile, $window, $location, requestFactory, $routeParams, $localStorage) {
     $scope.childIndex = -1;
-    //$scope.breadcrumbs = [];
     $scope.templates = { cacheExportDialogTemplate: "", cacheImportDialogTemplate: "", cacheDeleteAccountTemplate: "" }
     $scope.userSetting = null;
-    //$scope.tree = null;
     $scope.group = {};
-    //$scope.groups = {};
-    //$scope.children = {};
     $scope.delete = {};
     $scope.init = function () {
         initTree($scope);
@@ -171,6 +226,48 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             $("#isSymbol").prop('checked', isCheck);
         }
     });
+
+    $scope.$watch('account.passwd', function (newValue, oldvalue) {
+        if (newValue != oldvalue) {
+            if (typeof newValue == "string") {
+
+                if (lowerCaseRegex.test(newValue)) {
+                    addApprovedClass("#password-contain-lowercase");
+                } else {
+                    removeApprovedClass("#password-contain-lowercase");
+                }
+
+                if (updateCaseRegex.test(newValue)) {
+                    addApprovedClass("#password-contain-uppercase");
+                } else {
+                    removeApprovedClass("#password-contain-uppercase");
+                }
+
+                if (numberRegex.test(newValue)) {
+                    addApprovedClass("#password-contain-numbers-special");
+                } else {
+                    removeApprovedClass("#password-contain-numbers-special");
+                }
+
+                if (symbolRegex.test(newValue)) {
+                    addApprovedClass("#password-contain-mixed-symbol");
+                } else {
+                    removeApprovedClass("#password-contain-mixed-symbol");
+                }
+            }
+        }
+    });
+
+    var addApprovedClass = function (id) {
+        $(id).addClass("black");
+        $(id + " span").addClass("tick-pass");
+    };
+
+    var removeApprovedClass = function (id) {
+        $(id).removeClass("black");
+        $(id + " span").removeClass("tick-pass");
+    }
+
 
     $scope.$watch('groups', function (newValue, oldvalue) {
         if (newValue != oldvalue) {
@@ -250,6 +347,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     $scope.SubmitSettingForm = function () {
         ajaxPost($("#settingForm"), true, _urlSaveUserSetting, function (msg) {
             notifiSuccess(_NOTIFI_SETTING_CAPTION);
+            settingPGenerator();
             closeSilder();
         },
         function (msg) {
@@ -302,6 +400,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     $scope.TriggerMasterPasswordDialog = function ($title) {
         $http.get(_urlMasterPasswordDialogTemplate).success(function ($content) {
             var $compileContent = getCompileContent($content);
+            $scope.master = {};
             triggerDialog($title, $compileContent);
         })
         .error(function ($content, status) {
@@ -339,12 +438,24 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             });
         }, function () {
             redirectToErroPage505();
-
         });
     };
 
     $scope.DeleteGroup = function () {
-
+        var deleteGroup = $scope.deleteGroup;
+        if (isUndifined(deleteGroup)) {
+            redirectToErroPage505();
+            return;
+        }
+        ajaxGet(true, _urlDeleteGroup, postData, function () {
+            $.Dialog.close();
+            console.log($scope);
+            removeAtiveElem();
+            deleteGroupFromNewTreeByParentName(accountObj.groupParent, accountObj, false);
+            notifiSuccess(_NOTIFI_ACCOUNT_CAPTION, _DELETE_SUCCESS_MSG);
+        }, function () {
+            redirectToErroPage505();
+        });
     };
 
 
@@ -476,7 +587,25 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         }
     };
 
-
+    $scope.SubmitMasterPasswordForm = function (isValid) {
+        if (isValid) {
+            submitAnimatel();
+            ajaxPost($("#masterPasswordForm"), true, _urlResetMasterPassword, function (msg) {
+                if (!msg) {
+                    $.Dialog.close();
+                    notifiSuccess(_NOTIFI_MASTERPASSWORD_CAPTION, _DEFAULT_SUCCESS_MSG);
+                } else {
+                    $("#master-pwd-alert").show();
+                    $("#master-pwd-alert").text();
+                }
+            },
+            function () {
+                redirectToErroPage505();
+            });
+        } else {
+            redirectToErroPage505();
+        }
+    }
 
 
     $scope.SubmitCreateAccountForm = function (isValid) {
@@ -557,6 +686,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         hideLoader();
         var uuid = initAccountId();
         prepareAccountForm(uuid);
+        $('#passwd').change();
     };
 
     $scope.ViewAccountDetail = function () {
@@ -569,6 +699,39 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         }
         return str;
     };
+
+    $scope.getAllChildren = function () {
+        $scope.searchChildren = [];
+        var recursiveGroup = function (tree) {
+            for (var b = 0; b < tree.children.length; b++) {
+                $scope.searchChildren.push(tree.children[b]);
+            }
+            for (var a = 0; a < tree.groups.length; a++) {
+                recursiveGroup(tree.groups[a]);
+            }
+        };
+        recursiveGroup($scope.tree);
+        console.log($scope.searchChildren);
+    };
+
+    $scope.Reveal = function (id) {
+        $(id).attr("type", "text");
+    };
+    $scope.Hide = function (id) {
+        console.log("hide");
+        $(id).attr("type", "password");
+    };
+
+    $scope.RevealCheckboxPassword = function (chkID, targetID) {
+        var $target = $(targetID);
+        var password = $target.attr("data-password");
+        var mask = $target.attr("data-mask");
+        if ($(chkID).is(':checked')) {
+            $target.html(password);
+        } else {
+            $target.html(mask);
+        }
+    }
 
     var initAccountId = function () {
         var uuid = $routeParams.uuid;
@@ -651,13 +814,12 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
 
     var initSetting = function (scope) {
         requestFactory.get(_urlGetUserSetting).then(function (data) {
-            scope.userSetting = data;
+            $scope.userSetting = data;
         });
     };
 
     var initTree = function (scope) {
         requestFactory.get(_urlGetTree).then(function (data) {
-            console.log(data);
             $scope.tree = data;
             global_tree = data;
         });
@@ -796,7 +958,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     }
 
     var deleteGroupFromNewTreeByParentName = function (groupParentIndex, oldObj, isGroup) {
-        debugger;
         var groupArr = groupParentIndex.split('.');
         var count = 0;
         var resultObj = null;
@@ -871,6 +1032,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                     groupParent: getGroupParent(),
                     groupName: getGroupName()
                 }
+                $scope.deleteGroup = detailCurrentGroupObj;
                 var detailSerializedCurrentGroup = $.param(detailCurrentGroupObj);
                 redirect(_urlViewGroup + "?" + detailSerializedCurrentGroup);
             } else if (key == "EditGroup") {
@@ -949,4 +1111,63 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             },
         }
     });
+
+    var settingPGenerator = function () {
+        var pwdLenth = _DEFAULT_PWD_LENGTH;
+        var requiredPassword = pwdLength();
+
+        if (requiredPassword > pwdLenth) {
+            pwdLenth = requiredPassword;
+        }
+        $("#genPassword").pGenerator({
+            'bind': 'click',
+            'passwordElement': "#passwd",
+            'displayElement': '#my-display-element',
+            'passwordLength': pwdLenth,
+            'uppercase': true,
+            'lowercase': true,
+            'numbers': true,
+            'specialChars': true,
+            'onPasswordGenerated': function (generatedPassword) {
+                $scope.Reveal("#passwd");
+                setTimeout(function () {
+                    $scope.Hide("#passwd");
+                }, _TIME_SHOWPASSWORD);
+                $('#passwd').change();
+            }
+        });
+    }
+    settingPGenerator();
+
+    $scope.IsLowercase = function () {
+        return isLowercase();
+    }
+    $scope.IsUppercase = function () {
+        return isUppercase();
+    }
+    $scope.IsDigit = function () {
+        return isDigit();
+    }
+    $scope.IsSymbol = function () {
+        return isDigit();
+    }
+    $scope.PwdLength = function () {
+        return pwdLength();
+    }
 });
+
+var isLowercase = function () {
+    return $("#isLowercase").prop('checked');
+}
+var isUppercase = function () {
+    return $("#isUppercase").prop('checked');
+}
+var isDigit = function () {
+    return $("#isDigit").prop('checked');
+}
+var isSymbol = function () {
+    return $("#isSymbol").prop('checked');
+}
+var pwdLength = function () {
+    return $("#passwrdMinLenth").val();
+}
