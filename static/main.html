@@ -97,7 +97,7 @@
                         <div class="group-content" style="display: block;">
                             <a href="javascript:;" class="list file-group" ng-repeat="group in groups" ng-click="NavIn(group)">
                                 <div class="list-content">
-                                    <span class="list-title"><span class="place-right icon-copy smaller"></span>{{group.groupName}}</span>
+                                    <span class="list-title input-control text"><span class="btn-file" style="padding-left:8px; color: #2e92cf;"></span>{{group.groupName}}</span>
                                     <span class="list-subtitle">MetroUI: News on 26/10/2013</span>
                                     <span class="list-remark">Hello friend! Newest for Metro UI CSS</span>
                                 </div>
@@ -106,7 +106,7 @@
                             <a href="javascript:;" class="list file-child" ng-repeat="child in children" ng-click="SetActive($index,$event);ViewAccountDetail()">
                                 <div class=" list-content">
                                     <span class="account-uuid">{{child.uuid}}</span>
-                                    <span class="list-title"><span class="place-right icon-new smaller"></span>{{child.title}}</span>
+                                    <span class="list-title"><span class="place-right icon-user large" style="color: #2e92cf;"></span>{{child.title}}</span>
                                     <span class="list-subtitle">Last Modified: {{child.last_mod}}</span>
                                     <span class="list-remark">{{child.notes}}</span>
                                 </div>
