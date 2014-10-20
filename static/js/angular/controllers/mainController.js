@@ -228,6 +228,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     $scope.userSetting = null;
     $scope.group = {};
     $scope.delete = {};
+    $scope.file = {};
     $scope.init = function () {
         initTree($scope);
         initSetting($scope);
@@ -388,6 +389,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     };
 
     $scope.TriggerImportDialog = function ($title) {
+        $scope.file.filePath = "";
         if ($scope.templates.cacheImportDialogTemplate) {
             triggerDialog($title, getCompileContent($scope.templates.cacheImportDialogTemplate));
         } else {
@@ -469,6 +471,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             ajaxGetMethod(true, _urlGetFilePath, {}, function (content) {
                 if (content.length != 0) {
                     $("#importFileInput").val(content);
+                    $("#importFileInput").change();
                 }
                 lockFileDialog = false;
             }, function () {
@@ -599,14 +602,14 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     };
 
     $scope.SubmitMasterPasswordForm = function (isValid) {
+        $("#master-pwd-alert").hide();
         if (isValid) {
-            submitAnimatel();
             ajaxPost($("#masterPasswordForm"), true, _urlResetMasterPassword, function (msg) {
                 if (!msg) {
                     $.Dialog.close();
                     notifiSuccess(_NOTIFI_MASTERPASSWORD_CAPTION, _DEFAULT_SUCCESS_MSG);
                 } else {
-                    $("#master-pwd-alert").show();
+                    $("#master-pwd-alert").slideDown();
                     $("#master-pwd-alert").text();
                 }
             },

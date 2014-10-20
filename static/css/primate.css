@@ -1087,10 +1087,12 @@ p.validation {
     margin-top: 25px;
 }
 
-#import-customMsg {
-    position: absolute;
-    top: 32px;
-    left: 0;
+#main-body.metro #import-download.btn {
+    margin-top: 5px;
+}
+
+#main-body.metro .aside-footer .btn {
+    margin-top: 0;
 }
 
 #master-pwd-dialog {

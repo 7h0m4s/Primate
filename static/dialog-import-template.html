@@ -4,13 +4,14 @@
     </div>
     <div class="file-info margin-top10">
         <form name="fileImportForm" id="fileImport">
-            <div class="input-control file" data-role="input-control">
+            <div class="input-control file" data-role="input-control" ng-class="{'error-state': fileImportForm.file.$invalid && fileImportForm.file.$dirty}">
                 <input type="text" name="file" id="importFileInput" class="file-path" ng-model="file.filePath" required />
                 <button class="btn-file browse-btn" type="button" ng-click="OpenImportFileDialog()"></button>
             </div>
+            <p class="validation" ng-show="fileImportForm.file.$error.required&& fileImportForm.file.$dirty">This field is required</p>
             <p class="validation" id="import-customMsg"></p>
             <div>
-                <a href="javascript:;" class="btn btn-lead full" id="import-download" ng-click="ImportSubmit()">Import</a>
+                <a href="javascript:;" class="btn btn-lead full" id="import-download" ng-disabled="fileImportForm.$invalid" ng-click="ImportSubmit()">Import</a>
             </div>
         </form>
     </div>
