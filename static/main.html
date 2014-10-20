@@ -87,7 +87,7 @@
                             <a href="javascript:;" class="list file-child" ng-repeat="child in searchChildren  | orderBy : 'title' | filter:accountSearch:title" ng-click="SetActive($index,$event);ViewAccountDetail()">
                                 <div class=" list-content">
                                     <span class="account-uuid">{{child.uuid}}</span>
-                                    <span class="list-title"><span class="place-right icon-new smaller"></span>{{child.title}}</span>
+                                    <span class="list-title"><span class="place-right icon-user large" style="color: #2e92cf;"></span>{{child.title}}</span>
                                     <span class="list-subtitle">Last Modified: {{child.last_mod}}</span>
                                     <span class="list-remark">{{child.notes}}</span>
                                 </div>

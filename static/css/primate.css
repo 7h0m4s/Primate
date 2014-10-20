@@ -1,5 +1,10 @@
 ﻿@import url('font-style.css');
-
+* {
+    cursor: default !important;
+}
+a, a span, button {
+    cursor: pointer !important;
+}
 .fl {
     float: left;
 }
