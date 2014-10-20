@@ -21,12 +21,20 @@
             <label class="required">Password</label>
             <div class="ofh">
                 <div class="input-control password account-password" data-role="input-control" ng-class="{'error-state': userForm.passwd.$invalid && userForm.passwd.$dirty}">
-                    <input type="password" placeholder="Password" name="passwd" id="passwd" ng-model="account.passwd" ng-class="{'error-state': userForm.passwd.$error.required&& userForm.passwd.$dirty}" required />
+                    <input type="password" placeholder="Password" name="passwd" id="passwd" minpwd-length password-policy ng-model="account.passwd" ng-class="{'error-state': userForm.passwd.$error.required&& userForm.passwd.$dirty}" required />
                     <button class="btn-reveal" tabindex="-1" type="button" ng-mousedown="Reveal('#passwd')" ng-mouseup="Hide('#passwd')"></button>
                 </div>
                 <div class="generate-password"><button type="button" id="genPassword" class="btn btn-default full"><span class="icon-key"></span></button></div>
             </div>
+            <div class="row password-strength" id="password-strength">
+                <div class="column">Please use:</div>
+                <div class="column" id="password-contain-lowercase" ng-show="IsLowercase()"><span class="icon-checkmark icon-small"></span><span>Lowercase letters</span></div>
+                <div class="column" id="password-contain-uppercase" ng-show="IsUppercase()"><span class="icon-checkmark icon-small"></span>Upper letters</div>
+                <div class="column" id="password-contain-numbers-special" ng-show="IsDigit()"><span class="icon-checkmark icon-small"></span>Numbers</div>
+                <div class="column" id="password-contain-mixed-symbol" ng-show="IsSymbol()"><span class="icon-checkmark icon-small"></span>User symbols (%,$,@,#,etc.)</div>
+            </div>
             <span class="validation" ng-show="userForm.passwd.$error.required&& userForm.passwd.$dirty">This field is required</span>
+            <span class="validation" ng-show="userForm.passwd.$error.minpwdlength&& userForm.passwd.$dirty">Password required at least {{PwdLength()}} character(s)</span>
             <label>Title</label>
             <div class="input-control text" data-role="input-control">
                 <input placeholder="Title" name="title" id="title" ng-model="account.title" />

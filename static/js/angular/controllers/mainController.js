@@ -35,6 +35,7 @@ var _urlGetUser = "/get-user";
 var _GROUP_CONCAT_SYMBOL = ".";
 var _VALIDATE_DOT = '.';
 var _EMPTY_NAME = "N/A";
+var _DEFAULT_PWD_LENGTH = 12;
 var _urlSetFilePath = "/set-filePath";
 var _urlDeleteUser = "/delete-user";
 var _urlDeleteGroup = "_urlDeleteGroup";
@@ -123,26 +124,39 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     }
     return myService;
 })
-.directive('notargetSymbol', [function () {
-    return {
-        restrict: 'A',
-        scope: true,
-        require: 'ngModel',
-        link: function (scope, elem, attrs, control) {
-            var checker = function () {
-                var val = elem.context.value;
-                if (!isUndifined(val)) {
-                    var isValid = !(val.indexOf(_VALIDATE_DOT) > -1);
-                    return isValid;
-                }
-                return true;
-            };
-            scope.$watch(checker, function (n) {
-                control.$setValidity("dot", n);
-            });
-        }
-    };
-}])
+.directive('passwordPolicy', [
+    function () {
+        return {
+            restrict: 'A',
+            scope: true,
+            require: 'ngModel',
+            link: function (scope, elem, attrs, control) {
+                var checker = function () {
+                    var val = elem.context.value;
+                    var check = true;
+                    if (isLowercase()) {
+                        check = check && lowerCaseRegex.test(val);
+                    }
+                    if (isUppercase()) {
+                        check = check && updateCaseRegex.test(val);
+
+                    }
+                    if (isDigit()) {
+                        check = check && numberRegex.test(val);
+
+                    }
+                    if (isSymbol()) {
+                        check = check && symbolRegex.test(val);
+                    }
+                    return check;
+                };
+                scope.$watch(checker, function (n) {
+                    control.$setValidity("passwordpolicy", n);
+                });
+            }
+        };
+    }
+])
 
 .directive('passwordMatch', [function () {
     return {
@@ -167,15 +181,28 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     };
 }])
 
+.directive('minpwdLength', [function () {
+    return {
+        restrict: 'A',
+        scope: true,
+        require: 'ngModel',
+        link: function (scope, elem, attrs, control) {
+            var checker = function () {
+                var val = elem.context.value;
+                return val.length >= $("#passwrdMinLenth").val();
+            };
+            scope.$watch(checker, function (n) {
+                control.$setValidity("minpwdlength", n);
+            });
+        }
+    };
+}])
+
 .controller('mainController', function ($scope, $http, $q, $compile, $window, $location, requestFactory, $routeParams, $localStorage) {
     $scope.childIndex = -1;
-    //$scope.breadcrumbs = [];
     $scope.templates = { cacheExportDialogTemplate: "", cacheImportDialogTemplate: "", cacheDeleteAccountTemplate: "" }
     $scope.userSetting = null;
-    //$scope.tree = null;
     $scope.group = {};
-    //$scope.groups = {};
-    //$scope.children = {};
     $scope.delete = {};
     $scope.init = function () {
         initTree($scope);
@@ -320,6 +347,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     $scope.SubmitSettingForm = function () {
         ajaxPost($("#settingForm"), true, _urlSaveUserSetting, function (msg) {
             notifiSuccess(_NOTIFI_SETTING_CAPTION);
+            settingPGenerator();
             closeSilder();
         },
         function (msg) {
@@ -786,13 +814,12 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
 
     var initSetting = function (scope) {
         requestFactory.get(_urlGetUserSetting).then(function (data) {
-            scope.userSetting = data;
+            $scope.userSetting = data;
         });
     };
 
     var initTree = function (scope) {
         requestFactory.get(_urlGetTree).then(function (data) {
-            console.log(data);
             $scope.tree = data;
             global_tree = data;
         });
@@ -931,7 +958,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     }
 
     var deleteGroupFromNewTreeByParentName = function (groupParentIndex, oldObj, isGroup) {
-        debugger;
         var groupArr = groupParentIndex.split('.');
         var count = 0;
         var resultObj = null;
@@ -1086,21 +1112,62 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         }
     });
 
-    $("#genPassword").pGenerator({
-        'bind': 'click',
-        'passwordElement': "#passwd",
-        'displayElement': '#my-display-element',
-        'passwordLength': 12,
-        'uppercase': true,
-        'lowercase': true,
-        'numbers': true,
-        'specialChars': true,
-        'onPasswordGenerated': function (generatedPassword) {
-            $scope.Reveal("#passwd");
-            setTimeout(function () {
-                $scope.Hide("#passwd");
-            }, _TIME_SHOWPASSWORD);
-            $('#passwd').change();
+    var settingPGenerator = function () {
+        var pwdLenth = _DEFAULT_PWD_LENGTH;
+        var requiredPassword = pwdLength();
+
+        if (requiredPassword > pwdLenth) {
+            pwdLenth = requiredPassword;
         }
-    });
+        $("#genPassword").pGenerator({
+            'bind': 'click',
+            'passwordElement': "#passwd",
+            'displayElement': '#my-display-element',
+            'passwordLength': pwdLenth,
+            'uppercase': true,
+            'lowercase': true,
+            'numbers': true,
+            'specialChars': true,
+            'onPasswordGenerated': function (generatedPassword) {
+                $scope.Reveal("#passwd");
+                setTimeout(function () {
+                    $scope.Hide("#passwd");
+                }, _TIME_SHOWPASSWORD);
+                $('#passwd').change();
+            }
+        });
+    }
+    settingPGenerator();
+
+    $scope.IsLowercase = function () {
+        return isLowercase();
+    }
+    $scope.IsUppercase = function () {
+        return isUppercase();
+    }
+    $scope.IsDigit = function () {
+        return isDigit();
+    }
+    $scope.IsSymbol = function () {
+        return isDigit();
+    }
+    $scope.PwdLength = function () {
+        return pwdLength();
+    }
 });
+
+var isLowercase = function () {
+    return $("#isLowercase").prop('checked');
+}
+var isUppercase = function () {
+    return $("#isUppercase").prop('checked');
+}
+var isDigit = function () {
+    return $("#isDigit").prop('checked');
+}
+var isSymbol = function () {
+    return $("#isSymbol").prop('checked');
+}
+var pwdLength = function () {
+    return $("#passwrdMinLenth").val();
+}
