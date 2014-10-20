@@ -765,6 +765,20 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         redirect(url);
     };
 
+
+    $scope.DisplaySearch=function() {
+        $scope.getAllChildren();
+        $(".default-item").hide();
+        $('.active').removeClass("active");
+        $(".search-item").show();
+    }
+
+    $scope.HideSearch=function() {
+        $(".search-item").hide();
+        $('.active').removeClass("active");
+        $(".default-item").show();
+    }
+
     var initAccountId = function () {
         var uuid = $routeParams.uuid;
         $("#uuid").val(uuid);

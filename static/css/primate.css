@@ -1206,3 +1206,12 @@ p.validation {
 .metro .navigation-bar .navigation-bar-content .element.logo-link {
     padding: 8px;
 }
+
+/*search bar*/
+.search-bar {
+    color: grey;
+}
+.search-bar span {
+    font-style: italic;
+}
+/*end of search bar*/

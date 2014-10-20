@@ -43,8 +43,7 @@
             <div class="nav-search">
                 <form>
                     <div class="input-control text">
-                        <input type="text" placeholder="Search by account title..." ng-model="accountSearch.title">
-                        <button class="btn-search" ng-click="getAllChildren()"></button>
+                        <input type="text" placeholder="Search by account title..." ng-model="accountSearch.title" ng-click="DisplaySearch()">
                     </div>
                 </form>
             </div>
@@ -53,7 +52,7 @@
                     <li class="stick">
                         <a class="dropdown-toggle" href="javascript:;"><i class="icon-tree-view"></i>Database Name</a>
                         <ul data-role="dropdown" style="display: block;">
-                            <li ng-repeat="node in tree.groups" class="root-group" ng-click="SelectRoot(node)"><a ng-bind="AssessName(node.groupName)" class="word-break"></a></li>
+                            <li ng-repeat="node in tree.groups" class="root-group" ng-click="SelectRoot(node);HideSearch()"><a ng-bind="AssessName(node.groupName)" class="word-break"></a></li>
                         </ul>
                     </li>
                 </ul>
@@ -63,13 +62,14 @@
             <section class="side-mid" ng-keydown="Back($event)" tabindex="0">
                 <div id="bcrumb">
                     <div class="fl">
-                        <ul class="breadcrumb" data-breadcrumb-arr="{{GetGroupId();}}">
-                            <!--ng-class="CheckIfLastBreadcrumb(breadcrumb)"-->
+                        <ul class="breadcrumb default-item" data-breadcrumb-arr="{{GetGroupId();}}">
                             <li ng-repeat="breadcrumb in breadcrumbs" class="word-break"><a ng-click="BreadcrumbRedirect(breadcrumb)" ng-bind="breadcrumb.groupName"></a></li>
-                            <!--<li class="unavailable"><a href="javascript:;">Data</a></li>-->
+                        </ul>
+                        <ul class="breadcrumb search-bar search-item" style="display: none;">
+                            <li class="word-break">Search by account title: <span>{{accountSearch.title}}</span></li>
                         </ul>
                     </div>
-                    <div class="refresh-icon icon-style" style="padding-right:0px">
+                    <div class="refresh-icon icon-style" style="padding-right:0">
                         <a href="javascript:;" class="create-ddl dropdown-toggle dis-block">
                             <span class="icon-plus-2"></span>
                         </a>
@@ -81,9 +81,9 @@
                     <div class="clearfix"></div>
                 </div>
                 <div class="listview-outlook" id="default-list" data-role="listview">
-                    <div class="list-group collapsed">
-                        <a href="" class="group-title">Search Account ...</a>
-                        <div class="group-content" style="display: none;">
+                    <div class="list-group search-item" style="display:none;">
+                        <a href="" class="group-title">Account Search</a>
+                        <div class="group-content">
                             <a href="javascript:;" class="list file-child" ng-repeat="child in searchChildren  | orderBy : 'title' | filter:accountSearch:title" ng-click="SetActive($index,$event);ViewAccountDetail()">
                                 <div class=" list-content">
                                     <span class="account-uuid">{{child.uuid}}</span>
@@ -94,7 +94,7 @@
                             </a>
                         </div>
                     </div>
-                    <div class="list-group">
+                    <div class="list-group default-item">
                         <a href="" class="group-title">View All</a>
                         <div class="group-content" style="display: block;">
                             <a href="javascript:;" class="list file-group" ng-repeat="group in groups" ng-click="NavIn(group)">
