@@ -40,9 +40,9 @@ var _EMPTY_NAME = "N/A";
 var _DEFAULT_PWD_LENGTH = 12;
 var _urlSetFilePath = "/set-filepath";
 var _urlDeleteUser = "/delete-user";
-var _urlDeleteGroup = "_urlDeleteGroup";
+var _urlDeleteGroup = "/delete-group";
 var _urlResetMasterPassword = "/new-master-password"; //post
-
+var _UNTITLE = "Untitled";
 //new Password
 //old Password
 var _TIME_REDIRECT = 1500;
@@ -448,14 +448,15 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     };
 
     $scope.DeleteGroup = function () {
-        var deleteGroup = $scope.deleteGroup;
-        if (isUndifined(deleteGroup)) {
+        var groupObj = $scope.delete.group;
+        console.log(groupObj);
+        if (isUndifined(groupObj)) {
             redirectToErroPage505();
             return;
         }
-        var postData = $scope.delete.group;
+        var postData = { group: groupObj.groupParent + _GROUP_CONCAT_SYMBOL + groupObj.groupName }
         ajaxGet(true, _urlDeleteGroup, postData, function () {
-            deleteGroupFromNewTreeByParentName(postData.groupParent, postData, true);
+            deleteGroupFromNewTreeByParentName(groupObj.groupParent, groupObj, true);
             $.Dialog.close();
             notifiSuccess(_NOTIFI_ACCOUNT_CAPTION, _DELETE_SUCCESS_MSG);
         }, function () {
@@ -777,6 +778,13 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         $(".default-item").show();
     }
 
+    $scope.ProcessAccountTitle = function ($title) {
+        if (!$title) {
+            return _UNTITLE;
+        }
+        return $title;
+    }
+
     var initAccountId = function () {
         var uuid = $routeParams.uuid;
         $("#uuid").val(uuid);
@@ -1078,20 +1086,25 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     $.contextMenu({
         selector: '.file-group',
         callback: function (key, options) {
+            var groupParent = getGroupParent();
+            var groupName = getGroupName();
             if (key == "ViewGroup") {
                 var detailCurrentGroupObj = {
-                    groupParent: getGroupParent(),
-                    groupName: getGroupName()
+                    groupParent: groupParent,
+                    groupName: groupName
                 }
                 $scope.deleteGroup = detailCurrentGroupObj;
                 var detailSerializedCurrentGroup = $.param(detailCurrentGroupObj);
                 redirect(_urlViewGroup + "?" + detailSerializedCurrentGroup);
             } else if (key == "EditGroup") {
-                var currentGroupParent = getGroupParent();
-                var currentGroupName = getGroupName();
+                var currentGroupParent = groupParent;
+                var currentGroupName = groupName;
                 var serializedCurrentGroup = prepareGroupUrl(currentGroupParent, currentGroupName);
                 redirect(_urlEditGroup + "?" + serializedCurrentGroup);
             } else if (key == "DeleteGroup") {
+                $scope.delete.group = {};
+                $scope.delete.group.groupName = groupName;
+                $scope.delete.group.groupParent = groupParent;
                 $scope.TriggerDeleteGroupDialog("Delete Group");
             }
         },

@@ -360,11 +360,6 @@ TODO: Make it delete users recursively to subgroups
 def deleteGroup():
     try:
         group = request.form['group']
-        groupParent = request.form['groupParent']
-        groupName = request.form['groupName']
-       
-        if len(groupParent) > 0:
-            groupName = groupParent + "." + groupName
 
         #delete from group list
         for name in session['groups']:
