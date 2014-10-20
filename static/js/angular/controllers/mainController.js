@@ -4,6 +4,8 @@ var _NOTIFI_GROUP_CAPTION = "Group";
 var _NOTIFI_ACCOUNT_CAPTION = "Account";
 var _NOTIFI_CLIPBOARD_CAPTION = "Clipboard";
 var _NOTIFI_MASTERPASSWORD_CAPTION = "Master Password";
+var _NOTIFI_IMPORT_CAPTION = "Import";
+var _Import_SUCCESS_MSG = "Import successfully";
 var _DEFAULT_FAILURE_CAPTION = "Error";
 var _DEFAULT_SUCCESS_MSG = "Saved successfully";
 var _DEFAULT_FAILURE_MSG = "Save failed";
@@ -36,12 +38,14 @@ var _GROUP_CONCAT_SYMBOL = ".";
 var _VALIDATE_DOT = '.';
 var _EMPTY_NAME = "N/A";
 var _DEFAULT_PWD_LENGTH = 12;
-var _urlSetFilePath = "/set-filePath";
+var _urlSetFilePath = "/set-filepath";
 var _urlDeleteUser = "/delete-user";
 var _urlDeleteGroup = "_urlDeleteGroup";
 var _urlResetMasterPassword = "/new-master-password"; //post
+
 //new Password
 //old Password
+var _TIME_REDIRECT = 1500;
 var _TIME_SHOWPASSWORD = 1500;
 var _CONTENT_COPY = "/copy";
 var _CONTEXT_ATTRIBUTE = {
@@ -207,7 +211,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     $scope.init = function () {
         initTree($scope);
         initSetting($scope);
-        //console.log($scope.groups);
         readFromLocalStorage();
     };
 
@@ -228,32 +231,29 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     });
 
     $scope.$watch('account.passwd', function (newValue, oldvalue) {
-        if (newValue != oldvalue) {
-            if (typeof newValue == "string") {
+        if (typeof newValue == "string") {
+            if (lowerCaseRegex.test(newValue)) {
+                addApprovedClass("#password-contain-lowercase");
+            } else {
+                removeApprovedClass("#password-contain-lowercase");
+            }
 
-                if (lowerCaseRegex.test(newValue)) {
-                    addApprovedClass("#password-contain-lowercase");
-                } else {
-                    removeApprovedClass("#password-contain-lowercase");
-                }
+            if (updateCaseRegex.test(newValue)) {
+                addApprovedClass("#password-contain-uppercase");
+            } else {
+                removeApprovedClass("#password-contain-uppercase");
+            }
 
-                if (updateCaseRegex.test(newValue)) {
-                    addApprovedClass("#password-contain-uppercase");
-                } else {
-                    removeApprovedClass("#password-contain-uppercase");
-                }
+            if (numberRegex.test(newValue)) {
+                addApprovedClass("#password-contain-numbers-special");
+            } else {
+                removeApprovedClass("#password-contain-numbers-special");
+            }
 
-                if (numberRegex.test(newValue)) {
-                    addApprovedClass("#password-contain-numbers-special");
-                } else {
-                    removeApprovedClass("#password-contain-numbers-special");
-                }
-
-                if (symbolRegex.test(newValue)) {
-                    addApprovedClass("#password-contain-mixed-symbol");
-                } else {
-                    removeApprovedClass("#password-contain-mixed-symbol");
-                }
+            if (symbolRegex.test(newValue)) {
+                addApprovedClass("#password-contain-mixed-symbol");
+            } else {
+                removeApprovedClass("#password-contain-mixed-symbol");
             }
         }
     });
@@ -268,19 +268,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         $(id + " span").removeClass("tick-pass");
     }
 
-
-    $scope.$watch('groups', function (newValue, oldvalue) {
-        if (newValue != oldvalue) {
-            $localStorage.groups = $scope.groups;
-        }
-    });
-
-    $scope.$watch('children', function (newValue, oldvalue) {
-        if (newValue != oldvalue) {
-            $localStorage.children = $scope.children;
-        }
-    });
-
     $scope.$watch('breadcrumbs', function (newValue, oldvalue) {
         if (newValue != oldvalue) {
             $localStorage.breadcrumbs = $scope.breadcrumbs;
@@ -288,12 +275,20 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     });
 
     var readFromLocalStorage = function () {
-        $scope.groups = $localStorage.groups;
-        $scope.children = $localStorage.children;
+        if (isUndifined($scope.tree)) {
+            $scope.breadcrumbs = {};
+            return;
+        }
         if (!$localStorage.breadcrumbs) {
             $scope.breadcrumbs = [];
+            $scope.groups = {};
+            $scope.children = {};
         } else {
             $scope.breadcrumbs = $localStorage.breadcrumbs;
+            syncBreadCrumbByFindingObj($scope.breadcrumbs);
+            var lastIndex = $scope.breadcrumbs.length - 1;
+            $scope.groups = $scope.breadcrumbs[lastIndex].groups;
+            $scope.children = $scope.breadcrumbs[lastIndex].children;
         }
     };
 
@@ -429,8 +424,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             var accountObj = $.parseJSON(accountJson);
             ajaxGet(true, _urlDeleteUser, postData, function () {
                 $.Dialog.close();
-                console.log($scope);
-                removeAtiveElem();
+                syncBreadCrumbByFindingObj($scope.breadcrumbs);
                 deleteGroupFromNewTreeByParentName(accountObj.groupParent, accountObj, false);
                 notifiSuccess(_NOTIFI_ACCOUNT_CAPTION, _DELETE_SUCCESS_MSG);
             }, function () {
@@ -492,9 +486,12 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
 
     $scope.ImportSubmit = function () {
         ajaxPost($("#importFileInput"), true, _urlImportSubmit, function (msg) {
-            if (msg.length == 0) {
-                //redirect(_urlLoginRedirect);
-                //window.location.reload();
+            if (!msg) {
+                notifiSuccess(_NOTIFI_IMPORT_CAPTION, _Import_SUCCESS_MSG);
+                setTimeout(function() {
+                    redirect(_urlLoginRedirect);
+                }, _TIME_REDIRECT);
+
             } else {
                 $("#import-customMsg").html(msg);
             }
@@ -718,7 +715,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         $(id).attr("type", "text");
     };
     $scope.Hide = function (id) {
-        console.log("hide");
         $(id).attr("type", "password");
     };
 
@@ -1000,6 +996,33 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         return resultObj;
     }
 
+
+    var syncBreadCrumbByFindingObj = function (oldBreadcrumbObj) {
+        var count = 0;
+        var resultObj = null;
+        var recursiveGroup = function (tree) {
+            if (resultObj == null) {
+                for (var a = 0; a < tree.groups.length; a++) {
+                    if (tree.groups[a] != null) {
+                        var groupName = tree.groups[a].groupName;
+                        if (groupName == oldBreadcrumbObj[count].groupName) {
+                            if (count == oldBreadcrumbObj.length - 1) {
+                                resultObj = tree.groups[a];
+                            } else {
+                                count++;
+                            }
+                        }
+                        recursiveGroup(tree.groups[a]);
+                    }
+                }
+            }
+        };
+        if ($scope.tree != null) {
+            recursiveGroup($scope.tree);
+        }
+        return resultObj;
+    }
+
     var processAccountScope = function () {
         if (isUndifined($scope.account.uuid)) {
             $scope.account.uuid = "";
@@ -1027,6 +1050,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     $.contextMenu({
         selector: '.file-group',
         callback: function (key, options) {
+            console.log(options);
             if (key == "ViewGroup") {
                 var detailCurrentGroupObj = {
                     groupParent: getGroupParent(),
@@ -1056,6 +1080,41 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             }
         }
     });
+
+    $.contextMenu({
+        selector: '.root-group',
+        callback: function (key, options) {
+            console.log(options);
+            if (key == "ViewGroup") {
+                var detailCurrentGroupObj = {
+                    groupParent: getGroupParent(),
+                    groupName: getGroupName()
+                }
+                $scope.deleteGroup = detailCurrentGroupObj;
+                var detailSerializedCurrentGroup = $.param(detailCurrentGroupObj);
+                redirect(_urlViewGroup + "?" + detailSerializedCurrentGroup);
+            } else if (key == "EditGroup") {
+                var currentGroupParent = getGroupParent();
+                var currentGroupName = getGroupName();
+                var serializedCurrentGroup = prepareGroupUrl(currentGroupParent, currentGroupName);
+                redirect(_urlEditGroup + "?" + serializedCurrentGroup);
+            } else if (key == "DeleteGroup") {
+                $scope.TriggerDeleteGroupDialog("Delete Group");
+            }
+        },
+        items: {
+            "ViewGroup": {
+                name: GROUP_CONTEXT_NAME_OBJ.NAME_GROUP_DETAIL,
+            },
+            "EditGroup": {
+                name: GROUP_CONTEXT_NAME_OBJ.NAME_EDIT_GROUP,
+            },
+            "DeleteGroup": {
+                name: GROUP_CONTEXT_NAME_OBJ.NAME_DELETE_GROUP,
+            }
+        }
+    });
+
 
     $.contextMenu({
         selector: '.file-child',

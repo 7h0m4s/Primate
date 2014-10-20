@@ -55,7 +55,7 @@
                     <li class="stick">
                         <a class="dropdown-toggle" href="javascript:;"><i class="icon-tree-view"></i>Database Name</a>
                         <ul data-role="dropdown" style="display: block;">
-                            <li ng-repeat="node in tree.groups" ng-click="SelectRoot(node)"><a ng-bind="AssessName(node.groupName)" class="word-break"></a></li>
+                            <li ng-repeat="node in tree.groups" class="root-group" ng-click="SelectRoot(node)"><a ng-bind="AssessName(node.groupName)" class="word-break"></a></li>
                         </ul>
                     </li>
                 </ul>

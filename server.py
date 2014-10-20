@@ -712,7 +712,7 @@ def importFileDirect():
         saveDB()
         importedFile.close()
             
-        return "Sucessfuly imported."
+        return "",304
 
 
         
