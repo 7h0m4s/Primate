@@ -15,21 +15,24 @@
         <p class="error-msg login-validate">Password is required. </p>
         <p class="error-msg login-validate">Database is required. </p>
         <form class="login" name="loginForm" id="loginForm" target="/login" ng-submit="SubmitLoginForm(loginForm.$valid);" novalidate>
+            <input style="display:none" type="text" />
+            <input style="display:none" type="password" />
             <div class="logo">
                 <img src="static/img/logo.png" alt="logo" />
             </div>
             <table>
                 <tr>
-                    <td><p>Password: </p></td>
-                    <td class="input-control text">
-                        <input type="password" name="Password" ng-model="login.password" placeholder="Enter Password" required />
-                    </td>
-                </tr>
-                <tr>
                     <td><p>Database: </p></td>
                     <td class="input-control file text">
-                        <input type="text" name="DatabaseFile" ng-model="login.databaseFile" id="databaseFile" required>
+                        <input type="text" name="DatabaseFile" ng-model="login.databaseFile" id="databaseFile" required tabindex="1" />
                         <button class="btn-file browse-btn" type="button" ng-click="OpenFileDialog();"></button>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td><p>Password: </p></td>
+                    <td class="input-control text">
+                        <input type="password" name="Password" ng-model="login.password" placeholder="Enter Password" required tabindex="2" />
                     </td>
                 </tr>
                 <tr>

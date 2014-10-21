@@ -43,6 +43,7 @@ var _urlDeleteUser = "/delete-user";
 var _urlDeleteGroup = "/delete-group";
 var _urlResetMasterPassword = "/new-master-password"; //post
 var _UNTITLE = "Untitled";
+var _PREFIX = "http://";
 //new Password
 //old Password
 var _TIME_REDIRECT = 1500;
@@ -227,7 +228,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     $scope.templates = { cacheExportDialogTemplate: "", cacheImportDialogTemplate: "", cacheDeleteAccountTemplate: "" }
     $scope.userSetting = null;
     $scope.group = {};
-    $scope.delete = {};
     $scope.file = {};
     $scope.init = function () {
         initTree($scope);
@@ -416,7 +416,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     };
 
     $scope.TriggerDeleteAccountDialog = function ($title) {
-        $scope.delete.uuid = getUuid();
         $http.get(_urlDeleteAccountTemplate).success(function ($content) {
             var $compileContent = getCompileContent($content);
             return triggerDialog($title, $compileContent);
@@ -438,6 +437,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 $.Dialog.close();
                 syncBreadCrumbByFindingObj($scope.breadcrumbs);
                 deleteGroupFromNewTreeByParentName(accountObj.groupParent, accountObj, false);
+                selectAccountSearch();
                 notifiSuccess(_NOTIFI_ACCOUNT_CAPTION, _DELETE_SUCCESS_MSG);
             }, function () {
                 redirectToErroPage505();
@@ -629,6 +629,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 $scope.account = $.parseJSON(accountJson);
                 processAccountScope();
                 addGroupFromNewTreeByParentName(groupParentVal, $scope.account, false);
+                selectAccountSearch();
                 var currentGroupObj = { uuid: $scope.account.uuid }
                 var serializedCurrentGroup = $.param(currentGroupObj);
                 redirect(_urlViewAccount + "?" + serializedCurrentGroup);
@@ -654,6 +655,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                     $scope.account = $.parseJSON(response);
                     deleteGroupFromNewTreeByParentName($scope.oldAccountGroupParent, $scope.oldAccount, false);
                     addGroupFromNewTreeByParentName(groupParentVal, $scope.account, false);
+                    selectAccountSearch();
                     notifiSuccess(_NOTIFI_ACCOUNT_CAPTION, _EDIT_SUCCESS_MSG);
                     redirectWithExistingParms(_urlViewAccount);
                 }, function (response) {
@@ -713,7 +715,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         return str;
     };
 
-    $scope.getAllChildren = function () {
+    var getAllChildren = function () {
         $scope.searchChildren = [];
         var recursiveGroup = function (tree) {
             for (var b = 0; b < tree.children.length; b++) {
@@ -724,7 +726,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             }
         };
         recursiveGroup($scope.tree);
-        console.log($scope.searchChildren);
     };
 
     $scope.Reveal = function (id) {
@@ -766,7 +767,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
 
 
     $scope.DisplaySearch = function () {
-        $scope.getAllChildren();
+        getAllChildren();
         $(".default-item").hide();
         $('.active').removeClass("active");
         $(".search-item").show();
@@ -800,7 +801,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 if ($groupParent.length > 0) {
                     $groupParent.select2("val", $scope.account.groupParent);
                 }
-                //todo tobe continued
                 $scope.oldAccount = {};
                 $scope.oldAccountGroupParent = $scope.account.groupParent;
                 $.extend($scope.oldAccount, $scope.account);
@@ -867,6 +867,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         requestFactory.get(_urlGetTree).then(function (data) {
             $scope.tree = data;
             global_tree = data;
+            $scope.delete = {};
         });
     };
 
@@ -1163,7 +1164,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         }
     });
 
-
     $.contextMenu({
         selector: '.file-child',
         callback: function (key, options) {
@@ -1172,8 +1172,8 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             } else if (key == "editAcc") {
                 prepareRedirectAcco(_urlEditAccount);
             } else if (key == "delAcc") {
-                    uuid: getUuid(),
-                    $scope.TriggerDeleteAccountDialog("Delete Account");
+                $scope.delete.uuid = $(this).find(".account-uuid").html();
+                $scope.TriggerDeleteAccountDialog("Delete Account");
             } else if (key == "copyUrl") {
                 ajaxPostOnly({ uuid: getUuid(), attribute: _CONTEXT_ATTRIBUTE.URL }, _CONTENT_COPY, function () {
                     notifiSuccess(_NOTIFI_CLIPBOARD_CAPTION, _COPY_URL_MSG);
@@ -1188,10 +1188,15 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 });
             } else if (key == "RedirectUrl") {
                 ajaxPostOnly({ uuid: getUuid(), attribute: _CONTEXT_ATTRIBUTE.USERNAME }, _CONTENT_COPY, function (url) {
-                    window.open(url, '_blank');
+                    if (url.toLowerCase().indexOf(_PREFIX) == -1) {
+                        window.open(_PREFIX + url, '_blank');
+                    } else {
+                        window.open(url, '_blank');
+                    }
                 });
             }
         },
+
         items: {
             "RedirectUrl": {
                 name: USER_CONTEXT_NAME_OBJ.NAME_REDIRECT_URL,
@@ -1246,7 +1251,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     }
     settingPGenerator();
 
-
     var addApprovedClass = function (id) {
         $(id).addClass("black");
         $(id + " span").addClass("tick-pass");
@@ -1255,6 +1259,11 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     var removeApprovedClass = function (id) {
         $(id).removeClass("black");
         $(id + " span").removeClass("tick-pass");
+    }
+
+
+    var selectAccountSearch = function () {
+        $("#account-search").click();
     }
 });
 
