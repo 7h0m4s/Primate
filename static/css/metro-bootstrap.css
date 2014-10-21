@@ -2664,7 +2664,7 @@ a {
   display: inline-block;
   cursor: pointer;
   position: relative;
-  background-color: #fff;
+  /*background-color: #fff;*/
   outline: 0;
   height: 34px;
   width: 100%;
@@ -2909,6 +2909,9 @@ a {
 .metro .input-control.email .btn-file:after,
 .metro .input-control.tel .btn-file:after,
 .metro .input-control.number .btn-file:after {
+  content: "\e008";
+}
+.btn-file:after {
   content: "\e008";
 }
 .metro .input-control.text .btn-search,
