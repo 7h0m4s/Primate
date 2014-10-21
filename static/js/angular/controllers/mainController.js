@@ -1263,7 +1263,10 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
 
 
     var selectAccountSearch = function () {
-        $("#account-search").click();
+        var isSearchShow = !$(".search-item").is(":hidden");
+        if (isSearchShow) {
+            $("#account-search").click();
+        }
     }
 });
 
