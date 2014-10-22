@@ -57,8 +57,6 @@ var _CONTEXT_ATTRIBUTE = {
     URL: "url"
 };
 
-var deleteLock = false;
-var _LOCK_TIME_OUT = 500;
 var numberRegex = /\d+/;
 var lowerCaseRegex = /[a-z]+/;
 var updateCaseRegex = /[A-Z]+/;
