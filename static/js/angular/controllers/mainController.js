@@ -57,6 +57,8 @@ var _CONTEXT_ATTRIBUTE = {
     URL: "url"
 };
 
+var deleteLock = false;
+var _LOCK_TIME_OUT = 500;
 var numberRegex = /\d+/;
 var lowerCaseRegex = /[a-z]+/;
 var updateCaseRegex = /[A-Z]+/;
@@ -492,6 +494,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     };
 
     $scope.DeleteAccount = function () {
+        submitAnimatel("#delAccountLink");
         var uuid = $scope.delete.uuid;
         if (isUndifined(uuid)) {
             redirectToErroPage505();
@@ -524,6 +527,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     }
 
     $scope.DeleteGroup = function () {
+        submitAnimatel("#delGroupLink");
         var groupObj = $scope.delete.group;
         if (isUndifined(groupObj)) {
             redirectToErroPage505();

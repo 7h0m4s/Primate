@@ -315,6 +315,29 @@ var submitAnimatel = function () {
     }
 }
 
+var submitAnimatel = function ($target) {
+    var $submitAni = $($target);
+    if ($submitAni.length) {
+        $submitAni.html("Processing ").attr("disabled", "");
+        var defaultVal = $submitAni.html();
+        var count = 0;
+        var submitAnimateInterval = setInterval(function () {
+            var appendVal = $submitAni.html() + ".";
+            if (count == 4) {
+                $submitAni.html(defaultVal);
+                count = 0;
+            }
+            else {
+                $submitAni.html(appendVal);
+            }
+            if ($($target).attr("disabled") != "disabled") {
+                clearInterval(submitAnimateInterval);
+            }
+            count++;
+        }, 500);
+    }
+}
+
 var closeSilder = function () {
     $(".slide-right-wrapper").animate({ 'opacity': 0 });
     $(".slide-right-panel").animate({ 'margin-right': '-320px', 'opacity': -0.5, 'filter': 'alpha(opacity=-150)' }, function () {
