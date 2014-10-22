@@ -1230,3 +1230,7 @@ p.validation {
 .error-state .select2-choice {
     border-color: #e51400;
 }
+
+.metro .input-control.text .btn-file {
+    z-index: 0;
+}

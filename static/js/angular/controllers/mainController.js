@@ -277,6 +277,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     $scope.group = {};
     $scope.file = {};
     $scope.account = {};
+    $scope.breadcrumbs = [];
     $scope.groupArray = [];
     $scope.init = function () {
         initTree($scope);
