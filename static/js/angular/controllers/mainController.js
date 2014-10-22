@@ -550,7 +550,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
 
     $scope.InitGroupManagment = function () {
         resetScopeGroup();
-        var groupArr = getAllGroup($scope.tree);
+        var groupArr = getAllGroup($scope.tree, false);
         calFrameHeight();
         initSelect2(groupArr);
         initGroupId();
@@ -727,7 +727,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
 
     $scope.InitAccountManagment = function () {
         resetScopeGroup();
-        var groupArr = getAllGroup($scope.tree);
+        var groupArr = getAllGroup($scope.tree, true);
         calFrameHeight();
         initSelect2(groupArr);
         hideLoader();
@@ -910,24 +910,38 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         this.disabled = disabled;
     };
 
-    var getAllGroup = function (tree) {
+    var getAllGroup = function (tree, isAccount) {
         var preGroup = null;
         if (!isUndifined($routeParams.groupName)) {
             preGroup = $routeParams.groupParent + _GROUP_CONCAT_SYMBOL + $routeParams.groupName;
         }
-        var groupArr = [];
+        var groupArr = [];  
         //make changes here for account
-        var emptyGroup = new GroupModel("", "");
-        groupArr.push(emptyGroup);
+        if (!isAccount) {
+            var emptyGroup = new GroupModel("", "");
+            groupArr.push(emptyGroup);
+        }
         var rootGroupObj = tree;
+        var backCount = 0;
         var recursiveGroup = function (idChain, textChain, tree) {
             for (var a = 0; a < tree.groups.length; a++) {
+                if (backCount >= 1) {
+                    var temp = 1;
+                    var tempArrID = idChain.split(_GROUP_CONCAT_SYMBOL);
+                    debugger;
+                    tempArrID.splice(tempArrID.length - temp, temp);
+                    idChain = tempArrID.join();
+
+                    var tempArrText = textChain.split(_SLASH);
+                    tempArrText.splice(tempArrText.length - temp, temp);
+                    textChain = tempArrText.join();
+                    backCount = 0;
+                }
                 if (rootGroupObj == tree) {
                     idChain = "";
                     textChain = "";
                 }
                 if (tree.groups[a] != null) {
-                    debugger;
                     var groupName = tree.groups[a].groupName;
                     if (idChain.length > 0) {
                         textChain = textChain + _SLASH + groupName;
@@ -945,11 +959,12 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                     recursiveGroup(idChain, textChain, tree.groups[a]);
                 }
             }
-            var tempArrID = idChain.split(_GROUP_CONCAT_SYMBOL);
-            idChain = tempArrID.splice(tempArrID.length - 1, 1).join();
+            backCount++;
+            //var tempArrID = idChain.split(_GROUP_CONCAT_SYMBOL);
+            //idChain = tempArrID.splice(tempArrID.length - 1, 1).join();
 
-            var tempArrText = idChain.split(_SLASH);
-            textChain = tempArrText.splice(tempArrText.length - 1, 1).join();
+            //var tempArrText = idChain.split(_SLASH);
+            //textChain = tempArrText.splice(tempArrText.length - 1, 1).join();
         };
         recursiveGroup("", "", tree);
         return groupArr;
