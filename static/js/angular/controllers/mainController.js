@@ -242,7 +242,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 }
                 var $preGroup = $("#preGroup");
                 var preGroupVal;
-                debugger;
                 if ($preGroup.length > 0) {
                     preGroupVal = $preGroup.val();
                     if (preGroupVal.indexOf(_GROUP_CONCAT_SYMBOL) == 0) {
@@ -353,23 +352,23 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         });
     });
 
-    var readFromLocalStorage = function () {
-        if (isUndifined($scope.tree)) {
-            $scope.breadcrumbs = {};
-            return;
-        }
-        if (!$localStorage.breadcrumbs) {
-            $scope.breadcrumbs = [];
-            $scope.groups = {};
-            $scope.children = {};
-        } else {
-            $scope.breadcrumbs = $localStorage.breadcrumbs;
-            syncBreadCrumbByFindingObj($scope.breadcrumbs);
-            var lastIndex = $scope.breadcrumbs.length - 1;
-            $scope.groups = $scope.breadcrumbs[lastIndex].groups;
-            $scope.children = $scope.breadcrumbs[lastIndex].children;
-        }
-    };
+    //var readFromLocalStorage = function () {
+    //    if (isUndifined($scope.tree)) {
+    //        $scope.breadcrumbs = {};
+    //        return;
+    //    }
+    //    if (!$localStorage.breadcrumbs) {
+    //        $scope.breadcrumbs = [];
+    //        $scope.groups = {};
+    //        $scope.children = {};
+    //    } else {
+    //        $scope.breadcrumbs = $localStorage.breadcrumbs;
+    //        syncBreadCrumbByFindingObj($scope.breadcrumbs);
+    //        var lastIndex = $scope.breadcrumbs.length - 1;
+    //        $scope.groups = $scope.breadcrumbs[lastIndex].groups;
+    //        $scope.children = $scope.breadcrumbs[lastIndex].children;
+    //    }
+    //};
 
     $scope.AssessName = function (str) {
         if (str.length == 0) {
@@ -525,7 +524,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
 
     $scope.DeleteGroup = function () {
         var groupObj = $scope.delete.group;
-        console.log(groupObj);
         if (isUndifined(groupObj)) {
             redirectToErroPage505();
             return;
@@ -632,7 +630,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             submitAnimatel();
             ajaxPost($("#createGroupForm"), true, _urlCreateGroupSubmit, function () {
                 var newGroupObj = { groupName: groupNameVal, children: [], groups: [] };
-                console.log($scope.tree);
                 if (groupParentVal.length == 0) {
                     $scope.tree.groups.push(newGroupObj);
                 } else {
@@ -656,7 +653,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         if (isValid) {
             submitAnimatel();
             ajaxPost($("#editGroupForm"), true, _urlEditGroupSubmit, function () {
-                console.log($scope.oldGroup);
                 var deletedObj = deleteGroupFromNewTreeByParentName($scope.oldGroup.groupParent, $scope.oldGroup, true);
                 deletedObj.groupName = groupNameVal;
                 if (groupParentVal.length == 0) {
@@ -722,7 +718,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     $scope.SubmitEditAccountForm = function (isValid) {
         var groupParentVal = $("#groupParent").val();
         var uuidObj = { uuid: $("#uuid").val() };
-        console.log(uuidObj);
         if (isValid) {
             submitAnimatel();
             ajaxPost($("#editAccountForm"), true, _urlEditUserSubmit, function () {
@@ -832,7 +827,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         return isDigit();
     }
     $scope.IsSymbol = function () {
-        return isDigit();
+        return isSymbol();
     }
     $scope.PwdLength = function () {
         return pwdLength();
@@ -840,7 +835,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     $scope.Redirect = function (url) {
         redirect(url);
     };
-
 
     $scope.DisplaySearch = function () {
         getAllChildren();
@@ -1112,29 +1106,19 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                                         for (var b = 0; b < tree.groups[a].groups.length; b++) {
                                             if (tree.groups[a].groups[b].groupName == oldObj.groupName) {
                                                 resultObj = tree.groups[a].groups[b];
-                                                tree.groups[a].groups.splice(b, 1);
-                                                $scope.$apply();
+                                                $scope.$apply(function () {
+                                                    tree.groups[a].groups.splice(b, 1);
+                                                });
                                                 break;
                                             }
                                         }
                                     } else {
                                         for (var c = 0; c < tree.groups[a].children.length; c++) {
                                             if (tree.groups[a].children[c].uuid == oldObj.uuid) {
-                                                console.log(tree.groups[a].children[c].uuid);
-                                                console.log(oldObj.uuid);
-                                                debugger;
                                                 resultObj = tree.groups[a].children[c];
-                                                console.log(resultObj);
-
-                                                console.log("before");
-                                                console.log(tree.groups[a].children);
-
                                                 $scope.$apply(function () {
                                                     tree.groups[a].children.splice(c, 1);
                                                 });
-                                                console.log("after");
-                                                console.log(tree.groups[a].children);
-
                                                 break;
                                             }
                                         }
