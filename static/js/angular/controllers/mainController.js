@@ -234,7 +234,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 var check = true;
                 var groupParent = $("#groupParent").val();
                 var groupID;
-                
+
                 if (!groupParent) {
                     groupID = scope.group.groupName;
                 } else {
@@ -242,8 +242,16 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 }
                 var $preGroup = $("#preGroup");
                 var preGroupVal;
+                debugger;
                 if ($preGroup.length > 0) {
                     preGroupVal = $preGroup.val();
+                    if (preGroupVal.indexOf(_GROUP_CONCAT_SYMBOL) == 0) {
+                        if (!groupParent) {
+                            if (preGroupVal == (_GROUP_CONCAT_SYMBOL + groupID)) {
+                                return true;
+                            }
+                        }
+                    }
                     if (preGroupVal == groupID) {
                         return true;
                     }
@@ -274,7 +282,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     $scope.init = function () {
         initTree($scope);
         initSetting($scope);
-        readFromLocalStorage();
     };
 
     $scope.$watch('userSetting', function (newValue, oldvalue) {
@@ -321,11 +328,12 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         }
     });
 
-    $scope.$watch('breadcrumbs', function (newValue, oldvalue) {
-        if (newValue != oldvalue) {
-            $localStorage.breadcrumbs = $scope.breadcrumbs;
-        }
-    });
+    //$scope.$watch('breadcrumbs', function (newValue, oldvalue) {
+    //    if (newValue != oldvalue) {
+    //        $localStorage.breadcrumbs = $scope.breadcrumbs;
+    //    }
+    //});
+
     $scope.$watch('account.groupParent', function (newValue, oldvalue) {
         if ($('#groupParent').length > 0) {
             $scope.account.groupParent = $('#groupParent').val();
