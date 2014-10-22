@@ -22,28 +22,28 @@
                 <tr>
                     <td><p class="required">Database: </p></td>
                     <td class="input-control file text">
-                        <input type="text" name="DatabaseFile" ng-model="newDB.databaseFile" id="databaseFile" required>
+                        <input type="text" name="DatabaseFile" ng-model="newDB.databaseFile" id="databaseFile" required tabindex="1">
                         <button class="btn-file browse-btn" type="button" ng-click="OpenSetFileDialog();"></button>
                     </td>
                 </tr>
                 <tr>
                     <td><p class="required">Password: </p></td>
                     <td class="input-control text">
-                        <input type="password" id="password" name="Password" placeholder="Enter Password" ng-model="newDB.password" required />
+                        <input type="password" id="password" name="Password" placeholder="Enter Password" ng-model="newDB.password" required tabindex="2" />
                         <button class="btn-reveal" tabindex="-1" type="button" ng-mousedown="Reveal('#password')" ng-blur="Hide('#password')"></button>
                     </td>
                 </tr>
                 <tr>
                     <td><p class="required">Confirm: </p></td>
                     <td class="input-control text">
-                        <input type="password" name="ConfirmPassword" id="confirmPassword" placeholder="Confirm Password" ng-model="newDB.cfmPassword" password-match="newDB.password" required />
+                        <input type="password" name="ConfirmPassword" id="confirmPassword" placeholder="Confirm Password" ng-model="newDB.cfmPassword" password-match="newDB.password" required tabindex="3" />
                         <button class="btn-reveal" tabindex="-1" type="button" ng-mousedown="Reveal('#confirmPassword')" ng-blur="Hide('#confirmPassword')"></button>
                     </td>
                 </tr>
                 <tr>
                     <td></td>
                     <td class="td-btn">
-                        <button type="submit" class="btn btn-lead" id="btn-group-submit">Submit</button>
+                        <button type="submit" class="btn btn-lead" id="btn-group-submit" tabindex="4">Submit</button>
                     </td>
                 </tr>
             </table>

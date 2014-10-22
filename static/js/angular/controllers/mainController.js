@@ -44,6 +44,7 @@ var _urlDeleteGroup = "/delete-group";
 var _urlResetMasterPassword = "/new-master-password"; //post
 var _urlRedirectHomeNoRefresh = "/dashboard#";
 var _UNTITLE = "Untitled";
+var _SLASH = " / ";
 var _PREFIX = "http://";
 //new Password
 //old Password
@@ -915,6 +916,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             preGroup = $routeParams.groupParent + _GROUP_CONCAT_SYMBOL + $routeParams.groupName;
         }
         var groupArr = [];
+        //make changes here for account
         var emptyGroup = new GroupModel("", "");
         groupArr.push(emptyGroup);
         var rootGroupObj = tree;
@@ -925,9 +927,10 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                     textChain = "";
                 }
                 if (tree.groups[a] != null) {
+                    debugger;
                     var groupName = tree.groups[a].groupName;
                     if (idChain.length > 0) {
-                        textChain = textChain + " / " + groupName;
+                        textChain = textChain + _SLASH + groupName;
                         idChain = idChain + _GROUP_CONCAT_SYMBOL + groupName;
                     } else {
                         idChain = groupName;
@@ -935,13 +938,18 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                     }
                     var group = new GroupModel(idChain, textChain, false);
 
-                    if (idChain.indexOf(preGroup) == 0) {
+                    if (preGroup != null && idChain.indexOf(preGroup) == 0) {
                         group.disabled = true;
                     }
                     groupArr.push(group);
                     recursiveGroup(idChain, textChain, tree.groups[a]);
                 }
             }
+            var tempArrID = idChain.split(_GROUP_CONCAT_SYMBOL);
+            idChain = tempArrID.splice(tempArrID.length - 1, 1).join();
+
+            var tempArrText = idChain.split(_SLASH);
+            textChain = tempArrText.splice(tempArrText.length - 1, 1).join();
         };
         recursiveGroup("", "", tree);
         return groupArr;
