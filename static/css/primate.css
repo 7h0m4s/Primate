@@ -1227,3 +1227,6 @@ p.validation {
     cursor: auto;
 }
 /*end of search bar*/
+.error-state .select2-choice {
+    border-color: #e51400;
+}

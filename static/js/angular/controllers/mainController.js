@@ -224,26 +224,22 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         }
     };
 }])
-
-//.directive('notDuplicateGroup', [function () {
-//    return {
-//        restrict: 'A',
-//        scope: true,
-//        require: 'ngModel',
-//        link: function (scope, elem, attrs, control) {
-//            var checker = function () {
-//                if (!isUndifined(val)) {
-//                    var isValid = !(val.indexOf(_VALIDATE_DOT) > -1);
-//                    return isValid;
-//                }
-//                return true;
-//            };
-//            scope.$watch(checker, function (n) {
-//                control.$setValidity("duplicategroup", n);
-//            });
-//        }
-//    };
-//}])
+.directive('noduplicategroup', [function () {
+    return {
+        restrict: 'A',
+        scope: true,
+        require: 'ngModel',
+        link: function (scope, elem, attrs, control) {
+            var checker = function () {
+                console.log(scope);
+                return true;
+            };
+            scope.$watch(checker, function (n) {
+                control.$setValidity("duplicategroup", n);
+            });
+        }
+    };
+}])
 .controller('mainController', function ($scope, $http, $q, $compile, $window, $location, requestFactory, $routeParams, $localStorage) {
     var lockFileDialog = false;
     $scope.childIndex = -1;
@@ -251,6 +247,8 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     $scope.userSetting = null;
     $scope.group = {};
     $scope.file = {};
+    $scope.account = {};
+    $scope.groupArray = [];
     $scope.init = function () {
         initTree($scope);
         initSetting($scope);
@@ -301,12 +299,28 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         }
     });
 
-
-
     $scope.$watch('breadcrumbs', function (newValue, oldvalue) {
         if (newValue != oldvalue) {
             $localStorage.breadcrumbs = $scope.breadcrumbs;
         }
+    });
+    $scope.$watch('account.groupParent', function (newValue, oldvalue) {
+        if ($('#groupParent').length > 0) {
+            $scope.account.groupParent = $('#groupParent').val();
+        }
+        if (!isUndifined($scope.userForm)) {
+            if (newValue) {
+                $scope.userForm.groupParent.$setValidity("required", true);
+            } else {
+                $scope.userForm.groupParent.$setValidity("required", false);
+            }
+        }
+    });
+
+    $('#groupParent').change(function () {
+        $scope.$apply(function () {
+            $scope.account.groupParent = $('#groupParent').val();
+        });
     });
 
     var readFromLocalStorage = function () {
@@ -818,6 +832,13 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         return $title;
     }
 
+    $scope.ReplaceNAIfEmpty = function ($str) {
+        if (!$str) {
+            return _EMPTY_NAME;
+        }
+        return $str;
+    };
+
     var initAccountId = function () {
         var uuid = $routeParams.uuid;
         $("#uuid").val(uuid);
@@ -915,7 +936,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         if (!isUndifined($routeParams.groupName)) {
             preGroup = $routeParams.groupParent + _GROUP_CONCAT_SYMBOL + $routeParams.groupName;
         }
-        var groupArr = [];  
+        var groupArr = [];
         //make changes here for account
         if (!isAccount) {
             var emptyGroup = new GroupModel("", "");
@@ -928,7 +949,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 if (backCount >= 1) {
                     var temp = 1;
                     var tempArrID = idChain.split(_GROUP_CONCAT_SYMBOL);
-                    debugger;
                     tempArrID.splice(tempArrID.length - temp, temp);
                     idChain = tempArrID.join();
 
@@ -967,6 +987,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             //textChain = tempArrText.splice(tempArrText.length - 1, 1).join();
         };
         recursiveGroup("", "", tree);
+        $scope.groupArray = groupArr;
         return groupArr;
     };
 

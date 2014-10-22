@@ -11,8 +11,8 @@
                 <h3 class="frame-title">Create Account</h3>
             </legend>
             <label class="required" for="groupParent">Group Directory</label>
-            <div class="input-control text" data-role="input-control">
-                <input class="select-search" id="groupParent" name="groupParent" ng-model="account.groupParent" />
+            <div class="input-control text" data-role="input-control" ng-class="{'error-state': userForm.groupParent.$error.required}">
+                <input class="select-search" id="groupParent" name="groupParent" ng-update-hidden ng-model="account.groupParent" required />
             </div>
             <label class="required">Username</label>
             <div class="input-control text" data-role="input-control" ng-class="{'error-state': userForm.user.$invalid && userForm.user.$dirty}">

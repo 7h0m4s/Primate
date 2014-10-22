@@ -110,7 +110,7 @@
                                     <span class="account-uuid">{{child.uuid}}</span>
                                     <span class="list-title"><span class="place-right icon-user large" style="color: #2e92cf;"></span>{{child.title}}</span>
                                     <span class="list-subtitle">Last Modified: {{child.last_mod}}</span>
-                                    <span class="list-remark">{{child.notes}}</span>
+                                    <span class="list-remark">{{ReplaceNAIfEmpty(child.notes)}}</span>
                                 </div>
                             </a>
                         </div>
