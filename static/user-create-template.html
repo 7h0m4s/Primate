@@ -4,6 +4,8 @@
 <div class="example" id="user-management" style="margin-left: 25%; opacity: 0;" ng-init="InitAccountManagment();">
     <form novalidate name="userForm" id="createAccountForm" ng-submit="SubmitCreateAccountForm(userForm.$valid);">
         <input type="hidden" name="uuid" id="uuid" ng-model="account.uuid" />
+        <input style="display:none" type="text" />
+        <input style="display:none" type="password" />
         <fieldset>
             <legend>
                 <h3 class="frame-title">Create Account</h3>

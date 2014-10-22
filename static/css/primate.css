@@ -1,10 +1,7 @@
 ﻿@import url('font-style.css');
-* {
-    cursor: default !important;
-}
-a, a span, button {
+/*a, a span, button {
     cursor: pointer !important;
-}
+}*/
 .fl {
     float: left;
 }
@@ -1208,6 +1205,7 @@ p.validation {
 .company-logo {
     margin: 5px;
 }
+
 .metro .navigation-bar .navigation-bar-content .element.logo-link {
     padding: 8px;
 }
@@ -1216,10 +1214,16 @@ p.validation {
 .search-bar {
     color: grey;
 }
-.search-bar span {
-    font-style: italic;
-}
+
+    .search-bar span {
+        font-style: italic;
+    }
+
 .file-child {
     outline: none !important;
+}
+
+.metro #viewUserForm .input-control.text, .metro #viewUserForm label {
+    cursor: auto;
 }
 /*end of search bar*/

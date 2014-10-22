@@ -42,6 +42,7 @@ var _urlSetFilePath = "/set-filepath";
 var _urlDeleteUser = "/delete-user";
 var _urlDeleteGroup = "/delete-group";
 var _urlResetMasterPassword = "/new-master-password"; //post
+var _urlRedirectHomeNoRefresh = "/dashboard#";
 var _UNTITLE = "Untitled";
 var _PREFIX = "http://";
 //new Password
@@ -222,6 +223,26 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         }
     };
 }])
+
+//.directive('notDuplicateGroup', [function () {
+//    return {
+//        restrict: 'A',
+//        scope: true,
+//        require: 'ngModel',
+//        link: function (scope, elem, attrs, control) {
+//            var checker = function () {
+//                if (!isUndifined(val)) {
+//                    var isValid = !(val.indexOf(_VALIDATE_DOT) > -1);
+//                    return isValid;
+//                }
+//                return true;
+//            };
+//            scope.$watch(checker, function (n) {
+//                control.$setValidity("duplicategroup", n);
+//            });
+//        }
+//    };
+//}])
 .controller('mainController', function ($scope, $http, $q, $compile, $window, $location, requestFactory, $routeParams, $localStorage) {
     var lockFileDialog = false;
     $scope.childIndex = -1;
@@ -438,6 +459,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 syncBreadCrumbByFindingObj($scope.breadcrumbs);
                 deleteGroupFromNewTreeByParentName(accountObj.groupParent, accountObj, false);
                 selectAccountSearch();
+                checkIfRedirect(uuid);
                 notifiSuccess(_NOTIFI_ACCOUNT_CAPTION, _DELETE_SUCCESS_MSG);
             }, function () {
                 redirectToErroPage505();
@@ -446,6 +468,15 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             redirectToErroPage505();
         });
     };
+
+    var checkIfRedirect = function (deteledtUui) {
+        var uuid = $routeParams.uuid;
+        if (!isUndifined(uuid)) {
+            if (uuid == deteledtUui) {
+                redirect(_urlRedirectHomeNoRefresh);
+            }
+        }
+    }
 
     $scope.DeleteGroup = function () {
         var groupObj = $scope.delete.group;
@@ -518,7 +549,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
 
     $scope.InitGroupManagment = function () {
         resetScopeGroup();
-        var groupArr = getAllGroup(global_tree);
+        var groupArr = getAllGroup($scope.tree);
         calFrameHeight();
         initSelect2(groupArr);
         initGroupId();
@@ -695,7 +726,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
 
     $scope.InitAccountManagment = function () {
         resetScopeGroup();
-        var groupArr = getAllGroup(global_tree);
+        var groupArr = getAllGroup($scope.tree);
         calFrameHeight();
         initSelect2(groupArr);
         hideLoader();
@@ -1015,9 +1046,21 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                                     } else {
                                         for (var c = 0; c < tree.groups[a].children.length; c++) {
                                             if (tree.groups[a].children[c].uuid == oldObj.uuid) {
+                                                console.log(tree.groups[a].children[c].uuid);
+                                                console.log(oldObj.uuid);
+                                                debugger;
                                                 resultObj = tree.groups[a].children[c];
-                                                tree.groups[a].children.splice(c, 1);
-                                                $scope.$apply();
+                                                console.log(resultObj);
+
+                                                console.log("before");
+                                                console.log(tree.groups[a].children);
+
+                                                $scope.$apply(function () {
+                                                    tree.groups[a].children.splice(c, 1);
+                                                });
+                                                console.log("after");
+                                                console.log(tree.groups[a].children);
+
                                                 break;
                                             }
                                         }

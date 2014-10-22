@@ -4,24 +4,26 @@
 <div class="example" id="user-management" style="margin-left: 25%; opacity: 0;" ng-init="InitAccountManagment();">
     <form novalidate name="userForm" id="editAccountForm" ng-submit="SubmitEditAccountForm(userForm.$valid);">
         <input type="hidden" name="uuid" id="uuid" ng-model="account.uuid" />
+        <input style="display:none" type="text" />
+        <input style="display:none" type="password" />
         <fieldset>
             <legend>
                 <h3 class="frame-title">Edit Account</h3>
             </legend>
             <label class="required" for="groupParent">Group Directory</label>
-            <div class="input-control text" data-role="input-control" ng-class="{'error-state': userForm.user.$invalid && userForm.user.$dirty}">
+            <div class="input-control text" data-role="input-control" ng-class="{'error-state': userForm.user.$invalid}">
                 <input class="select-search" id="groupParent" name="groupParent" ng-model="account.groupParent" />
             </div>
             <label class="required">Username</label>
             <div class="input-control text" data-role="input-control">
-                <input placeholder="Username" name="user" id="user" ng-model="account.user" ng-class="{'error-state': userForm.user.$invalid&& userForm.user.$dirty}" required />
+                <input placeholder="Username" name="user" id="user" ng-model="account.user" ng-class="{'error-state': userForm.user.$invalid}" required />
                 <button class="btn-clear" tabindex="-1" type="button"></button>
             </div>
-            <span class="validation" ng-show="userForm.user.$error.required&& userForm.user.$dirty">This field is required</span>
+            <span class="validation" ng-show="userForm.user.$error.required">This field is required</span>
             <label class="required">Password</label>
             <div class="ofh">
-                <div class="input-control password account-password" data-role="input-control" ng-class="{'error-state': userForm.passwd.$invalid && userForm.passwd.$dirty}">
-                    <input type="password" placeholder="Password" name="passwd" id="passwd" minpwd-length password-policy ng-model="account.passwd" ng-class="{'error-state': userForm.passwd.$error.required&& userForm.passwd.$dirty}" required />
+                <div class="input-control password account-password" data-role="input-control" ng-class="{'error-state': userForm.passwd.$invalid}">
+                    <input type="password" placeholder="Password" name="passwd" id="passwd" minpwd-length password-policy ng-model="account.passwd" ng-class="{'error-state': userForm.passwd.$error.required}" required />
                     <button class="btn-reveal" tabindex="-1" type="button" ng-mousedown="Reveal('#passwd')" ng-blur="Hide('#passwd')"></button>
                 </div>
                 <div class="generate-password"><button type="button" id="genPassword" class="btn btn-default full"><span class="icon-key"></span></button></div>
@@ -33,8 +35,8 @@
                 <div class="column" id="password-contain-numbers-special" ng-show="IsDigit()"><span class="icon-checkmark icon-small"></span>Numbers</div>
                 <div class="column" id="password-contain-mixed-symbol" ng-show="IsSymbol()"><span class="icon-checkmark icon-small"></span>User symbols (%,$,@,#,etc.)</div>
             </div>
-            <span class="validation" ng-show="userForm.passwd.$error.required&& userForm.passwd.$dirty">This field is required</span>
-            <span class="validation" ng-show="userForm.passwd.$error.minpwdlength&& userForm.passwd.$dirty">Password required at least {{PwdLength()}} character(s)</span>
+            <span class="validation" ng-show="userForm.passwd.$error.required">This field is required</span>
+            <span class="validation" ng-show="userForm.passwd.$error.minpwdlength">Password required at least {{PwdLength()}} character(s)</span>
             <label>Title</label>
             <div class="input-control text" data-role="input-control">
                 <input placeholder="Title" name="title" id="title" ng-model="account.title" />
