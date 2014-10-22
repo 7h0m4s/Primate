@@ -17,6 +17,7 @@
                 <button class="btn-clear" tabindex="-1" type="button"></button>
                 <span class="validation" ng-show="createGroupForm.groupName.$error.required&& createGroupForm.groupName.$dirty">This field is required</span>
                 <span class="validation" ng-show="createGroupForm.groupName.$error.dot&& createGroupForm.groupName.$dirty">This field is not allowed to have dot (".")</span>
+                <span class="validation" ng-show="createGroupForm.groupName.$error.duplicategroup">The group already exists</span>
             </div>
             <div>
                 <button type="submit" class="btn btn-lead full submit-animate" id="btn-group-submit" ng-disabled="createGroupForm.$invalid">Save Changes</button>

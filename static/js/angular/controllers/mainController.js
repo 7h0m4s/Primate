@@ -231,8 +231,30 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         require: 'ngModel',
         link: function (scope, elem, attrs, control) {
             var checker = function () {
-                console.log(scope);
-                return true;
+                var check = true;
+                var groupParent = $("#groupParent").val();
+                var groupID;
+                
+                if (!groupParent) {
+                    groupID = scope.group.groupName;
+                } else {
+                    groupID = groupParent + _GROUP_CONCAT_SYMBOL + scope.group.groupName;
+                }
+                var $preGroup = $("#preGroup");
+                var preGroupVal;
+                if ($preGroup.length > 0) {
+                    preGroupVal = $preGroup.val();
+                    if (preGroupVal == groupID) {
+                        return true;
+                    }
+                }
+                var groupArray = scope.groupArray;
+                for (var a = 0; a < groupArray.length; a++) {
+                    if (groupID == groupArray[a].id) {
+                        check = false;
+                    }
+                }
+                return check;
             };
             scope.$watch(checker, function (n) {
                 control.$setValidity("duplicategroup", n);
