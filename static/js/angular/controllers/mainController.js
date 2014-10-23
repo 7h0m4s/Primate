@@ -46,6 +46,8 @@ var _urlRedirectHomeNoRefresh = "/dashboard#";
 var _UNTITLE = "Untitled";
 var _SLASH = " / ";
 var _PREFIX = "http://";
+var _TEXT_SAVE = "Save Changes";
+var _REQUEST_LOCK = false;
 //new Password
 //old Password
 var _TIME_REDIRECT = 1500;
@@ -676,15 +678,23 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     };
 
     $scope.SubmitMasterPasswordForm = function (isValid) {
-        $("#master-pwd-alert").hide();
         if (isValid) {
+            $("#master-pwd-alert").hide();
+            if (_REQUEST_LOCK) {
+                return;
+            }
+            _REQUEST_LOCK = true;
+            var $target = "#master-pwd-btn";
             ajaxPost($("#masterPasswordForm"), true, _urlResetMasterPassword, function (msg) {
                 if (!msg) {
                     $.Dialog.close();
                     notifiSuccess(_NOTIFI_MASTERPASSWORD_CAPTION, _DEFAULT_SUCCESS_MSG);
+                    _REQUEST_LOCK = false;
                 } else {
+                    $($target).removeAttr("disabled").html(_TEXT_SAVE);
                     $("#master-pwd-alert").slideDown();
                     $(".custom-error").html(msg);
+                    _REQUEST_LOCK = false;
                 }
             },
             function () {
@@ -841,6 +851,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
 
     $scope.DisplaySearch = function () {
         getAllChildren();
+        console.log($scope.searchChildren);
         $(".default-item").hide();
         $('.active').removeClass("active");
         $(".search-item").show();
@@ -1291,7 +1302,8 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                     notifiSuccess(_NOTIFI_CLIPBOARD_CAPTION, _COPY_USERNAME_MSG);
                 });
             } else if (key == "RedirectUrl") {
-                ajaxPostOnly({ uuid: getUuid(), attribute: _CONTEXT_ATTRIBUTE.USERNAME }, _CONTENT_COPY, function (url) {
+                ajaxPostOnly({ uuid: getUuid(), attribute: _CONTEXT_ATTRIBUTE.URL }, _CONTENT_COPY, function (url) {
+                    debugger;
                     if (url.toLowerCase().indexOf(_PREFIX) == -1) {
                         window.open(_PREFIX + url, '_blank');
                     } else {

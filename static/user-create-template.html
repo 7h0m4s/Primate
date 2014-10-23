@@ -17,7 +17,6 @@
             <label class="required">Username</label>
             <div class="input-control text" data-role="input-control" ng-class="{'error-state': userForm.user.$invalid && userForm.user.$dirty}">
                 <input placeholder="Username" name="user" id="user" ng-model="account.user" ng-class="{'error-state': userForm.user.$error.required&& userForm.user.$dirty}" required />
-                <button class="btn-clear" tabindex="-1" type="button"></button>
             </div>
             <span class="validation" ng-show="userForm.user.$error.required&& userForm.user.$dirty">This field is required</span>
             <label class="required">Password</label>
@@ -40,12 +39,10 @@
             <label>Title</label>
             <div class="input-control text" data-role="input-control">
                 <input placeholder="Title" name="title" id="title" ng-model="account.title" />
-                <button class="btn-clear" tabindex="-1" type="button"></button>
             </div>
             <label>URL</label>
             <div class="input-control text" data-role="input-control">
                 <input placeholder="URL" name="url" id="url" ng-model="account.url" />
-                <button class="btn-clear" tabindex="-1" type="button"></button>
             </div>
             <label>Notes</label>
             <div class="input-control textarea">
