@@ -29,7 +29,7 @@ import time
 from ConfigParser import SafeConfigParser
 import appdirs
 import subprocess
-
+from tendo import singleton
 
 
 #Configuration to handle HTML file uploads if implemented later.
@@ -1084,6 +1084,9 @@ def shutdown_server():
 #Code below is equivilent to a "Main" function in Java or C
 if __name__ == "__main__":
 
+    #Close Program if an instance of Password Primate is already running.
+    me = singleton.SingleInstance()
+    
     #initiate server config
     initConfig()
     

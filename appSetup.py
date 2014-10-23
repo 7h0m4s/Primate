@@ -17,6 +17,6 @@ import py2app
 
 setup(
     app=['server.py'],
-    options=dict(py2app=dict(includes=['views'],packages=['email','werkzeug','pyperclip','jinja2'],argv_emulation=True),plist={'LSUIElement': True})
+    options=dict(py2app=dict(includes=['views'],packages=['email','werkzeug','pyperclip','jinja2','tendo'],argv_emulation=True),plist={'LSUIElement': True})
 )
 #'jinja2', 'jinja2.ext','flask','email','werkzeug','Tkinter','pyperclip'
