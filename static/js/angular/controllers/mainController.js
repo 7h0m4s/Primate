@@ -48,7 +48,7 @@ var _UNTITLE = "Untitled";
 var _SLASH = " / ";
 var _PREFIX = "http://";
 var _PREFIXS = "https://";
-
+var _urlShutdown = "/shutdown";
 var _TEXT_SAVE = "Save Changes";
 var _REQUEST_LOCK = false;
 //new Password

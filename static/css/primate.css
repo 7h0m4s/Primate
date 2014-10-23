@@ -1121,6 +1121,9 @@ p.validation {
     background-color: #d9534f;
     border-color: #d43f3a;
 }
+.metro .btn-danger:focus,.metro .btn-danger:active {
+    color: #fff;
+}
 
     .metro .btn-danger:hover {
         color: #fff;
@@ -1244,12 +1247,11 @@ p.validation {
     margin-left: -319px;
     margin-top: -150px;
 }
-#shutdown div {
-    text-align: center;
-}
-    #shutdown img {
-        width: 160px;
+
+    #shutdown div {
+        text-align: center;
     }
+
     #shutdown p {
         text-align: center;
         font-size: 40px;
