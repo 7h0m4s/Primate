@@ -1066,9 +1066,7 @@ def shutdown():
             sessionVault.removeVault()
             session.clear()
         shutdown_server()    
-
-
-        return "Password Primate has shutdown."
+        return app.send_static_file('primate-shut-down.html')
     except Exception,e:
         return str(e),500
 
