@@ -1084,6 +1084,10 @@ def shutdown_server():
 #Code below is equivilent to a "Main" function in Java or C
 if __name__ == "__main__":
 
+
+    #Open users browser to allow access to the frontend.
+    webbrowser.open_new_tab('http://localhost:5000')
+    
     #Close Program if an instance of Password Primate is already running.
     me = singleton.SingleInstance()
     
