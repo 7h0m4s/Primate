@@ -1039,7 +1039,7 @@ def getChild(record):
             "uuid" : "",
             "title" : "",
             "user" : "",
-            "passwd" : "",
+            #"passwd" : "",
             "notes" : "",
             "last_mod" : 0,
             "url" : ""
@@ -1047,7 +1047,7 @@ def getChild(record):
     data["uuid"] = str(record._get_uuid())
     data["title"] = str(record._get_title())
     data["user"] = str(record._get_user())
-    data["passwd"] = str(record._get_passwd())
+    #data["passwd"] = str(record._get_passwd())
     data["notes"] = str(record._get_notes())
     data["last_mod"] = str(time.strftime("%H:%M %d-%m-%Y", time.localtime(record._get_last_mod())))
     data["url"] = str(record._get_url())
