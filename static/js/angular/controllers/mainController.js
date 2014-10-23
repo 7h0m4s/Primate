@@ -651,6 +651,10 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             return;
         }
         if (isValid) {
+            if (_REQUEST_LOCK) {
+                return;
+            }
+            _REQUEST_LOCK = true;
             submitAnimatel();
             ajaxPost($("#createGroupForm"), true, _urlCreateGroupSubmit, function () {
                 var newGroupObj = { groupName: groupNameVal, children: [], groups: [] };
@@ -661,7 +665,9 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 }
                 notifiSuccess(_NOTIFI_GROUP_CAPTION, _ADD_SUCCESS_MSG);
                 var serializedCurrentGroup = prepareGroupUrl(groupParentVal, groupNameVal);
+                _REQUEST_LOCK = false;
                 redirect(_urlViewGroup + "?" + serializedCurrentGroup);
+
             },
                 function () {
                     redirectToErroPage505();
@@ -675,6 +681,10 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         var groupParentVal = $("#groupParent").val();
         var groupNameVal = $("#groupName").val();
         if (isValid) {
+            if (_REQUEST_LOCK) {
+                return;
+            }
+            _REQUEST_LOCK = true;
             submitAnimatel();
             ajaxPost($("#editGroupForm"), true, _urlEditGroupSubmit, function () {
                 var deletedObj = deleteGroupFromNewTreeByParentName($scope.oldGroup.groupParent, $scope.oldGroup, true);
@@ -686,6 +696,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 }
                 notifiSuccess(_NOTIFI_SETTING_CAPTION, _EDIT_SUCCESS_MSG);
                 var serializedCurrentGroup = prepareGroupUrl(groupParentVal, groupNameVal);
+                _REQUEST_LOCK = false;
                 redirect(_urlViewGroup + "?" + serializedCurrentGroup);
             },
                 function () {
@@ -728,6 +739,10 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     $scope.SubmitCreateAccountForm = function (isValid) {
         var groupParentVal = $("#groupParent").val();
         if (isValid) {
+            if (_REQUEST_LOCK) {
+                return;
+            }
+            _REQUEST_LOCK = true;
             submitAnimatel();
             ajaxPost($("#createAccountForm"), true, _urlCreateUserSubmit, function (accountJson) {
                 $scope.account = $.parseJSON(accountJson);
@@ -738,6 +753,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 var serializedCurrentGroup = $.param(currentGroupObj);
                 redirect(_urlViewAccount + "?" + serializedCurrentGroup);
                 notifiSuccess(_NOTIFI_ACCOUNT_CAPTION, _ADD_SUCCESS_MSG);
+                _REQUEST_LOCK = false;
             },
                 function () {
                     redirectToErroPage505();
@@ -751,6 +767,10 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         var groupParentVal = $("#groupParent").val();
         var uuidObj = { uuid: $("#uuid").val() };
         if (isValid) {
+            if (_REQUEST_LOCK) {
+                return;
+            }
+            _REQUEST_LOCK = true;
             submitAnimatel();
             ajaxPost($("#editAccountForm"), true, _urlEditUserSubmit, function () {
                 processAccountScope();
@@ -761,6 +781,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                     selectAccountSearch();
                     notifiSuccess(_NOTIFI_ACCOUNT_CAPTION, _EDIT_SUCCESS_MSG);
                     redirectWithExistingParms(_urlViewAccount);
+                    _REQUEST_LOCK = false;
                 }, function (response) {
                     redirectToErroPage505();
                 });
