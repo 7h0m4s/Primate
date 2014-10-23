@@ -799,18 +799,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         return str;
     };
 
-    var getAllChildren = function () {
-        $scope.searchChildren = [];
-        var recursiveGroup = function (tree) {
-            for (var b = 0; b < tree.children.length; b++) {
-                $scope.searchChildren.push(tree.children[b]);
-            }
-            for (var a = 0; a < tree.groups.length; a++) {
-                recursiveGroup(tree.groups[a]);
-            }
-        };
-        recursiveGroup($scope.tree);
-    };
+
 
     $scope.Reveal = function (id) {
         $(id).attr("type", "text");
@@ -851,7 +840,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
 
     $scope.DisplaySearch = function () {
         getAllChildren();
-        console.log($scope.searchChildren);
         $(".default-item").hide();
         $('.active').removeClass("active");
         $(".search-item").show();
@@ -877,10 +865,38 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         return $str;
     };
 
+    $scope.CheckUntitleFields = function (item) {
+        if (isUndifined($scope.accountSearch)) {
+            $scope.accountSearch = {};
+            $scope.accountSearch.title = "";
+        }
+        if ($scope.accountSearch.title && $scope.accountSearch.title && $scope.accountSearch.title.length > 0) {
+            var check = item.title.toString().indexOf($scope.accountSearch.title) > -1;
+            if (item.title.length == 0) {
+                check = check || (_UNTITLE.indexOf($scope.accountSearch.title) > -1);
+            }
+            return check;
+        }
+        return true;
+    }
+
     var initAccountId = function () {
         var uuid = $routeParams.uuid;
         $("#uuid").val(uuid);
         return uuid;
+    };
+
+    var getAllChildren = function () {
+        $scope.searchChildren = [];
+        var recursiveGroup = function (tree) {
+            for (var b = 0; b < tree.children.length; b++) {
+                $scope.searchChildren.push(tree.children[b]);
+            }
+            for (var a = 0; a < tree.groups.length; a++) {
+                recursiveGroup(tree.groups[a]);
+            }
+        };
+        recursiveGroup($scope.tree);
     };
 
     var prepareAccountForm = function (uuid) {
@@ -1303,7 +1319,6 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 });
             } else if (key == "RedirectUrl") {
                 ajaxPostOnly({ uuid: getUuid(), attribute: _CONTEXT_ATTRIBUTE.URL }, _CONTENT_COPY, function (url) {
-                    debugger;
                     if (url.toLowerCase().indexOf(_PREFIX) == -1) {
                         window.open(_PREFIX + url, '_blank');
                     } else {
