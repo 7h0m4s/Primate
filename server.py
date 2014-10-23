@@ -212,7 +212,7 @@ def newDB():
             open(session['dbFile'], 'w').close()
             os.unlink(session['dbFile'])
         except (OSError,IOError):
-            return "Database Filename Is Invalid",200
+            return "Database filename is invalid",200
             
         try:
             sessionVault.addVault(Vault(session['password'].encode('ascii','ignore')))

@@ -173,7 +173,7 @@
     font-size: 14px;
 }
 
-.metro .login-error, .metro .login-validate {
+.metro .login-error, .metro .login-validate, .metro .login-error, .metro .symbol-validate {
     display: none;
 }
 
