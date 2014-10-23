@@ -30,6 +30,8 @@ from ConfigParser import SafeConfigParser
 import appdirs
 import subprocess
 from tendo import singleton
+import threading
+import urllib2
 
 
 #Configuration to handle HTML file uploads if implemented later.
@@ -54,6 +56,12 @@ global confParser
 global confPath
 confParser = SafeConfigParser()
 confPath = str(os.path.join(appdirs.user_data_dir(appName, appAuthor),"config.ini"))
+
+global shutdown_delay
+shutdown_delay = 5 #seconds
+
+global server_port_number
+server_port_number = "5000"
 
 """
 Class holds session values that are not compatiable with the Flask session variable.
@@ -1062,19 +1070,35 @@ Function safely closes the backend server.
 @app.route('/shutdown')
 def shutdown():
     try:
-        if isLoggedIn():#redirects if already logged in
-            sessionVault.removeVault()
-            session.clear()
-        shutdown_server()    
+        t = threading.Thread(target=shutdownDelay)
+        t.start()
+        #shutdown_server()    
         return "",304
     except Exception,e:
         return str(e),500
 
+
+def shutdownDelay():
+    try:
+        time.sleep(shutdown_delay)
+        response = urllib2.urlopen('http://localhost:'+server_port_number+"/force-shutdown")
+        return
+    except Exception,e:
+        return#We expect a http 500 error here.
+
+"""
+
+"""
+@app.route('/force-shutdown')
 def shutdown_server():
+    if isLoggedIn():#redirects if already logged in
+            sessionVault.removeVault()
+            session.clear()
     func = request.environ.get('werkzeug.server.shutdown')
     if func is None:
         raise RuntimeError('Not running with the Werkzeug Server')
     func()
+    return
 
 
 
@@ -1084,7 +1108,7 @@ if __name__ == "__main__":
 
 
     #Open users browser to allow access to the frontend.
-    webbrowser.open_new_tab('http://localhost:5000')
+    webbrowser.open_new_tab('http://localhost:'+server_port_number)
     
     #Close Program if an instance of Password Primate is already running.
     me = singleton.SingleInstance()
@@ -1095,9 +1119,6 @@ if __name__ == "__main__":
     #initiate object that will store the databases.
     global sessionVault
     sessionVault = SessionVault()
-
-    #Open users browser to allow access to the frontend.
-    webbrowser.open_new_tab('http://localhost:5000')
 
 
     #This key is used to encrypt the session cookies for security.
