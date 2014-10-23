@@ -32,7 +32,7 @@ import subprocess
 from tendo import singleton
 import threading
 import urllib2
-
+import sys
 
 #Configuration to handle HTML file uploads if implemented later.
 UPLOAD_FOLDER = 'uploads/'
@@ -1106,6 +1106,8 @@ def shutdown_server():
 #Code below is equivilent to a "Main" function in Java or C
 if __name__ == "__main__":
 
+    #Prevent Py2exe making a .log file
+    sys.stderr = sys.stdout
 
     #Open users browser to allow access to the frontend.
     webbrowser.open_new_tab('http://localhost:'+server_port_number)
