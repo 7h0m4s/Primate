@@ -26,7 +26,7 @@ loginApp.directive('passwordMatch', [function () {
     };
 }]);
 
-loginApp.controller('loginController', function ($scope) {
+loginApp.controller('loginController', function ($scope, $compile, $http) {
     var lockFileDialog = false;
 
     $scope.SubmitLoginForm = function (isValid) {
@@ -160,6 +160,16 @@ loginApp.controller('loginController', function ($scope) {
     };
     $scope.Hide = function (id) {
         $(id).attr("type", "password");
+    };
+
+    $scope.TriggerShutdownDialog = function ($title) {
+        $http.get(_urlShutdownTemplate).success(function ($content) {
+            var $compileContent = $compile($content)($scope)[0];
+            return triggerDialog($title, $compileContent);
+        })
+        .error(function ($content, status) {
+            redirectToErroPage505();
+        });
     };
 
     var setDatabaseInputModified = function () {

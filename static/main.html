@@ -25,12 +25,12 @@
                             <span class="icon-cog"></span>
                         </a>
                         <ul class="dropdown-menu place-right" data-role="dropdown">
+                            <li><a href="static/user-startup-guide.pdf" target="_blank">User Guide</a></li>
                             <li><a href="javascript:;" ng-click="TriggerMasterPasswordDialog('Master Password')">Master Password</a></li>
                             <li><a href="javascript:;" ng-click="TriggerSlider()">Settings</a></li>
                             <li><a href="javascript:;" ng-click="TriggerImportDialog('Import')">Import</a></li>
                             <li><a href="javascript:;" ng-click="TriggerExportDialog('Export')">Export</a></li>
-                            <li><a href="static/user-startup-guide.pdf" target="_blank">Help Document</a></li>
-                            <li><a href="/shutdown">Shut Down</a></li>
+                            <li><a ng-click="TriggerShutdownDialog('Shut Down')">Shut Down</a></li>
                             <li><a href="logout">Log Out</a></li>
                         </ul>
                     </div>

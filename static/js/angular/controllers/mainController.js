@@ -43,6 +43,7 @@ var _urlDeleteUser = "/delete-user";
 var _urlDeleteGroup = "/delete-group";
 var _urlResetMasterPassword = "/new-master-password"; //post
 var _urlRedirectHomeNoRefresh = "/dashboard#";
+var _urlShutdownTemplate = "/static/dialog-shutdown-template.html";
 var _UNTITLE = "Untitled";
 var _SLASH = " / ";
 var _PREFIX = "http://";
@@ -487,6 +488,16 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
 
     $scope.TriggerDeleteAccountDialog = function ($title) {
         $http.get(_urlDeleteAccountTemplate).success(function ($content) {
+            var $compileContent = getCompileContent($content);
+            return triggerDialog($title, $compileContent);
+        })
+        .error(function ($content, status) {
+            redirectToErroPage505();
+        });
+    };
+
+    $scope.TriggerShutdownDialog = function ($title) {
+        $http.get(_urlShutdownTemplate).success(function ($content) {
             var $compileContent = getCompileContent($content);
             return triggerDialog($title, $compileContent);
         })
