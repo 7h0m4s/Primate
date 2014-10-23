@@ -1068,7 +1068,7 @@ def shutdown():
         shutdown_server()    
 
 
-        return "Shutting down server."
+        return "Password Primate has shutdown."
     except Exception,e:
         return str(e),500
 
