@@ -1234,3 +1234,25 @@ p.validation {
 .metro .input-control.text .btn-file {
     z-index: 0;
 }
+
+
+/*shutdown page*/
+#shutdown {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -319px;
+    margin-top: -150px;
+}
+#shutdown div {
+    text-align: center;
+}
+    #shutdown img {
+        width: 160px;
+    }
+    #shutdown p {
+        text-align: center;
+        font-size: 40px;
+        margin-top: 18px;
+    }
+/*end of shutdown page*/
