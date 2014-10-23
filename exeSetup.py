@@ -14,6 +14,5 @@ setup(console=[
                               'excludes': 'perfmon IPython EasyDialogs hotshot adodbapi'
                                           'pyreadline wx nose genshi test pygtk'.split(),
                               'dll_excludes': 'OCI.dll w9xpopen.exe gdiplus.dll MSVCP90.dll'.split(),
-                              'packages': ['email','werkzeug','Tkinter','jinja2','pyperclip','appdirs'
-                                             ],
+                              'packages': ['email','werkzeug','Tkinter','jinja2','pyperclip','appdirs','tendo'],
                                   }})

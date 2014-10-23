@@ -1,3 +1,4 @@
-import subprocess
-output = subprocess.check_output('dir', shell=True)
-print output
+from tendo import singleton
+me = singleton.SingleInstance() # will sys.exit(-1) if other instance is running
+while True:
+    print "HI"
