@@ -2,7 +2,7 @@
 var _urlGetFilePath = "/get-filepath";
 var _urlDashboard = "/dashboard";
 var loginApp = angular.module("loginApp", ['ngStorage']);
-
+var _REQUEST_LOCK = false;
 loginApp.directive('passwordMatch', [function () {
     return {
         restrict: 'A',
@@ -51,7 +51,6 @@ loginApp.controller('loginController', function ($scope) {
             }
         }
     };
-
     $scope.OpenSetFileDialog = function () {
         if (!lockFileDialog) {
             lockFileDialog = true;
@@ -107,9 +106,18 @@ loginApp.controller('loginController', function ($scope) {
 
     $scope.SubmitNewDbForm = function (isValid) {
         if (isValid) {
-            submitAnimatel();
-            ajaxPost($("#newDBForm"), true, null, function () {
-                redirect(_urlDashboard);
+            if (_REQUEST_LOCK) {
+                return;
+            }
+            _REQUEST_LOCK = true;
+            ajaxPost($("#newDBForm"), true, null, function (msg) {
+                if (!msg) {
+                    redirect(_urlDashboard);
+                    _REQUEST_LOCK = false;
+                } else {
+                    $(".symbol-validate").html(msg).slideDown("fast");
+                    _REQUEST_LOCK = false;
+                }
             },
             function () {
                 redirectToErroPage505();
@@ -121,6 +129,7 @@ loginApp.controller('loginController', function ($scope) {
             if ($scope.newDBForm.Password.$error.required) {
                 $(".login-validate").eq(1).slideDown("fast");
             }
+            _REQUEST_LOCK = false;
         }
     };
 

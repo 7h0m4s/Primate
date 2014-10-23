@@ -46,6 +46,8 @@ var _urlRedirectHomeNoRefresh = "/dashboard#";
 var _UNTITLE = "Untitled";
 var _SLASH = " / ";
 var _PREFIX = "http://";
+var _PREFIXS = "https://";
+
 var _TEXT_SAVE = "Save Changes";
 var _REQUEST_LOCK = false;
 //new Password
@@ -581,15 +583,21 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     };
 
     $scope.ImportSubmit = function () {
+        if (_REQUEST_LOCK) {
+            return;
+        }
+        _REQUEST_LOCK = true;
         ajaxPost($("#importFileInput"), true, _urlImportSubmit, function (msg) {
             if (!msg) {
                 notifiSuccess(_NOTIFI_IMPORT_CAPTION, _Import_SUCCESS_MSG);
                 setTimeout(function () {
                     redirect(_urlLoginRedirect);
+                    _REQUEST_LOCK = false;
                 }, _TIME_REDIRECT);
 
             } else {
                 $("#import-customMsg").html(msg);
+                _REQUEST_LOCK = false;
             }
         }, function () { });
 
@@ -1319,10 +1327,10 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 });
             } else if (key == "RedirectUrl") {
                 ajaxPostOnly({ uuid: getUuid(), attribute: _CONTEXT_ATTRIBUTE.URL }, _CONTENT_COPY, function (url) {
-                    if (url.toLowerCase().indexOf(_PREFIX) == -1) {
-                        window.open(_PREFIX + url, '_blank');
-                    } else {
+                    if (url.toLowerCase().indexOf(_PREFIX) == 0 || url.toLowerCase().indexOf(_PREFIXS) == 0) {
                         window.open(url, '_blank');
+                    } else {
+                        window.open(_PREFIX + url, '_blank');
                     }
                 });
             }
