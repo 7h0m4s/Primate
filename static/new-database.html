@@ -16,6 +16,8 @@
         <p class="error-msg login-validate">Confirm password is not match. </p>
         <p class="error-msg symbol-validate"></p>
         <form class="login" name="newDBForm" id="newDBForm" method="post" target="/newDB" novalidate ng-submit="SubmitNewDbForm(newDBForm.$valid)">
+            <input style="display:none" type="text" />
+            <input style="display:none" type="password" />
             <div class="logo">
                 <img src="static/img/logo.png" alt="logo" />
             </div>

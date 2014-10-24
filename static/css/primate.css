@@ -624,7 +624,7 @@ button.close {
 
 .metro .btn-lead:hover {
     background-color: #217dbb;
-    color: #fff;
+    color: #fff!important;
     border: 1px #1d6fa5 solid;
 }
 
