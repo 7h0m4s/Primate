@@ -519,8 +519,8 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 $.Dialog.close();
                 syncBreadCrumbByFindingObj($scope.breadcrumbs);
                 deleteGroupFromNewTreeByParentName(accountObj.groupParent, accountObj, false);
+                checkIfRedirect();
                 selectAccountSearch();
-                checkIfRedirect(uuid);
                 notifiSuccess(_NOTIFI_ACCOUNT_CAPTION, _DELETE_SUCCESS_MSG);
             }, function () {
                 redirectToErroPage505();
@@ -530,17 +530,25 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         });
     };
 
-    var checkIfRedirect = function (deteledtUui) {
+    var checkIfRedirect = function () {
+        debugger;
         var uuid = $routeParams.uuid;
         if (!isUndifined(uuid)) {
-            if (uuid == deteledtUui) {
+            getAllChildren();
+            var allAccount = $scope.searchChildren;
+            var check = true;
+            for (var a = 0; a < allAccount.length; a++) {
+                if (allAccount[a].uuid == uuid) {
+                    check = false;
+                }
+            }
+            if (check) {
                 redirect(_urlRedirectHomeNoRefresh);
             }
         }
     }
 
-    var checkGroupIfRedirect = function (deteledGroupId) {
-        debugger;
+    var checkGroupIfRedirect = function () {
         var groupParent = $routeParams.groupParent;
         var groupName = $routeParams.groupName;
         var groupId = "";
@@ -548,20 +556,22 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             if (!isUndifined(groupName)) {
                 groupId = _GROUP_CONCAT_SYMBOL + groupName;
             }
-            if (deteledGroupId == groupId) {
-                redirect(_urlRedirectHomeNoRefresh);
-                return;
-            }
         } else {
             if (isUndifined(groupName)) {
                 groupId = groupParent;
             } else {
                 groupId = groupParent + _GROUP_CONCAT_SYMBOL + groupName;
             }
-            if (deteledGroupId == groupId) {
-                redirect(_urlRedirectHomeNoRefresh);
-                return;
+        }
+        var allGroup = getAllGroup($scope.tree, true);
+        var check = true;
+        for (var a = 0; a < allGroup.length; a++) {
+            if (allGroup[a].id == groupId) {
+                check = false;
             }
+        }
+        if (check) {
+            redirect(_urlRedirectHomeNoRefresh);
         }
     }
 
@@ -576,7 +586,8 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         var postData = { group: groupId }
         ajaxGet(true, _urlDeleteGroup, postData, function () {
             deleteGroupFromNewTreeByParentName(groupObj.groupParent, groupObj, true);
-            checkGroupIfRedirect(groupId);
+            checkIfRedirect();
+            checkGroupIfRedirect();
             $.Dialog.close();
             notifiSuccess(_NOTIFI_ACCOUNT_CAPTION, _DELETE_SUCCESS_MSG);
         }, function () {
@@ -862,7 +873,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
     }
 
     $scope.ReplaceEmptyToNA = function (str) {
-        if (!str.trim()) {
+        if (!str) {
             return _EMPTY_NAME;
         }
         return str;
@@ -1259,7 +1270,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 }
             }
         };
-        if ($scope.tree != null) {
+        if ($scope.tree != null && oldBreadcrumbObj.length != 0) {
             recursiveGroup($scope.tree);
         }
         return resultObj;
