@@ -665,13 +665,14 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 }
                 notifiSuccess(_NOTIFI_GROUP_CAPTION, _ADD_SUCCESS_MSG);
                 var serializedCurrentGroup = prepareGroupUrl(groupParentVal, groupNameVal);
-                _REQUEST_LOCK = false;
                 redirect(_urlViewGroup + "?" + serializedCurrentGroup);
-
+                setTimeout(function () {
+                    _REQUEST_LOCK = false;
+                }, 100);
             },
-                function () {
-                    redirectToErroPage505();
-                });
+            function () {
+                redirectToErroPage505();
+            });
         } else {
             redirectToErroPage505();
         }
@@ -696,8 +697,8 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
                 }
                 notifiSuccess(_NOTIFI_SETTING_CAPTION, _EDIT_SUCCESS_MSG);
                 var serializedCurrentGroup = prepareGroupUrl(groupParentVal, groupNameVal);
-                _REQUEST_LOCK = false;
                 redirect(_urlViewGroup + "?" + serializedCurrentGroup);
+                _REQUEST_LOCK = false;
             },
                 function () {
                     redirectToErroPage505();

@@ -233,7 +233,8 @@ var ajaxGet = function (isAsync, requestUrl, postData, successFunc, failureFunc)
         data: postData,
         type: method,
         url: url,
-        async: isAsync
+        async: isAsync,
+        cache: false
     }).done(function (msg) {
         successFunc(msg);
 
@@ -249,7 +250,8 @@ var ajaxGetMethod = function (isAsync, requestUrl, postData, successFunc, failur
         data: postData,
         type: method,
         url: url,
-        async: isAsync
+        async: isAsync,
+        cache: false
     }).done(function (msg) {
         successFunc(msg);
 
@@ -264,6 +266,7 @@ var ajaxPostOnly = function (postData, requestUrl, successFunc) {
         type: method,
         url: requestUrl,
         data: postData,
+        cache: false
     }).done(function (msg) {
         successFunc(msg);
     }).fail(function (msg) {
