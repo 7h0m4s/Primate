@@ -682,7 +682,7 @@ def importFileDirect():
         file_path = request.form['file']
 
         if str(os.path.splitext(file_path)[1]) != ".csv":
-            return "Incorrect File Format.", 200
+            return "Incorrect File Format. Please insert a CSV file", 200
         
         importedFile = open(file_path,'r')
         reader = csv.DictReader(importedFile)
@@ -694,10 +694,10 @@ def importFileDirect():
                 return "Incorrect Data Format",200
             if len(lineDict) > 7:
                 importedFile.close()
-                return "Incorrect Data Format. Too Many Items On Line " + str(i),200
+                return "Incorrect data format. Too many items on line " + str(i),200
             if len(lineDict.get('uuid','')) != 36:
                 importedFile.close()
-                return "Incorrect UUID On Line " + str(i),200
+                return "Incorrect UUID on line " + str(i),200
 
 
             entry = Vault.Record.create()
@@ -717,7 +717,7 @@ def importFileDirect():
             
         if i <= 1:
             importedFile.close()
-            return "File Is Empty", 200
+            return "File is empty", 200
         saveDB()
         importedFile.close()
             
