@@ -1039,7 +1039,7 @@ def getChild(record):
             "uuid" : "",
             "title" : "",
             "user" : "",
-            "passwd" : "",
+            #"passwd" : "",
             "notes" : "",
             "last_mod" : 0,
             "url" : ""
@@ -1047,7 +1047,7 @@ def getChild(record):
     data["uuid"] = str(record._get_uuid())
     data["title"] = str(record._get_title())
     data["user"] = str(record._get_user())
-    data["passwd"] = str(record._get_passwd())
+    #data["passwd"] = str(record._get_passwd())
     data["notes"] = str(record._get_notes())
     data["last_mod"] = str(time.strftime("%H:%M %d-%m-%Y", time.localtime(record._get_last_mod())))
     data["url"] = str(record._get_url())
@@ -1070,21 +1070,23 @@ Function safely closes the backend server.
 @app.route('/shutdown')
 def shutdown():
     try:
-        t = threading.Thread(target=shutdownDelay)
-        t.start()
-        #shutdown_server()    
+##        t = threading.Thread(target=shutdownDelay)
+##        t.start()
+        #shutdown_server()
+        time.sleep(shutdown_delay)
+        shutdown_server()
         return "",304
     except Exception,e:
         return str(e),500
 
 
-def shutdownDelay():
-    try:
-        time.sleep(shutdown_delay)
-        response = urllib2.urlopen('http://localhost:'+server_port_number+"/force-shutdown")
-        return
-    except Exception,e:
-        return#We expect a http 500 error here.
+##def shutdownDelay():
+##    try:
+##        time.sleep(shutdown_delay)
+##        response = urllib2.urlopen('http://localhost:'+server_port_number+"/force-shutdown")
+##        return
+##    except Exception,e:
+##        return#We expect a http 500 error here.
 
 """
 
