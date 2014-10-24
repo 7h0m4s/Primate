@@ -586,8 +586,7 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         var postData = { group: groupId }
         ajaxGet(true, _urlDeleteGroup, postData, function () {
             deleteGroupFromNewTreeByParentName(groupObj.groupParent, groupObj, true);
-            checkIfRedirect();
-            checkGroupIfRedirect();
+            syncBreadCrumbByFindingObj($scope.breadcrumbs);
             $.Dialog.close();
             notifiSuccess(_NOTIFI_ACCOUNT_CAPTION, _DELETE_SUCCESS_MSG);
         }, function () {
