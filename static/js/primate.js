@@ -13,7 +13,7 @@ var USER_CONTEXT_NAME_OBJ = {
     NAME_DELETE_ACCOUNT: "Delete Account",
     NAME_COPY_USERNAME: "Copy Username",
     NAME_COPY_PASSWORD: "Copy Password",
-    NAME_COPY_URL: "Copy Url",
+    NAME_COPY_URL: "Copy URL",
     NAME_REDIRECT_URL: "Redirect to Website"
 };
 
