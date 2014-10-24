@@ -2,7 +2,7 @@
 var _urlLoginRedirect = "dashboard";
 var _undefined = "undefined";
 var GROUP_CONTEXT_NAME_OBJ = {
-    NAME_GROUP_DETAIL: "Group Detail",
+    NAME_GROUP_DETAIL: "Group Details",
     NAME_EDIT_GROUP: "Edit Group",
     NAME_DELETE_GROUP: "Delete Group"
 };
