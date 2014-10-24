@@ -1070,21 +1070,23 @@ Function safely closes the backend server.
 @app.route('/shutdown')
 def shutdown():
     try:
-        t = threading.Thread(target=shutdownDelay)
-        t.start()
-        #shutdown_server()    
+##        t = threading.Thread(target=shutdownDelay)
+##        t.start()
+        #shutdown_server()
+        time.sleep(shutdown_delay)
+        shutdown_server()
         return "",304
     except Exception,e:
         return str(e),500
 
 
-def shutdownDelay():
-    try:
-        time.sleep(shutdown_delay)
-        response = urllib2.urlopen('http://localhost:'+server_port_number+"/force-shutdown")
-        return
-    except Exception,e:
-        return#We expect a http 500 error here.
+##def shutdownDelay():
+##    try:
+##        time.sleep(shutdown_delay)
+##        response = urllib2.urlopen('http://localhost:'+server_port_number+"/force-shutdown")
+##        return
+##    except Exception,e:
+##        return#We expect a http 500 error here.
 
 """
 
