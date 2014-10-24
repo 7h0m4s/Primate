@@ -539,6 +539,32 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
         }
     }
 
+    var checkGroupIfRedirect = function (deteledGroupId) {
+        debugger;
+        var groupParent = $routeParams.groupParent;
+        var groupName = $routeParams.groupName;
+        var groupId = "";
+        if (isUndifined(groupParent) || groupParent.length == 0) {
+            if (!isUndifined(groupName)) {
+                groupId = _GROUP_CONCAT_SYMBOL + groupName;
+            }
+            if (deteledGroupId == groupId) {
+                redirect(_urlRedirectHomeNoRefresh);
+                return;
+            }
+        } else {
+            if (isUndifined(groupName)) {
+                groupId = groupParent;
+            } else {
+                groupId = groupParent + _GROUP_CONCAT_SYMBOL + groupName;
+            }
+            if (deteledGroupId == groupId) {
+                redirect(_urlRedirectHomeNoRefresh);
+                return;
+            }
+        }
+    }
+
     $scope.DeleteGroup = function () {
         submitAnimatel("#delGroupLink");
         var groupObj = $scope.delete.group;
@@ -546,9 +572,11 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             redirectToErroPage505();
             return;
         }
-        var postData = { group: groupObj.groupParent + _GROUP_CONCAT_SYMBOL + groupObj.groupName }
+        var groupId = groupObj.groupParent + _GROUP_CONCAT_SYMBOL + groupObj.groupName;
+        var postData = { group: groupId }
         ajaxGet(true, _urlDeleteGroup, postData, function () {
             deleteGroupFromNewTreeByParentName(groupObj.groupParent, groupObj, true);
+            checkGroupIfRedirect(groupId);
             $.Dialog.close();
             notifiSuccess(_NOTIFI_ACCOUNT_CAPTION, _DELETE_SUCCESS_MSG);
         }, function () {
@@ -912,9 +940,9 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
             $scope.accountSearch.title = "";
         }
         if ($scope.accountSearch.title && $scope.accountSearch.title && $scope.accountSearch.title.length > 0) {
-            var check = item.title.toString().indexOf($scope.accountSearch.title) > -1;
+            var check = item.title.toString().toLowerCase().indexOf($scope.accountSearch.title.toLowerCase()) > -1;
             if (item.title.length == 0) {
-                check = check || (_UNTITLE.indexOf($scope.accountSearch.title) > -1);
+                check = check || (_UNTITLE.toLowerCase().indexOf($scope.accountSearch.title.toLowerCase()) > -1);
             }
             return check;
         }
