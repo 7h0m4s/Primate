@@ -953,6 +953,7 @@ def setConfig():
     try:#request.form.get('test1', default=False, type=bool)
         if (request.form.get('sessionTimeOut', False) != False) and int(request.form.get('sessionTimeOut')) > 0:
             confParser.set("general",'sessiontimeout',str(int(request.values.get('sessionTimeOut')) * 60))
+            app.permanent_session_lifetime = timedelta(seconds=int(confParser.getint("general",'sessionTimeOut')))
         else:
             return "No sessionTimeOut set",200
         if request.form.get('passwrdMinLenth', False) and int(request.form.get('passwrdMinLenth')) >= 0:
@@ -1129,7 +1130,7 @@ if __name__ == "__main__":
     app.secret_key = os.urandom(24)
 
     #This is how long the session will remain active untill it times-out.
-    app.permanent_session_lifetime = timedelta(seconds=600)
+    app.permanent_session_lifetime = timedelta(seconds=int(confParser.getint("general",'sessionTimeOut')))
     
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER # Placeholder for where files should be stored if files are uploaded via HTML
                                                 # form.
