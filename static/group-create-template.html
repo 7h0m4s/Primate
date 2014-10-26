@@ -14,7 +14,6 @@
             <label class="required" for="groupName">Group Name</label>
             <div class="input-control text" data-role="input-control" ng-class="{'error-state': createGroupForm.groupName.$invalid && createGroupForm.groupName.$dirty}" ng-required="true">
                 <input type="text" placeholder="Group Name" id="groupName" name="groupName" ng-model="group.groupName" notarget-symbol noduplicategroup required />
-                <button class="btn-clear" tabindex="-1" type="button"></button>
                 <span class="validation" ng-show="createGroupForm.groupName.$error.required&& createGroupForm.groupName.$dirty">This field is required</span>
                 <span class="validation" ng-show="createGroupForm.groupName.$error.dot&& createGroupForm.groupName.$dirty">This field is not allowed to have dot (".")</span>
                 <span class="validation" ng-show="createGroupForm.groupName.$error.duplicategroup">The group already exists</span>
