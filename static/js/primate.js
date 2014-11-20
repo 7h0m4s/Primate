@@ -156,7 +156,7 @@ var unbindBackspace = function () {
     //prevent backspance button navigate back in all browser
     $(document).unbind('keydown').bind('keydown', function (event) {
         var doPrevent = false;
-        if (event.keyCode === _backspace_keycode) {
+        if (event.keyCode == _backspace_keycode) {
             var d = event.srcElement || event.target;
             if ((d.tagName.toUpperCase() === 'INPUT' &&
                  (
@@ -173,6 +173,9 @@ var unbindBackspace = function () {
             else {
                 doPrevent = true;
             }
+        }
+        if (event.keyCode == _mousebackspace_keycode) {
+            doPrevent = true;
         }
         if (doPrevent) {
             event.preventDefault();

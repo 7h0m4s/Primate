@@ -16,6 +16,7 @@ var _COPY_URL_MSG = "Copy URL successfully";
 var _COPY_USERNAME_MSG = "Copy username successfully";
 var _COPY_PASSWORD_MSG = "Copy password successfully";
 var _backspace_keycode = 8;
+var _mousebackspace_keycode = 18;
 var _defaultCheckboxValue = "on";
 var _urlErrorPage404 = "static/error-page.html";
 var _urlErrorPage505 = "static/error-page.html?code=505";
@@ -413,7 +414,8 @@ var mainApp = angular.module("mainApp", ['ngRoute', 'ngStorage'])
 
     $scope.Back = function ($event) {
         var currentKeyCode = $event.keyCode;
-        if (currentKeyCode == _backspace_keycode) {
+        console.log(currentKeyCode);
+        if (currentKeyCode == _backspace_keycode || currentKeyCode == _mousebackspace_keycode) {
             var backcrumbIndex = $scope.breadcrumbs.length - 2;
             if (backcrumbIndex >= 0) {
                 $scope.BreadcrumbRedirect($scope.breadcrumbs[backcrumbIndex]);
